@@ -1,6 +1,8 @@
 'use strict'
 const path = require('path')
 const defaultSettings = require('./src/settings.js')
+const TerserPlugin = require("terser-webpack-plugin");
+
 
 function resolve(dir) {
   return path.join(__dirname, dir)
@@ -42,6 +44,15 @@ module.exports = {
     // provide the app's title in webpack's name field, so that
     // it can be accessed in index.html to inject the correct title.
     name: name,
+    // minimizer:[
+    //   new TerserPlugin({
+    //     terserOptions: {
+    //       compress: {
+    //         pure_funcs: ["console.log"]
+    //       }
+    //     }
+    //   })
+    // ],
     resolve: {
       alias: {
         '@': resolve('src')
@@ -117,6 +128,9 @@ module.exports = {
             })
           // https:// webpack.js.org/configuration/optimization/#optimizationruntimechunk
           config.optimization.runtimeChunk('single')
+          // config.optimization:{
+
+          // }
         }
       )
   }

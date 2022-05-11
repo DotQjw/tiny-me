@@ -1,6 +1,9 @@
 <template>
   <div class="dashboard-container">
-    <div class="dashboard-text">name: {{ name }}</div>
+    <div class="dashboard-text">你好，小W的朋友:
+
+      <span style="color:purple;"> {{ name }}</span>
+    </div>
   </div>
 </template>
 
