@@ -111,7 +111,39 @@ export default {
         };
       }
     },
-    handleChild(row) {},
+    handleChild(row) {
+      console.log('row',row);
+      var curIndex;
+      this.tableData.some((item, index) => {
+        if (item.parentId === row.parentId && item.type === "button") {
+          console.log("index", index);
+          curIndex = index;
+          return;
+        }
+      });
+      const id = this.getRandom(16);
+      const childId = this.getRandom(8);
+      this.tableData.splice(curIndex+1, 0, {
+        parentId:id,
+        id: id,
+        name: `根据${row.name}`,
+        amount1: "165",
+        amount2: "4.43",
+        amount3: 12,
+        connectId:row.id
+      },
+      {
+          parentId: id,
+          type: "button",
+          id: childId,
+          name: "",
+          amount1: "",
+          amount2: "",
+          amount3: "",
+          maxRowspan: 0,
+        });
+      this.handleDealData();
+    },
     handleInner(row) {
       console.log("row", row);
       // var obj = this.tableData.find((v) => v.id === row.parentId);

@@ -9,7 +9,7 @@
       label-position="left"
     >
       <div class="title-container">
-        <el-badge value="v1.0" type="success ">
+        <el-badge value="v1.0" type="success">
           <h3 class="title">专利设计辅助系统</h3>
         </el-badge>
       </div>
@@ -89,10 +89,10 @@ export default {
       },
       loginRules: {
         username: [
-          { required: true, trigger: "blur", validator: validateUsername },
+          { required: true, trigger: "blur",message:'请输入手机号'},
         ],
         password: [
-          { required: true, trigger: "blur", validator: validatePassword },
+          { required: true, trigger: "blur",message:'请输入密码' },
         ],
       },
       loading: false,
@@ -123,16 +123,15 @@ export default {
     handleLogin() {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
-          if (this.loginForm.password !== "hello2022") {
-            this.$message.error("password error");
-            return;
-          }
+          // if (this.loginForm.password !== "hello2022") {
+          //   this.$message.error("password error");
+          //   return;
+          // }
           this.loading = true;
           this.$store
             .dispatch("user/login", this.loginForm)
             .then(() => {
               this.$router.push({ path: "/fuceng" });
-              // this.$router.push({ path: this.redirect || '/' })
               this.loading = false;
             })
             .catch(() => {

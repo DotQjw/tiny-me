@@ -26,12 +26,12 @@
           @click="stopRecord"
           >完成录制</el-button
         >
-        <el-button
+        <!-- <el-button
           type="primary"
           v-if="recordType === 'recording'"
           @click="getBlob"
           >暂停获取数据</el-button
-        >
+        > -->
         <el-button
           type="text"
           v-if="recordType === 'recording'"
@@ -46,6 +46,7 @@
 <script>
 import Recorder from "js-audio-recorder";
 import lamejs from "lamejs";
+import { uploadAudio } from "@/api/upload";
 export default {
   props: {
     type: {
@@ -114,13 +115,16 @@ export default {
       this.title = "录制结束";
       this.recordType = "stopRecord";
       clearInterval(this.timer);
-      that.play();
+      const wavData = this.recorder.getWAVBlob();
+      const data = new FormData();
+      let file = new File([wavData], "custom.wav");
+      data.append("file", file);
+      uploadAudio(data).then((res) => {
+        this.$message.success("录音上传成功");
+      });
+      // that.play();
     },
-    getBlob(){
-      const data = this.recorder.getPCMBlob();
-      console.log("fileSize",this.recorder.fileSize);
-      console.log('data',data)
-    },
+    getBlob() {},
     play() {
       // this.recorder.play();
       // getWholeData()

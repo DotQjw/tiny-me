@@ -8,7 +8,10 @@
   >
     <el-upload
       class="upload-main"
-      action="https://jsonplaceholder.typicode.com/posts/"
+      action="http://8.129.8.125:8080/api/v1/file/upload_file"
+      :headers="{
+        Authorization:`Bearer ${token}`,
+      }"
       :on-preview="handlePreview"
       :on-remove="handleRemove"
       :on-success="handleSuccess"
@@ -32,13 +35,14 @@ export default {
       type: Number,
       default: null,
     },
-    show:{
-      type:Boolean,
-      default:false
-    }
+    show: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
+      token: this.$store.getters.token,
       fileList: [],
     };
   },
@@ -55,14 +59,14 @@ export default {
     handleExceed(file) {
       console.log("handleExceed", file);
     },
-    handleClose(){
-      this.$emit('update:show',false)
-    }
+    handleClose() {
+      this.$emit("update:show", false);
+    },
   },
 };
 </script>
 <style lang="scss" scoped>
-.upload-main{
+.upload-main {
   text-align: center;
 }
 </style>

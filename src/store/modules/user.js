@@ -4,7 +4,7 @@ import { resetRouter } from '@/router'
 
 const getDefaultState = () => {
   return {
-    token: getToken(),
+    token: "",
     name: '',
     avatar: ''
   }
@@ -14,6 +14,7 @@ const state = getDefaultState()
 
 const mutations = {
   RESET_STATE: (state) => {
+    removeToken() // must remove  token  first
     Object.assign(state, getDefaultState())
   },
   SET_TOKEN: (state, token) => {
@@ -32,7 +33,7 @@ const actions = {
   login({ commit }, userInfo) {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
+      login({ phoneNo: username.trim(), password: password }).then(response => {
         const { data } = response
         commit('SET_TOKEN', data.token)
         setToken(data.token)
@@ -67,14 +68,8 @@ const actions = {
   // user logout
   logout({ commit, state }) {
     return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
-        removeToken() // must remove  token  first
-        resetRouter()
-        commit('RESET_STATE')
-        resolve()
-      }).catch(error => {
-        reject(error)
-      })
+      commit('RESET_STATE')
+      resolve()
     })
   },
 
