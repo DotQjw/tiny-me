@@ -19,7 +19,7 @@ service.interceptors.request.use(
       // let each request carry token
       // ['X-Token'] is a custom headers key
       // please modify it according to the actual situation
-      config.headers['Authorization'] = 'Bearer '+getToken()+1
+      config.headers['Authorization'] = 'Bearer '+getToken()
     }
     if(config.ContentType){
       console.log("config.ContentType",config.ContentType)
@@ -64,9 +64,9 @@ service.interceptors.response.use(
       if (res.code === 20103) {
         console.log('有问题')
         // to re-login
-        MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
-          confirmButtonText: 'Re-Login',
-          cancelButtonText: 'Cancel',
+        MessageBox.confirm('登录过期,请重新登录', 'Confirm logout', {
+          confirmButtonText: '重新登录',
+          cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
           store.dispatch('user/resetToken').then(() => {

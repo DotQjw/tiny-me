@@ -12,10 +12,9 @@ export function uploadAudio(data) {
   return request({
     url: '/api/v1/file/upload_audio',
     method: 'post',
-    ContentType:'multipart/form-data',
-    headers:{
-      "ContentType":'multipart/form-data'
-    },
+    // headers:{
+    //   "ContentType":'multipart/form-data'
+    // },
     data
   })
 }

@@ -20,6 +20,9 @@ const mutations = {
   SET_TOKEN: (state, token) => {
     state.token = token
   },
+  SET_ROLES:(state,roles)=>{
+    state.roles = roles
+  },
   SET_NAME: (state, name) => {
     state.name = name
   },
@@ -36,8 +39,11 @@ const actions = {
       login({ phoneNo: username.trim(), password: password }).then(response => {
         const { data } = response
         commit('SET_TOKEN', data.token)
+        commit('SET_NAME', data.username)
+        commit('SET_ROLES',data.roles)
+
         setToken(data.token)
-        resolve()
+        resolve(data)
       }).catch(error => {
         reject(error)
       })

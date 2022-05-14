@@ -130,8 +130,13 @@ export default {
           this.loading = true;
           this.$store
             .dispatch("user/login", this.loginForm)
-            .then(() => {
-              this.$router.push({ path: "/fuceng" });
+            .then((res) => {
+              console.log('res',res)
+              if(res.role === 1){
+                this.$router.push({ path: "/fuceng" });
+              }else{
+                  this.$router.push({ path: "/data-list" });
+              }
               this.loading = false;
             })
             .catch(() => {
@@ -258,10 +263,6 @@ $light_gray: #eee;
     color: $dark_gray;
     cursor: pointer;
     user-select: none;
-  }
-  .badge-item {
-    //    margin-top: 10px;
-    // margin-right: 40px;
   }
 }
 </style>

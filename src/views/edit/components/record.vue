@@ -39,7 +39,6 @@
           >取消</el-button
         >
       </div>
-      <audio :src="src" controls></audio>
     </div>
   </el-dialog>
 </template>
