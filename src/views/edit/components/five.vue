@@ -14,10 +14,10 @@
           :span-method="objectSpanMethod"
           style="width: 100%; margin-top: 20px"
         >
-          <el-table-column prop="id" label="ID" width="280">
+          <el-table-column prop="name" label="权力名称" width="280">
             <template slot-scope="scope">
               <div>
-                <el-input v-model="scope.row.id"></el-input>
+                <el-input v-model="scope.row.name"></el-input>
                 <el-button
                   icon="el-icon-plus"
                   style="margin-top: 10px"
@@ -56,6 +56,13 @@
             <template slot-scope="scope">
               <div v-if="!scope.row.type">
                 <el-input v-model="scope.row.amount3"></el-input>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="" label=" ">
+            <template slot-scope="scope">
+              <div v-if="!scope.row.type">
+                <el-button>上传附件</el-button>
               </div>
             </template>
           </el-table-column>
@@ -104,7 +111,7 @@ export default {
   methods: {
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
       // console.log("rowIndex", { row, column, rowIndex, columnIndex });
-      if (columnIndex === 0) {
+      if (columnIndex === 0 || columnIndex === 5) {
         return {
           rowspan: row.maxRowspan,
           colspan: 1,

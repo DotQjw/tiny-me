@@ -10,7 +10,7 @@
               <span>上传附件</span>
             </span>
             <span class="tool-item">
-              <i class="el-icon-headset"></i>
+              <i class="el-icon-microphone"></i>
               <span> 语音转文字 </span>
             </span>
           </span>

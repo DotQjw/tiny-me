@@ -14,7 +14,7 @@
               <span class="tool-label">上传附件</span>
             </span>
             <span class="tool-item" @click="openRecord('type1')">
-              <i class="el-icon-headset"></i>
+              <i class="el-icon-microphone"></i>
               <span class="tool-label"> 语音转文字 </span>
             </span>
           </span>
@@ -40,7 +40,7 @@
               <span class="tool-label">上传附件</span>
             </span>
             <span class="tool-item" @click="openRecord('type2')">
-              <i class="el-icon-headset"></i>
+              <i class="el-icon-microphone"></i>
               <span class="tool-label"> 语音转文字 </span>
             </span>
           </span>
@@ -66,7 +66,7 @@
               <span class="tool-label">上传附件</span>
             </span>
             <span class="tool-item" @click="openRecord('type3')">
-              <i class="el-icon-headset"></i>
+              <i class="el-icon-microphone"></i>
               <span class="tool-label"> 语音转文字 </span>
             </span>
           </span>
@@ -92,7 +92,7 @@
               <span class="tool-label">上传附件</span>
             </span>
             <span class="tool-item" @click="openRecord('type4')">
-              <i class="el-icon-headset"></i>
+              <i class="el-icon-microphone"></i>
               <span class="tool-label"> 语音转文字 </span>
             </span>
           </span>
