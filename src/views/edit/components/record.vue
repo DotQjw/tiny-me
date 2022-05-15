@@ -5,18 +5,19 @@
     :visible.sync="show"
     width="300px"
     :before-close="handleClose"
+    :close-on-click-modal="false"
   >
     <div class="dialog-main">
       <div>录音过程中请保持环境安静无其他噪音</div>
       <div>单次建议最多录制十分钟</div>
-      <div v-if="recordType !== 'recording'" class="unready">未开始</div>
+      <div v-if="recordType === 'ready'" class="unready">未开始</div>
       <div v-if="recordType === 'recording'" class="recording">
         已录制：{{ recordTime }}秒
       </div>
       <div class="dialog-btn">
         <el-button
           type="success"
-          v-if="recordType !== 'recording'"
+          v-if="recordType === 'ready'"
           @click="startRecord"
           >准备好了，开始录制</el-button
         >
@@ -26,19 +27,26 @@
           @click="stopRecord"
           >完成录制</el-button
         >
-        <!-- <el-button
+        <el-button
           type="primary"
-          v-if="recordType === 'recording'"
-          @click="getBlob"
-          >暂停获取数据</el-button
-        > -->
+          v-if="recordType === 'uploadFail'"
+          @click="stopRecord"
+          >重新上传</el-button
+        >
+        <el-button
+          type="success"
+          :loading="btnLoading"
+          v-if="recordType === 'uploadRecord'"
+          >录音上传中</el-button
+        >
         <el-button
           type="text"
           v-if="recordType === 'recording'"
-          @click="startRecord"
+          @click="handleCancel"
           >取消</el-button
         >
       </div>
+      <!-- <audio  :src="src" controls></audio> -->
     </div>
   </el-dialog>
 </template>
@@ -49,8 +57,8 @@ import { uploadAudio } from "@/api/upload";
 export default {
   props: {
     type: {
-      type: Number,
-      default: null,
+      type: String,
+      default: "",
     },
     show: {
       type: Boolean,
@@ -67,6 +75,8 @@ export default {
       recordType: "ready",
       recordTime: null,
       timer: null,
+      btnLoading: false,
+      src: "",
     };
   },
   created() {
@@ -109,30 +119,46 @@ export default {
       );
     },
     stopRecord() {
-      var that = this;
+      console.log("token", this.$store.getters.token);
       this.recorder.stop();
       this.title = "录制结束";
-      this.recordType = "stopRecord";
+      this.recordType = "uploadRecord";
       clearInterval(this.timer);
       const wavData = this.recorder.getWAVBlob();
       const data = new FormData();
       let file = new File([wavData], "custom.wav");
       data.append("file", file);
-      uploadAudio(data).then((res) => {
-        this.$message.success("录音上传成功");
-      });
+      this.btnLoading = true;
+      uploadAudio(data)
+        .then((res) => {
+          console.log("res", res);
+          this.src =
+            "https://x-patent.oss-cn-shenzhen.aliyuncs.com/" + res.data.url;
+          this.$message.success("录音上传成功");
+          this.btnLoading = false;
+          this.recordType = "ready";
+          this.$emit("uploadRecord", res.data.url);
+        })
+        .catch((err) => {
+          console.log("err", err);
+          this.$message.error("录音上传失败，请重新上传");
+          this.btnLoading = false;
+          this.recordType = "uploadFail";
+        });
       // that.play();
     },
-    getBlob() {},
+    handleCancel() {
+      this.$confirm("确定要取消录音吗", "提示", {
+        confirmButtonText: "取消录音",
+        cancelButtonText: "继续录音",
+        type: "warning",
+      }).then(() => {
+        this.recorder.stop();
+        this.title = "录制结束";
+        this.recordType = "ready";
+      });
+    },
     play() {
-      // this.recorder.play();
-      // getWholeData()
-      // this.recorder.onprogress = function (params) {
-      //   console.log("录音时长(秒)", params.duration);
-      //   console.log("录音大小(字节)", params.fileSize);
-      //   console.log("录音音量百分比(%)", params.vol);
-      //   // console.log('当前录音的总数据([DataView, DataView...])', params.data);
-      // };
       const blobs = this.recorder.getPCMBlob();
       // const dataBlob = this.changeMp3()
       let file = this.changeMp3(this.recorder.getWAV());
@@ -144,17 +170,7 @@ export default {
       var box = document.getElementById("box");
       audio.controls = true;
       box.appendChild(audio);
-      // this.recorder.getPCMBlob();
-      // console.log("URL.createObjectURL(blob)", URL.createObjectURL(blobs));
-      // let dataArray = this.recorder.getRecordAnalyseData();
-      // console.log("dataArray", dataArray);
-      // setTimeout(() => {
-      //   var audio = document.createElement("audio");
-      //   audio.src = URL.createObjectURL(blobs);
-      //   var box = document.getElementById("box");
-      //   audio.controls = true;
-      //   box.appendChild(audio);
-      // }, 5000);
+
     },
     changeMp3(wavDataView = {}) {
       // 获取wav头信息

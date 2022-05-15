@@ -16,11 +16,11 @@ router.beforeEach(async(to, from, next) => {
 
   // set page title
   // document.title = getPageTitle(to.meta.title)
-  document.title="tiny-me-admin"
+  document.title="专利辅助系统v1.0"
 
   // determine whether the user has logged in
   const hasToken = getToken()
-
+  console.log('hasToken',hasToken)
   if (hasToken) {
     if (to.path === '/login') {
       // if is logged in, redirect to the home page

@@ -45,7 +45,7 @@ export const constantRoutes = [
     hidden: false
   },
   {
-    path:'/data-list',
+    path:'/',
     redirect:'/data-list',
     component:LayoutTop,
     children:[

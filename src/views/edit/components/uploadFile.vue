@@ -29,11 +29,12 @@
   </el-dialog>
 </template>
 <script>
+import store from "@/store";
 export default {
   props: {
     type: {
-      type: Number,
-      default: null,
+      type: String,
+      default: '',
     },
     show: {
       type: Boolean,
@@ -55,9 +56,23 @@ export default {
     handleRemove(file) {},
     handleSuccess(response, file, fileList) {
       console.log("handleSuccess", { response, file, fileList });
+      if(response.code === 0){
+        this.$emit('uploadFile',response.data.url)
+      }else if(response.code === 20103){
+        this.$confirm("登录过期,请重新登录", "提示", {
+          confirmButtonText: "重新登录",
+          cancelButtonText: "取消",
+          type: "warning",
+        }).then(() => {
+          store.dispatch("user/resetToken").then(() => {
+            location.reload();
+          });
+        });
+      }
     },
     handleExceed(file) {
       console.log("handleExceed", file);
+      this.$message.warning('最多同时上传三个文件')
     },
     handleClose() {
       this.$emit("update:show", false);

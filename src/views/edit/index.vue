@@ -28,7 +28,7 @@ export default {
   components:{first,second,third,four,five},
   data() {
     return {
-        active:5,
+        active:2,
         type:'add'
     };
   },

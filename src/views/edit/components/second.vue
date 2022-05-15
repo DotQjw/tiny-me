@@ -5,15 +5,15 @@
         <div class="custom-label">
           <span> 本专利属于哪个技术领域 </span>
           <span class="right-tool">
-            <span class="tool-item" @click="openFileList(1)">
+            <span class="tool-item" @click="openFileList('type1')">
               <i class="el-icon-paperclip"></i>
               <span class="tool-label">附件列表</span>
             </span>
-            <span class="tool-item" @click="openUploadFile(1)">
+            <span class="tool-item" @click="openUploadFile('type1')">
               <i class="el-icon-upload2"></i>
               <span class="tool-label">上传附件</span>
             </span>
-            <span class="tool-item" @click="openRecord(1)">
+            <span class="tool-item" @click="openRecord('type1')">
               <i class="el-icon-headset"></i>
               <span class="tool-label"> 语音转文字 </span>
             </span>
@@ -31,15 +31,15 @@
         <div class="custom-label">
           <span>该领域存在什么痛点</span>
           <span class="right-tool">
-            <span class="tool-item" @click="openFileList(2)">
+            <span class="tool-item" @click="openFileList('type2')">
               <i class="el-icon-paperclip"></i>
               <span class="tool-label">附件列表</span>
             </span>
-            <span class="tool-item" @click="openUploadFile(2)">
+            <span class="tool-item" @click="openUploadFile('type2')">
               <i class="el-icon-upload2"></i>
               <span class="tool-label">上传附件</span>
             </span>
-            <span class="tool-item" @click="openRecord(2)">
+            <span class="tool-item" @click="openRecord('type2')">
               <i class="el-icon-headset"></i>
               <span class="tool-label"> 语音转文字 </span>
             </span>
@@ -57,15 +57,15 @@
         <div class="custom-label">
           <span>当前是如何解决这些痛点的</span>
           <span class="right-tool">
-            <span class="tool-item" @click="openFileList(3)">
+            <span class="tool-item" @click="openFileList('type3')">
               <i class="el-icon-paperclip"></i>
               <span class="tool-label">附件列表</span>
             </span>
-            <span class="tool-item" @click="openUploadFile(3)">
+            <span class="tool-item" @click="openUploadFile('type3')">
               <i class="el-icon-upload2"></i>
               <span class="tool-label">上传附件</span>
             </span>
-            <span class="tool-item" @click="openRecord(3)">
+            <span class="tool-item" @click="openRecord('type3')">
               <i class="el-icon-headset"></i>
               <span class="tool-label"> 语音转文字 </span>
             </span>
@@ -83,15 +83,15 @@
         <div class="custom-label">
           <span>解决这些痛点的方案所存在的且本专利要解决的缺陷有哪些？</span>
           <span class="right-tool">
-            <span class="tool-item" @click="openFileList(4)">
+            <span class="tool-item" @click="openFileList('type4')">
               <i class="el-icon-paperclip"></i>
               <span class="tool-label">附件列表</span>
             </span>
-            <span class="tool-item" @click="openUploadFile(4)">
+            <span class="tool-item" @click="openUploadFile('type4')">
               <i class="el-icon-upload2"></i>
               <span class="tool-label">上传附件</span>
             </span>
-            <span class="tool-item" @click="openRecord(4)">
+            <span class="tool-item" @click="openRecord('type4')">
               <i class="el-icon-headset"></i>
               <span class="tool-label"> 语音转文字 </span>
             </span>
@@ -115,17 +115,29 @@
       :type="uploadFileType"
       v-if="showUpload"
       :show.sync="showUpload"
+      @uploadFile="uploadFile"
     />
-    <record :type="recordType" v-if="showRecord" :show.sync="showRecord" />
-    <file-list :type="fileListType" v-if="showFileList" :show.sync="showFileList" />
+    <record
+      :type="recordType"
+      @uploadRecord="uploadRecord"
+      v-if="showRecord"
+      :show.sync="showRecord"
+    />
+    <file-list
+      :type="fileListType"
+      :recordList="currentRecordList"
+      :fileList="currentFileList"
+      v-if="showFileList"
+      :show.sync="showFileList"
+    />
   </div>
 </template>
 <script>
 import uploadFile from "./uploadFile";
 import record from "./record";
-import fileList from "./fileList"
+import fileList from "./fileList";
 export default {
-  components: { uploadFile, record,fileList },
+  components: { uploadFile, record, fileList },
   data() {
     return {
       content: "",
@@ -133,11 +145,39 @@ export default {
       uploadFileType: null,
       showRecord: false,
       recordType: null,
-      showFileList:false,
-      fileListType:null
+      showFileList: false,
+      fileListType: null,
+      currentRecordList: [],
+      currentFileList: [],
+      formData: {
+        type1: {
+          recordList: [],
+          fileList: [],
+        },
+        type2: {
+          recordList: [],
+          fileList: [],
+        },
+        type3: {
+          recordList: [],
+          fileList: [],
+        },
+        type4: {
+          recordList: [],
+          fileList: [],
+        },
+      },
     };
   },
   methods: {
+    uploadRecord(data) {
+      this.formData[this.recordType]["recordList"].push(data);
+      console.log("formData", this.formData[this.recordType]["recordList"]);
+    },
+    uploadFile(data) {
+      this.formData[this.uploadFileType]["fileList"].push(data);
+      console.log("formData", this.formData[this.uploadFileType]["fileList"]);
+    },
     openUploadFile(type) {
       this.uploadFileType = type;
       this.showUpload = true;
@@ -146,10 +186,12 @@ export default {
       this.recordType = type;
       this.showRecord = true;
     },
-    openFileList(type){
+    openFileList(type) {
       this.showFileList = true;
       this.fileListType = type;
-    }
+      this.currentRecordList = this.formData[type].recordList;
+      this.currentFileList = this.formData[type].fileList;
+    },
   },
 };
 </script>
