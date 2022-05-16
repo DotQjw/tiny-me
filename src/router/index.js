@@ -60,6 +60,12 @@ export const constantRoutes = [
         name: '编辑页面',
         component: () => import('@/views/edit/index'),
         meta: { title: '编辑页面', icon: 'edit' }
+      },
+      {
+        path: '/rich-text-edit',
+        name: '说明书编辑',
+        component: () => import('@/views/richTextEdit/index'),
+        meta: { title: '说明书编辑', icon: 'edit' }
       }
     ]
   },

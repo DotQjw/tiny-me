@@ -84,7 +84,7 @@ export default {
         language: "zh_CN", //语言
         skin_url: "tinymce/skins/ui/oxide",
         content_css: "tinymce/skins/content/default/content.css",
-        height: "500px",
+        height: "600px",
         selector: "textarea", // change this value according to your HTML
         plugins: this.plugins, //插件
         //以下为powerpaste插件配置
