@@ -85,12 +85,13 @@ export default {
       audioToText({ url }).then((res) => {
         console.log("res", res);
         if (res.data && res.data.text) {
-          this.$message.success("录音转文字成功");
-          this.$copyText(this.link).then(
-            function (e) {
-              this.$message.success("录音转文字成功");
+          // this.$message.success("录音转文字成功");
+          this.$copyText(res.data.text).then(
+             (e)=> {
+               console.log('e',e)
+              this.$message.success("录音转文字成功,去复制吧");
             },
-            function (e) {
+             (e)=> {
                this.$message.success("复制失败,请重试");
             }
           );
