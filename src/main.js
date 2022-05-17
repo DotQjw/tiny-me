@@ -11,6 +11,9 @@ import '@/styles/index.scss' // global css
 import App from './App'
 import store from './store'
 import router from './router'
+import VueClipboard from 'vue-clipboard2'
+
+Vue.use(VueClipboard)
 
 import '@/icons' // icon
 import '@/permission' // permission control

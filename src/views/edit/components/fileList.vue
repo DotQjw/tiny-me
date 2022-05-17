@@ -24,7 +24,10 @@
                 @click="handlePlay(item)"
                 class="el-icon-video-play tool-icon"
               ></span>
-              <span class="el-icon-delete tool-icon"></span>
+              <span
+                @click="changeText(item)"
+                class="el-icon-delete tool-icon"
+              ></span>
             </span>
           </div>
         </div>
@@ -42,6 +45,7 @@
   </el-dialog>
 </template>
 <script>
+import { audioToText } from "@/api/table";
 export default {
   props: {
     recordList: {
@@ -77,6 +81,22 @@ export default {
       this.audioSrc = this.baseUrl + src;
       console.log("audioSrc", this.audioSrc);
     },
+    changeText(url) {
+      audioToText({ url }).then((res) => {
+        console.log("res", res);
+        if (res.data && res.data.text) {
+          this.$message.success("录音转文字成功");
+          this.$copyText(this.link).then(
+            function (e) {
+              this.$message.success("录音转文字成功");
+            },
+            function (e) {
+               this.$message.success("复制失败,请重试");
+            }
+          );
+        }
+      });
+    },
     handleClose() {
       this.$emit("update:show", false);
     },
@@ -97,7 +117,7 @@ export default {
   cursor: pointer;
 }
 .tool-icon:hover {
-  color: #409EFF;
+  color: #409eff;
 }
 .dialog-main {
   line-height: 30px;

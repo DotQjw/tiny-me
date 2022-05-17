@@ -20,7 +20,7 @@
       <div class="box1-content">
         <div class="first-left">
           <div class="custom-title">说明书编辑</div>
-          <editor />
+          <editor selectorId="edit1" :defaultValue="allContent" />
         </div>
         <div class="first-right">
           <div class="custom-title">技术交底</div>
@@ -37,7 +37,10 @@
       <div class="custom-tips">
         要编辑摘要，请先填写好上方的内容，再点击下方的生成摘要按钮
       </div>
-      <el-button type="primary">生成摘要</el-button>
+      <el-button v-if="!showMainEdit" @click="handleMainEdit" type="primary">生成摘要</el-button>
+      <div v-show="showMainEdit" class="main-edit">
+        <editor selectorId="mainEdit" :defaultValue="mainContent" />
+      </div>
     </div>
     <div id="box3">
       <div class="custom-title">附图</div>
@@ -61,6 +64,9 @@ export default {
     return {
       toolList: ["攥写", "摘要", "附图", "预览"],
       currentTool: 0,
+      showMainEdit:false,
+      allContent:'<h1 class="custom" style="text-align: center;">权 利 要 求 书</h1><hr style="border: 1px solid #000; background: #000;" size="1px" width="90%"><p>&nbsp;</p><p style="padding-left: 40px; line-height: 1.5;">1. (7.1),其特征在于（7.1.a）</p><p style="padding-left: 40px; line-height: 1.5;">2. (7.1.1),其特征在于（7.1.1.a）</p><p style="padding-left: 40px; line-height: 1.5;">3. (7.1.1.1),其特征在于（7.1.1.a）</p><p style="padding-left: 40px; line-height: 1.5;">4. (8.1),其特征在于（8.1.a）</p>',
+      mainContent:'<h1 class="custom" style="text-align: center;">说 明 书 摘 要</h1><hr width="90%" size="1px" style="border:1px solid #000;background:#000" /'
     };
   },
   methods: {
@@ -69,6 +75,9 @@ export default {
       console.log("#", `#box${index}`);
       this.$el.querySelector(`#box${index + 1}`).scrollIntoView();
     },
+    handleMainEdit(){
+      this.showMainEdit = true;
+    }
   },
 };
 </script>
@@ -151,5 +160,9 @@ export default {
 .bottom-btn{
   text-align: center;
   margin: 30px 0;
+}
+.main-edit{
+  width: 100%;
+  // height: 500px;
 }
 </style>

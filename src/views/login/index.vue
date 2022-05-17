@@ -56,7 +56,7 @@
         type="primary"
         style="width: 100%; margin-bottom: 30px"
         @click.native.prevent="handleLogin"
-        >Login</el-button
+        >登 录</el-button
       >
     </el-form>
   </div>
@@ -139,7 +139,9 @@ export default {
               }
               this.loading = false;
             })
-            .catch(() => {
+            .catch((error) => {
+              console.log('error',error)
+              this.$message.error('密码错误，请确认账号密码')
               this.loading = false;
             });
         } else {

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <editor id="tinymce" v-model="myValue" :init="init" :disabled="disabled">
+    <editor :id="selectorId" v-model="myValue" :init="init" :disabled="disabled">
     </editor>
   </div>
 </template>
@@ -29,8 +29,12 @@ export default {
     Editor,
   },
   props: {
+    selectorId:{
+      type:String,
+      defaults:""
+    },
     //传入一个value，使组件支持v-model绑定
-    value: {
+    defaultValue: {
       type: String,
       default: "",
     },
@@ -46,15 +50,16 @@ export default {
     toolbar: {
       type: [String, Array],
       //菜单
-      default: "undo redo",
+      // default: "undo redo",
       // "undo redo | formatselect | bold italic forecolor backcolor | alignleft aligncenter alignright  | bullist numlist outdent indent |     | removeformat",
     },
   },
   watch: {
     myValue(n, o) {
-      this.$nextTick(() => {
-        this.getData(n);
-      });
+      console.log('n',n)
+      // this.$nextTick(() => {
+      //   this.getData(n);
+      // });
       if (n.includes("color")) {
         // console.log("in");
         // n = n.replace(/color/g, "");
@@ -66,7 +71,7 @@ export default {
   data() {
     var that = this;
     return {
-      myValue: "",
+      myValue: this.defaultValue,
       editorVm: "",
       template:
         '<p class="custom" >这里啥都没有-</p><p>我说的是真的</p><p class="custom" style="display:inline-block;">同行1</p><p class="custom" style="display:inline-block;">同行2</p><p></p><p class="custom">第二个段落</p><p></p><p></p><p></p><p class="custom">第三段</p><p></p>',
@@ -85,7 +90,7 @@ export default {
         skin_url: "tinymce/skins/ui/oxide",
         content_css: "tinymce/skins/content/default/content.css",
         height: "600px",
-        selector: "textarea", // change this value according to your HTML
+        selector: this.selectorId, // change this value according to your HTML
         plugins: this.plugins, //插件
         //以下为powerpaste插件配置
         convert_urls: false,
@@ -107,13 +112,13 @@ export default {
             title: "编辑",
             items: "undo redo | cut copy paste pastetext | selectall",
           },
-          insert: { title: "插入", items: "link media | template hr" },
+          // insert: { title: "插入", items: "link media | template hr" },
           view: { title: "查看", items: "visualaid" },
-          format: {
-            title: "格式",
-            items:
-              "bold italic underline strikethrough superscript subscript | formats | removeformat",
-          },
+          // format: {
+          //   title: "格式",
+          //   items:
+          //     "bold italic underline strikethrough superscript subscript | formats | removeformat",
+          // },
           table: {
             title: "表格",
             items: "inserttable tableprops deletetable | cell row column",
@@ -135,7 +140,7 @@ export default {
         init_instance_callback: function (editor) {
           console.log("ID为: " + editor.id + " 的编辑器已初始化完成.", editor);
           that.editorVm = editor;
-          editor.setContent(that.template);
+          editor.setContent(that.myValue);
           this.hasInit = true;
           editor.on("NodeChange Change KeyUp SetContent", () => {
             // console.log('1', editor.getContent())
