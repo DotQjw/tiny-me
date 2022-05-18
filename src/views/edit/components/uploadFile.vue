@@ -16,6 +16,7 @@
       :on-remove="handleRemove"
       :on-success="handleSuccess"
       :show-file-list="true"
+      :before-uoload="beforeUpload"
       :before-remove="beforeRemove"
       multiple
       drag
@@ -32,6 +33,10 @@
 import store from "@/store";
 export default {
   props: {
+    maxIndex:{
+      type:Number,
+      default:1
+    },
     type: {
       type: String,
       default: '',
@@ -43,12 +48,12 @@ export default {
   },
   data() {
     return {
-      token: this.$store.getters.token,
+      token: this.$store.getters.token || localStorage.getItem('token'),
       fileList: [],
     };
   },
   created() {
-    console.log("this.type", this.type);
+    console.log("this.type", this.type,this.id);
   },
   methods: {
     beforeRemove(file) {},
@@ -57,7 +62,11 @@ export default {
     handleSuccess(response, file, fileList) {
       console.log("handleSuccess", { response, file, fileList });
       if(response.code === 0){
-        this.$emit('uploadFile',response.data.url)
+        this.$emit('uploadFile',{
+          name:`文件${this.maxIndex}`,
+          url:response.data.url,
+          size:file.size
+        })
       }else if(response.code === 20103){
         this.$confirm("登录过期,请重新登录", "提示", {
           confirmButtonText: "重新登录",
@@ -69,6 +78,9 @@ export default {
           });
         });
       }
+    },
+    beforeUpload(file){
+      console.log('file',file)
     },
     handleExceed(file) {
       console.log("handleExceed", file);

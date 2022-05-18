@@ -11,27 +11,28 @@
       </div>
     </div>
     <div class="bottom">
-      <el-button type="primary">下一步</el-button>
+      <el-button type="primary" @click="handleNext">下一步</el-button>
       <el-button>保 存</el-button>
     </div>
-    <created-case v-if="showDilag" :show.sync="showDilag" />
   </div>
 </template>
 <script>
-import createdCase from './createdCase'
 export default {
-  components:{createdCase},
-  props:{
-    type:{
-      type:String,
-      default:''
-    }
+  props: {
+    type: {
+      type: String,
+      default: "",
+    },
   },
   data() {
     return {
-      showDilag:this.type === 'add' ? true : false,
+      showDilag: this.type === "add" ? true : false,
       content: "",
+      id: "",
     };
+  },
+  methods: {
+    handleNext() {},
   },
 };
 </script>

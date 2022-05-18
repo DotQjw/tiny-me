@@ -5,15 +5,15 @@
         <div class="custom-label">
           <span> 本专利属于哪个技术领域 </span>
           <span class="right-tool">
-            <span class="tool-item" @click="openFileList('type1')">
+            <span class="tool-item" @click="openFileList('domain')">
               <i class="el-icon-paperclip"></i>
               <span class="tool-label">附件列表</span>
             </span>
-            <span class="tool-item" @click="openUploadFile('type1')">
+            <span class="tool-item" @click="openUploadFile('domain')">
               <i class="el-icon-upload2"></i>
               <span class="tool-label">上传附件</span>
             </span>
-            <span class="tool-item" @click="openRecord('type1')">
+            <span class="tool-item" @click="openRecord('domain')">
               <i class="el-icon-microphone"></i>
               <span class="tool-label"> 语音转文字 </span>
             </span>
@@ -23,7 +23,7 @@
           type="textarea"
           :rows="4"
           class="custom-input"
-          v-model="content"
+          v-model="formData.domain.text"
           placeholder="请输入内容"
         ></el-input>
       </div>
@@ -31,15 +31,15 @@
         <div class="custom-label">
           <span>该领域存在什么痛点</span>
           <span class="right-tool">
-            <span class="tool-item" @click="openFileList('type2')">
+            <span class="tool-item" @click="openFileList('painPoint')">
               <i class="el-icon-paperclip"></i>
               <span class="tool-label">附件列表</span>
             </span>
-            <span class="tool-item" @click="openUploadFile('type2')">
+            <span class="tool-item" @click="openUploadFile('painPoint')">
               <i class="el-icon-upload2"></i>
               <span class="tool-label">上传附件</span>
             </span>
-            <span class="tool-item" @click="openRecord('type2')">
+            <span class="tool-item" @click="openRecord('painPoint')">
               <i class="el-icon-microphone"></i>
               <span class="tool-label"> 语音转文字 </span>
             </span>
@@ -49,7 +49,7 @@
           :rows="4"
           type="textarea"
           class="custom-input"
-          v-model="content"
+          v-model="formData.painPoint.text"
           placeholder="请输入内容"
         ></el-input>
       </div>
@@ -57,15 +57,15 @@
         <div class="custom-label">
           <span>当前是如何解决这些痛点的</span>
           <span class="right-tool">
-            <span class="tool-item" @click="openFileList('type3')">
+            <span class="tool-item" @click="openFileList('currentSolution')">
               <i class="el-icon-paperclip"></i>
               <span class="tool-label">附件列表</span>
             </span>
-            <span class="tool-item" @click="openUploadFile('type3')">
+            <span class="tool-item" @click="openUploadFile('currentSolution')">
               <i class="el-icon-upload2"></i>
               <span class="tool-label">上传附件</span>
             </span>
-            <span class="tool-item" @click="openRecord('type3')">
+            <span class="tool-item" @click="openRecord('currentSolution')">
               <i class="el-icon-microphone"></i>
               <span class="tool-label"> 语音转文字 </span>
             </span>
@@ -75,7 +75,7 @@
           :rows="4"
           type="textarea"
           class="custom-input"
-          v-model="content"
+          v-model="formData.currentSolution.text"
           placeholder="请输入内容"
         ></el-input>
       </div>
@@ -83,15 +83,15 @@
         <div class="custom-label">
           <span>解决这些痛点的方案所存在的且本专利要解决的缺陷有哪些？</span>
           <span class="right-tool">
-            <span class="tool-item" @click="openFileList('type4')">
+            <span class="tool-item" @click="openFileList('pendingDefect')">
               <i class="el-icon-paperclip"></i>
               <span class="tool-label">附件列表</span>
             </span>
-            <span class="tool-item" @click="openUploadFile('type4')">
+            <span class="tool-item" @click="openUploadFile('pendingDefect')">
               <i class="el-icon-upload2"></i>
               <span class="tool-label">上传附件</span>
             </span>
-            <span class="tool-item" @click="openRecord('type4')">
+            <span class="tool-item" @click="openRecord('pendingDefect')">
               <i class="el-icon-microphone"></i>
               <span class="tool-label"> 语音转文字 </span>
             </span>
@@ -101,25 +101,27 @@
           :rows="4"
           type="textarea"
           class="custom-input"
-          v-model="content"
+          v-model="formData.pendingDefect.text"
           placeholder="请输入内容"
         ></el-input>
       </div>
     </div>
     <div class="bottom">
-      <el-button type="primary">下一步</el-button>
-      <el-button type="success">上一步</el-button>
-      <el-button>保 存</el-button>
+      <el-button type="primary" @click="handleNext">下一步</el-button>
+      <el-button type="success" @click="handleLast">上一步</el-button>
+      <el-button @click="handleSave">保 存</el-button>
     </div>
     <upload-file
       :type="uploadFileType"
       v-if="showUpload"
       :show.sync="showUpload"
+      :maxIndex="maxIndex"
       @uploadFile="uploadFile"
     />
     <record
       :type="recordType"
       @uploadRecord="uploadRecord"
+      :maxIndex="maxIndex"
       v-if="showRecord"
       :show.sync="showRecord"
     />
@@ -136,8 +138,21 @@
 import uploadFile from "./uploadFile";
 import record from "./record";
 import fileList from "./fileList";
+import { saveTechbg } from "@/api/table";
 export default {
   components: { uploadFile, record, fileList },
+  props:{
+    id:{
+      type:String,
+      default:""
+    }
+  },
+  watch:{
+    id(n,o){
+      console.log('n',n,o)
+      this.formData.id = n;
+    }
+  },
   data() {
     return {
       content: "",
@@ -150,47 +165,67 @@ export default {
       currentRecordList: [],
       currentFileList: [],
       formData: {
-        type1: {
-          recordList: [],
-          fileList: [],
+        id:this.id,
+        domain: {
+          text: "",
+          attachments: [],
+          recordFiles: [],
         },
-        type2: {
-          recordList: [],
-          fileList: [],
+        painPoint: {
+          text: "",
+          attachments: [],
+          recordFiles: [],
         },
-        type3: {
-          recordList: [],
-          fileList: [],
+        currentSolution: {
+          text: "",
+          attachments: [],
+          recordFiles: [],
         },
-        type4: {
-          recordList: [],
-          fileList: [],
+        pendingDefect: {
+          text: "",
+          attachments: [],
+          recordFiles: [],
         },
       },
     };
   },
   methods: {
+    handleNext(){
+
+    },
+    handleLast(){
+
+    },
+    handleSave(){
+      console.log('this',this.formData)
+      saveTechbg(this.formData).then(res=>{
+        console.log('res',res)
+        this.$message.success('保存成功')
+      })
+    },
     uploadRecord(data) {
-      this.formData[this.recordType]["recordList"].push(data);
-      console.log("formData", this.formData[this.recordType]["recordList"]);
+      this.formData[this.recordType]["recordFiles"].push(data);
+      console.log("formData", this.formData[this.recordType]["recordFiles"]);
     },
     uploadFile(data) {
-      this.formData[this.uploadFileType]["fileList"].push(data);
-      console.log("formData", this.formData[this.uploadFileType]["fileList"]);
+      this.formData[this.uploadFileType]["attachments"].push(data);
+      console.log("formData", this.formData[this.uploadFileType]["attachments"]);
     },
     openUploadFile(type) {
       this.uploadFileType = type;
+      this.maxIndex = this.formData[type].attachments.length+1;
       this.showUpload = true;
     },
     openRecord(type) {
       this.recordType = type;
+      this.maxIndex = this.formData[type].recordFiles.length+1;
       this.showRecord = true;
     },
     openFileList(type) {
       this.showFileList = true;
       this.fileListType = type;
-      this.currentRecordList = this.formData[type].recordList;
-      this.currentFileList = this.formData[type].fileList;
+      this.currentRecordList = this.formData[type].recordFiles;
+      this.currentFileList = this.formData[type].attachments;
     },
   },
 };

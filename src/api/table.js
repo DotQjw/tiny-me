@@ -8,6 +8,34 @@ export function createCase(params) {
   })
 }
 
+export function getList(params) {
+  return request({
+    url: '/api/v1/patent/list',
+    method: 'get',
+    params
+  })
+}
+export function planOutline(params) {
+  return request({
+    url: '/api/v1/patent/plan_outline',
+    method: 'post',
+    data:params
+  })
+}
+export function implementPlan(params) {
+  return request({
+    url: '/api/v1/patent/implement_plan',
+    method: 'post',
+    data:params
+  })
+}
+export function caseDetail(params) {
+  return request({
+    url: '/api/v1/case/detail',
+    method: 'post',
+    data:params
+  })
+}
 export function saveTechbg(params) {
   return request({
     url: '/api/v1/patent/tech_bg',
@@ -18,6 +46,14 @@ export function saveTechbg(params) {
 export function audioToText(params) {
   return request({
     url: '/api/v1/file/audio_to_text',
+    method: 'get',
+    params
+  })
+}
+
+export function userSearch(params) {
+  return request({
+    url: '/api/v1/user/search',
     method: 'get',
     params
   })

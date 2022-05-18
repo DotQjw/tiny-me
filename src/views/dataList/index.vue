@@ -2,17 +2,17 @@
   <div class="page">
     <div class="page-title">项目管理</div>
     <el-table border :data="tableData" style="width: 100%">
-      <el-table-column prop="date" align="center" label="客户案号" width="180">
+      <el-table-column prop="caseNo" align="center" label="客户案号" width="180">
       </el-table-column>
-      <el-table-column prop="name" align="center" label="天元案号" width="180">
+      <el-table-column prop="tianyuan" align="center" label="天元案号" width="180">
       </el-table-column>
-      <el-table-column prop="address" align="center" label="提案名称">
+      <el-table-column prop="proposalName" align="center" label="提案名称">
       </el-table-column>
-      <el-table-column prop="address" align="center" label="专利名称">
+      <el-table-column prop="assistUserName" align="center" label="专利名称">
       </el-table-column>
-      <el-table-column prop="address" align="center" label="状态">
+      <el-table-column prop="status" align="center" label="状态">
       </el-table-column>
-      <el-table-column prop="address" align="center" label="客户名称">
+      <el-table-column prop="address" align="clientName" label="客户名称">
       </el-table-column>
       <el-table-column prop="address" align="center" label="事件">
       </el-table-column>
@@ -32,6 +32,8 @@
   </div>
 </template>
 <script>
+import { getList } from "@/api/table";
+
 export default {
   data() {
     return {
@@ -59,12 +61,27 @@ export default {
       ],
     };
   },
+  created(){
+    this.fetchData()
+  },  
   methods: {
+    fetchData(){
+      const param = {
+        currentPage:1,
+        perPage:15
+      }
+      getList(param).then(res=>{
+        console.log('res',res)
+        this.tableData = res.data.list;
+
+      })
+    },
     handleCheck(row) {
       console.log("check", row);
     },
     handleEdit(row) {
       console.log("edit", row);
+      this.$router.push({path:'/data-edit',query:{id:row.id}})
     },
   },
 };

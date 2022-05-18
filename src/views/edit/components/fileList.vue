@@ -18,7 +18,7 @@
             :key="index"
             class="list-item"
           >
-            <span> 录音{{ index + 1 }} </span>
+            <span>{{item.name}} </span>
             <span class="tool-box">
               <span
                 @click="handlePlay(item)"
@@ -36,7 +36,7 @@
       <div v-else>
         <div v-if="fileList && fileList.length">
           <div v-for="(item, index) in fileList" :key="index">
-            {{ item }}
+            {{ item.name }}
           </div>
         </div>
         <div v-else>还没有录音文件哦</div>
@@ -77,12 +77,12 @@ export default {
   },
   methods: {
     handleClick() {},
-    handlePlay(src) {
-      this.audioSrc = this.baseUrl + src;
+    handlePlay(item) {
+      this.audioSrc = this.baseUrl +item.url;
       console.log("audioSrc", this.audioSrc);
     },
-    changeText(url) {
-      audioToText({ url }).then((res) => {
+    changeText(item) {
+      audioToText({ url:item.url }).then((res) => {
         console.log("res", res);
         if (res.data && res.data.text) {
           // this.$message.success("录音转文字成功");

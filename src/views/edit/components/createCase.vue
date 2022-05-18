@@ -9,40 +9,40 @@
     <el-form :model="form">
       <el-form-item label="客户案号：">
         <el-input
-          v-model="form.name"
+          v-model="form.caseNo"
           class="custom-input"
           autocomplete="off"
         ></el-input>
       </el-form-item>
       <el-form-item label="天元案号：">
         <el-input
-          v-model="form.name"
+          v-model="form.tianyuan"
           class="custom-input"
           autocomplete="off"
         ></el-input>
       </el-form-item>
       <el-form-item label="客户名称：">
         <el-input
-          v-model="form.name"
+          v-model="form.clientName"
           class="custom-input"
           autocomplete="off"
         ></el-input>
       </el-form-item>
       <el-form-item label="提案名称：">
         <el-input
-          v-model="form.name"
+          v-model="form.proposalName"
           class="custom-input"
           autocomplete="off"
         ></el-input>
       </el-form-item>
       <el-form-item label="专利类型：">
-        <el-radio v-model="form.type" label="1">发明</el-radio>
-        <el-radio v-model="form.type" label="2">实用类型</el-radio>
+        <el-radio v-model="form.type" :label="1">发明</el-radio>
+        <el-radio v-model="form.type" :label="2">实用类型</el-radio>
       </el-form-item>
       <div class="more" v-if="!showMore" @click="handleMore">更多信息</div>
       <el-form-item v-if="showMore" label="协办人：">
         <el-input
-          v-model="form.name"
+          v-model="form.assistUserId"
           class="custom-input"
           autocomplete="off"
         ></el-input>
@@ -55,6 +55,8 @@
   </el-dialog>
 </template>
 <script>
+import { createCase } from "@/api/table";
+
 export default {
   props: {
     show: {
@@ -66,14 +68,12 @@ export default {
     return {
       showMore: false,
       form: {
-        name: "",
-        region: "",
-        date1: "",
-        date2: "",
-        delivery: false,
+        caseNo: "",
+        tianyuan: "",
+        clientName: "",
+        proposalName: "",
         type: "",
-        resource: "",
-        desc: "",
+        assistUserId: "",
       },
     };
   },
@@ -86,7 +86,15 @@ export default {
       this.showMore = true;
     },
     submit() {
-      this.$emit("update:show", false);
+      createCase(this.form).then((res) => {
+        if (res.code === 0) {
+          this.$message.success("新建成功");
+          this.$emit("updateId", res.data.id);
+          this.$emit("update:show", false);
+        } else {
+          this.$message.error('服务器有点忙，请重试');
+        }
+      });
     },
   },
 };

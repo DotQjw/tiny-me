@@ -60,6 +60,10 @@ export default {
       type: String,
       default: "",
     },
+    maxIndex:{
+      type:Number,
+      default:1
+    },
     show: {
       type: Boolean,
       default: false,
@@ -128,6 +132,7 @@ export default {
       const data = new FormData();
       let file = new File([wavData], "custom.wav");
       data.append("file", file);
+      console.log('fileSize', this.recorder.fileSize)
       this.btnLoading = true;
       uploadAudio(data)
         .then((res) => {
@@ -137,7 +142,12 @@ export default {
           this.$message.success("录音上传成功");
           this.btnLoading = false;
           this.recordType = "ready";
-          this.$emit("uploadRecord", res.data.url);
+          this.$emit("uploadRecord", {
+            name:`录音${this.maxIndex}`,
+            url:res.data.url,
+            size:this.recorder.fileSize,
+            duration:parseInt(this.recorder.duration)
+          });
         })
         .catch((err) => {
           console.log("err", err);
