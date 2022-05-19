@@ -41,8 +41,9 @@ const actions = {
         commit('SET_TOKEN', data.token)
         commit('SET_NAME', data.username)
         commit('SET_ROLES',data.roles)
-
         setToken(data.token)
+        // localStorage.setItem('token',data.token)
+        console.log('出来了')
         resolve(data)
       }).catch(error => {
         reject(error)
@@ -82,7 +83,7 @@ const actions = {
   // remove token
   resetToken({ commit }) {
     return new Promise(resolve => {
-      removeToken() // must remove  token  first
+      // removeToken() // must remove  token  first
       commit('RESET_STATE')
       resolve()
     })

@@ -4,6 +4,8 @@
     center=""
     :visible.sync="show"
     width="30%"
+    
+    :close-on-click-modal="false"
     :before-close="handleClose"
   >
     <el-upload
@@ -48,7 +50,7 @@ export default {
   },
   data() {
     return {
-      token: this.$store.getters.token || localStorage.getItem('token'),
+      token: this.$store.getters.token,
       fileList: [],
     };
   },

@@ -15,19 +15,15 @@ service.interceptors.request.use(
   (config) => {
     if (getToken()) {
       const token = getToken();
-      console.log("headers", token);
       config.headers["Authorization"] = "Bearer " + token;
     }
     if (config.ContentType) {
-      console.log("config.ContentType", config.ContentType);
       config.headers["Content-Type"] = config.ContentType;
     }
-    console.log("config", config);
     return config;
   },
   (error) => {
     // do something with request error
-    console.log(error); // for debug
     return Promise.reject(error);
   }
 );
@@ -46,10 +42,8 @@ service.interceptors.response.use(
    */
   (response) => {
     const res = response.data;
-    console.log("res", res);
 
     if (res.code != 0) {
-      console.log("res", res);
       // if the custom code is not 20000, it is judged as an error.
       // Message({
       //   message: res.message || 'Error',
@@ -77,7 +71,6 @@ service.interceptors.response.use(
   },
   (error) => {
     if (error.code === "20103") return;
-    console.log("err" + error); // for debug
     Message({
       message: error.message,
       type: "error",

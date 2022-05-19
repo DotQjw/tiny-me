@@ -25,6 +25,7 @@ import third from "./components/third.vue";
 import four from "./components/four.vue";
 import five from "./components/five.vue";
 import createCase from "./components/createCase";
+import { caseDetail } from "@/api/table";
 
 
 export default {
@@ -32,7 +33,7 @@ export default {
 
   data() {
     return {
-      active: 2,
+      active: 1,
       type: "add",
       id: "",
       showDilag: false,
@@ -44,12 +45,17 @@ export default {
     this.id = this.$route.query.id;
     if(this.id){
       console.log('获取数据')
+      this.getDetail(this.id)
     }
   },
   methods: {
+    getDetail(id){
+      caseDetail({id}).then(res=>{
+        console.log('data',data)
+      })
+    },
     handleSteps(index) {
-      console.log("Okok", index);
-      // if(index >= this.active) return
+      if(index >= this.active) return
       this.active = index;
     },
     updateId(id) {

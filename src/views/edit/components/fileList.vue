@@ -4,6 +4,7 @@
     :visible.sync="show"
     width="500px"
     :before-close="handleClose"
+    :close-on-click-modal="false"
   >
     <div class="dialog-main">
       <el-tabs v-model="activeName" type="card" @tab-click="handleClick">

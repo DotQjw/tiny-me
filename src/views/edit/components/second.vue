@@ -155,7 +155,6 @@ export default {
   },
   data() {
     return {
-      content: "",
       showUpload: false,
       uploadFileType: null,
       showRecord: false,
@@ -165,7 +164,7 @@ export default {
       currentRecordList: [],
       currentFileList: [],
       formData: {
-        id:this.id,
+        id:this.id ,
         domain: {
           text: "",
           attachments: [],
@@ -201,6 +200,8 @@ export default {
       saveTechbg(this.formData).then(res=>{
         console.log('res',res)
         this.$message.success('保存成功')
+      }).catch(err=>{
+        this.$message.error(err.message)
       })
     },
     uploadRecord(data) {
