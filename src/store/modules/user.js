@@ -6,7 +6,8 @@ const getDefaultState = () => {
   return {
     token: "",
     name: '',
-    avatar: ''
+    avatar: '',
+    roles:""
   }
 }
 
@@ -21,6 +22,7 @@ const mutations = {
     state.token = token
   },
   SET_ROLES:(state,roles)=>{
+    console.log('SET_ROLES',roles)
     state.roles = roles
   },
   SET_NAME: (state, name) => {
@@ -40,7 +42,7 @@ const actions = {
         const { data } = response
         commit('SET_TOKEN', data.token)
         commit('SET_NAME', data.username)
-        commit('SET_ROLES',data.roles)
+        commit('SET_ROLES',data.role)
         setToken(data.token)
         // localStorage.setItem('token',data.token)
         console.log('出来了')
