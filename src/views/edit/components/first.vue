@@ -5,14 +5,15 @@
         <div class="custom-label">本专利属于哪个技术领域</div>
         <el-input
           class="custom-input"
-          v-model="content"
+          v-model="form.techArea"
           placeholder="请输入内容"
+          @input="inputChange"
         ></el-input>
       </div>
     </div>
     <div class="bottom">
-      <el-button type="primary" @click="handleNext">下一步</el-button>
-      <el-button>保 存</el-button>
+      <el-button type="primary" @click="saveData('next')">下一步</el-button>
+      <el-button @click="saveData('save')">保 存</el-button>
     </div>
   </div>
 </template>
@@ -23,16 +24,44 @@ export default {
       type: String,
       default: "",
     },
+    id: {
+      type: String,
+      default: "",
+    },
+    textarea: {
+      type: String,
+      default: "",
+    },
   },
   data() {
     return {
+      timer: null,
       showDilag: this.type === "add" ? true : false,
       content: "",
-      id: "",
+      form: {
+        techArea: this.textarea,
+        id: "",
+      },
     };
   },
+  created() {
+    console.log("this.id", this.id, this.textarea);
+  },
   methods: {
-    handleNext() {},
+    saveData(type) {
+      this.$emit("saveData", {
+        type,
+        step: 1,
+      });
+    },
+    inputChange() {
+      if (this.timer) {
+        clearTimeout(this.timer);
+      }
+      this.timer = setTimeout(() => {
+        this.saveData("autoSave");
+      }, 1000);
+    },
   },
 };
 </script>

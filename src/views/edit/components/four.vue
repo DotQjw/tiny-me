@@ -5,15 +5,15 @@
         <div class="custom-label">
           <span> 实现方案 </span>
           <span class="right-tool">
-            <span class="tool-item" @click="openFileList('claim')">
+            <span class="tool-item" @click="openFileList('fixDefectMethod')">
               <i class="el-icon-paperclip"></i>
               <span class="tool-label">附件列表</span>
             </span>
-            <span class="tool-item" @click="openUploadFile('claim')">
+            <span class="tool-item" @click="openUploadFile('fixDefectMethod')">
               <i class="el-icon-upload2"></i>
               <span class="tool-label">上传附件</span>
             </span>
-            <span class="tool-item" @click="openRecord('claim')">
+            <span class="tool-item" @click="openRecord('fixDefectMethod')">
               <i class="el-icon-microphone"></i>
               <span class="tool-label"> 语音转文字 </span>
             </span>
@@ -24,15 +24,15 @@
           :rows="4"
           class="custom-input"
           @input="inputChange"
-          v-model="formData.claim.text"
+          v-model="formData.fixDefectMethod.text"
           placeholder="请输入内容"
         ></el-input>
       </div>
     </div>
     <div class="bottom">
-      <el-button type="primary" @click="handleNext">下一步</el-button>
-      <el-button type="success" @click="handleLast">上一步</el-button>
-      <el-button @click="handleSave">保 存</el-button>
+      <el-button type="primary" @click="saveData('next')">下一步</el-button>
+      <el-button type="success" @click="saveData('last')">上一步</el-button>
+      <el-button @click="saveData('save')">保 存</el-button>
     </div>
     <upload-file
       :type="uploadFileType"
@@ -65,22 +65,22 @@ import { implementPlan } from "@/api/table";
 
 export default {
   components: { uploadFile, record, fileList },
-  watch: {
-    id(n, o) {
-      console.log("n", n, o);
-      this.formData.id = n;
+  props: {
+    id: {
+      type: String,
+      default: "",
+    },
+    fixDefectMethod: {
+      type: Object,
+      default: () => {},
     },
   },
   data() {
     return {
       timer: null,
       formData: {
-        id: this.id || '001',
-        claim: {
-          text: "",
-          attachments: [],
-          recordFiles: [],
-        },
+        id: this.id,
+        fixDefectMethod: this.fixDefectMethod,
       },
       showUpload: false,
       uploadFileType: null,
@@ -92,41 +92,29 @@ export default {
       currentFileList: [],
     };
   },
-  created(){
-    console.log('this.data',this.id)
+  created() {
+    console.log("four step", this.id, this.fixDefectMethod);
   },
   methods: {
-    handleNext() {},
-    handleLast() {},
-    handleSave() {
-      console.log("this", this.formData);
-      implementPlan(this.formData).then((res) => {
-        console.log("res", res);
-        this.$message.success("保存成功");
-      }).catch(err=>{
-        this.$message.error(err.message)
-      })
+    saveData(type) {
+      this.$emit("saveData", {
+        type,
+        step: 4,
+      });
     },
-    inputChange(){
-      console.log('进来')
-      if(this.timer){
-        clearTimeout(this.timer)
+    inputChange() {
+      if (this.timer) {
+        clearTimeout(this.timer);
       }
-      this.timer = setTimeout(()=>{
-        console.log('触发')
-        this.handleSave()
-      },1000)
+      this.timer = setTimeout(() => {
+        this.saveData('autoSave');
+      }, 1000);
     },
     uploadRecord(data) {
       this.formData[this.recordType]["recordFiles"].push(data);
-      console.log("formData", this.formData[this.recordType]["recordFiles"]);
     },
     uploadFile(data) {
       this.formData[this.uploadFileType]["attachments"].push(data);
-      console.log(
-        "formData",
-        this.formData[this.uploadFileType]["attachments"]
-      );
     },
     openUploadFile(type) {
       this.uploadFileType = type;
@@ -145,9 +133,9 @@ export default {
       this.currentFileList = this.formData[type].attachments;
     },
   },
-  beforeDestroy(){
-    clearTimeout(this.timer)
-  }
+  beforeDestroy() {
+    clearTimeout(this.timer);
+  },
 };
 </script>
 <style lang="scss" scoped>

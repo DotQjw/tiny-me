@@ -30,9 +30,9 @@
       </div>
     </div>
     <div class="bottom">
-      <el-button type="primary" @click="handleNext">下一步</el-button>
-      <el-button type="success" @click="handleLast">上一步</el-button>
-      <el-button @click="handleSave">保 存</el-button>
+      <el-button type="primary" @click="saveData('next')">下一步</el-button>
+      <el-button type="success" @click="saveData('last')">上一步</el-button>
+      <el-button @click="saveData('save')">保 存</el-button>
     </div>
     <upload-file
       :type="uploadFileType"
@@ -61,26 +61,25 @@
 import uploadFile from "./uploadFile";
 import record from "./record";
 import fileList from "./fileList";
-import { planOutline } from "@/api/table";
 
 export default {
   components: { uploadFile, record, fileList },
-  watch: {
-    id(n, o) {
-      console.log("n", n, o);
-      this.formData.id = n;
+  props: {
+    id: {
+      type: String,
+      default: "",
     },
+    idea: {
+      type: Object,
+      default: () => {},
+    }
   },
   data() {
     return {
       timer: null,
       formData: {
-        id: this.id || '001',
-        idea: {
-          text: "",
-          attachments: [],
-          recordFiles: [],
-        },
+        id: this.id || "001",
+        idea: this.idea,
       },
       showUpload: false,
       uploadFileType: null,
@@ -92,30 +91,23 @@ export default {
       currentFileList: [],
     };
   },
-  created(){
-    console.log('this.data',this.id)
+  created() {
+    console.log("this.data", this.id, this.idea);
   },
   methods: {
-    handleNext() {},
-    handleLast() {},
-    handleSave() {
-      console.log("this", this.formData);
-      planOutline(this.formData).then((res) => {
-        console.log("res", res);
-        this.$message.success("保存成功");
-      }).catch(err=>{
-        this.$message.error(err.message)
+    saveData(type) {
+      this.$emit('saveData',{
+        type,
+        step:3
       })
     },
-    inputChange(){
-      console.log('进来')
-      if(this.timer){
-        clearTimeout(this.timer)
+    inputChange() {
+      if (this.timer) {
+        clearTimeout(this.timer);
       }
-      this.timer = setTimeout(()=>{
-        console.log('触发')
-        this.handleSave()
-      },1000)
+      this.timer = setTimeout(() => {
+        this.saveData('autoSave');
+      }, 1000);
     },
     uploadRecord(data) {
       this.formData[this.recordType]["recordFiles"].push(data);
@@ -145,9 +137,9 @@ export default {
       this.currentFileList = this.formData[type].attachments;
     },
   },
-  beforeDestroy(){
-    clearTimeout(this.timer)
-  }
+  beforeDestroy() {
+    clearTimeout(this.timer);
+  },
 };
 </script>
 <style lang="scss" scoped>

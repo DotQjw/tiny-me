@@ -15,6 +15,13 @@ export function getList(params) {
     params
   })
 }
+export function techArea(params) {
+  return request({
+    url: '/api/v1/patent/tech_area',
+    method: 'post',
+    data:params
+  })
+}
 export function planOutline(params) {
   return request({
     url: '/api/v1/patent/plan_outline',
@@ -29,11 +36,11 @@ export function implementPlan(params) {
     data:params
   })
 }
-export function caseDetail(params) {
+export function patentDetail(params) {
   return request({
-    url: '/api/v1/case/detail',
-    method: 'post',
-    data:params
+    url: '/api/v1/patent/detail',
+    method: 'get',
+    params
   })
 }
 export function saveTechbg(params) {

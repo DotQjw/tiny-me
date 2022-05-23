@@ -22,6 +22,7 @@
         <el-input
           type="textarea"
           :rows="4"
+          @input="inputChange"
           class="custom-input"
           v-model="formData.domain.text"
           placeholder="请输入内容"
@@ -47,6 +48,7 @@
         </div>
         <el-input
           :rows="4"
+          @input="inputChange"
           type="textarea"
           class="custom-input"
           v-model="formData.painPoint.text"
@@ -73,6 +75,7 @@
         </div>
         <el-input
           :rows="4"
+          @input="inputChange"
           type="textarea"
           class="custom-input"
           v-model="formData.currentSolution.text"
@@ -99,6 +102,7 @@
         </div>
         <el-input
           :rows="4"
+          @input="inputChange"
           type="textarea"
           class="custom-input"
           v-model="formData.pendingDefect.text"
@@ -107,9 +111,9 @@
       </div>
     </div>
     <div class="bottom">
-      <el-button type="primary" @click="handleNext">下一步</el-button>
-      <el-button type="success" @click="handleLast">上一步</el-button>
-      <el-button @click="handleSave">保 存</el-button>
+      <el-button type="primary" @click="saveData('next')">下一步</el-button>
+      <el-button type="success" @click="saveData('last')">上一步</el-button>
+      <el-button @click="saveData('save')">保 存</el-button>
     </div>
     <upload-file
       :type="uploadFileType"
@@ -138,23 +142,21 @@
 import uploadFile from "./uploadFile";
 import record from "./record";
 import fileList from "./fileList";
-import { saveTechbg } from "@/api/table";
 export default {
   components: { uploadFile, record, fileList },
-  props:{
-    id:{
-      type:String,
-      default:""
-    }
-  },
-  watch:{
-    id(n,o){
-      console.log('n',n,o)
-      this.formData.id = n;
-    }
+  props: {
+    id: {
+      type: String,
+      default: "",
+    },
+    secondStepsData: {
+      type: Object,
+      default: () => {},
+    },
   },
   data() {
     return {
+      timer: null,
       showUpload: false,
       uploadFileType: null,
       showRecord: false,
@@ -163,46 +165,23 @@ export default {
       fileListType: null,
       currentRecordList: [],
       currentFileList: [],
-      formData: {
-        id:this.id ,
-        domain: {
-          text: "",
-          attachments: [],
-          recordFiles: [],
-        },
-        painPoint: {
-          text: "",
-          attachments: [],
-          recordFiles: [],
-        },
-        currentSolution: {
-          text: "",
-          attachments: [],
-          recordFiles: [],
-        },
-        pendingDefect: {
-          text: "",
-          attachments: [],
-          recordFiles: [],
-        },
-      },
+      formData: this.secondStepsData,
     };
   },
   methods: {
-    handleNext(){
-
+    saveData(type) {
+      this.$emit("saveData", {
+        type,
+        step: 2,
+      });
     },
-    handleLast(){
-
-    },
-    handleSave(){
-      console.log('this',this.formData)
-      saveTechbg(this.formData).then(res=>{
-        console.log('res',res)
-        this.$message.success('保存成功')
-      }).catch(err=>{
-        this.$message.error(err.message)
-      })
+    inputChange() {
+      if (this.timer) {
+        clearTimeout(this.timer);
+      }
+      this.timer = setTimeout(() => {
+        this.saveData("autoSave");
+      }, 1000);
     },
     uploadRecord(data) {
       this.formData[this.recordType]["recordFiles"].push(data);
@@ -210,16 +189,19 @@ export default {
     },
     uploadFile(data) {
       this.formData[this.uploadFileType]["attachments"].push(data);
-      console.log("formData", this.formData[this.uploadFileType]["attachments"]);
+      console.log(
+        "formData",
+        this.formData[this.uploadFileType]["attachments"]
+      );
     },
     openUploadFile(type) {
       this.uploadFileType = type;
-      this.maxIndex = this.formData[type].attachments.length+1;
+      this.maxIndex = this.formData[type].attachments.length + 1;
       this.showUpload = true;
     },
     openRecord(type) {
       this.recordType = type;
-      this.maxIndex = this.formData[type].recordFiles.length+1;
+      this.maxIndex = this.formData[type].recordFiles.length + 1;
       this.showRecord = true;
     },
     openFileList(type) {

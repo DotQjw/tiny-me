@@ -14,6 +14,11 @@
           :span-method="objectSpanMethod"
           style="width: 100%; margin-top: 20px"
         >
+          <el-table-column prop="index" label="序号">
+            <template slot-scope="scope">
+              <span>{{scope.$index+1}}</span>
+            </template>
+          </el-table-column>
           <el-table-column prop="name" label="权力名称" width="280">
             <template slot-scope="scope">
               <div>
@@ -27,7 +32,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="name" label="姓名">
+          <el-table-column prop="name" label="内核">
             <template slot-scope="scope">
               <div v-if="scope.row.type === 'button'">
                 <el-button icon="el-icon-plus" @click="handleInner(scope.row)">
@@ -38,21 +43,21 @@
               <el-input v-else v-model="scope.row.name"></el-input>
             </template>
           </el-table-column>
-          <el-table-column prop="amount1" label="数值 1（元）">
+          <el-table-column prop="amount1" label="校核">
             <template slot-scope="scope">
               <div v-if="!scope.row.type">
                 <el-input v-model="scope.row.amount1"></el-input>
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="amount2" label="数值 2（元）">
+          <el-table-column prop="amount2" label="备注">
             <template slot-scope="scope">
               <div v-if="!scope.row.type">
                 <el-input v-model="scope.row.amount2"></el-input>
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="amount3" label="数值 3（元）">
+          <el-table-column prop="amount3" label="有益效果">
             <template slot-scope="scope">
               <div v-if="!scope.row.type">
                 <el-input v-model="scope.row.amount3"></el-input>
@@ -111,7 +116,7 @@ export default {
   methods: {
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
       // console.log("rowIndex", { row, column, rowIndex, columnIndex });
-      if (columnIndex === 0 || columnIndex === 5) {
+      if (columnIndex === 0 || columnIndex === 1 || columnIndex === 6) {
         return {
           rowspan: row.maxRowspan,
           colspan: 1,
@@ -119,7 +124,7 @@ export default {
       }
     },
     handleChild(row) {
-      console.log('row',row);
+      console.log("row", row);
       var curIndex;
       this.tableData.some((item, index) => {
         if (item.parentId === row.parentId && item.type === "button") {
@@ -130,16 +135,19 @@ export default {
       });
       const id = this.getRandom(16);
       const childId = this.getRandom(8);
-      this.tableData.splice(curIndex+1, 0, {
-        parentId:id,
-        id: id,
-        name: `根据${row.name}`,
-        amount1: "165",
-        amount2: "4.43",
-        amount3: 12,
-        connectId:row.id
-      },
-      {
+      this.tableData.splice(
+        curIndex + 1,
+        0,
+        {
+          parentId: id,
+          id: id,
+          name: `根据${row.name}`,
+          amount1: "165",
+          amount2: "4.43",
+          amount3: 12,
+          connectId: row.id,
+        },
+        {
           parentId: id,
           type: "button",
           id: childId,
@@ -148,7 +156,8 @@ export default {
           amount2: "",
           amount3: "",
           maxRowspan: 0,
-        });
+        }
+      );
       this.handleDealData();
     },
     handleInner(row) {

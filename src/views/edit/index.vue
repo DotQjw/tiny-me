@@ -10,12 +10,33 @@
         <el-step title="权利要求" @click.native="handleSteps(5)"></el-step>
       </el-steps>
     </div>
-    <first v-if="active === 1" :id.sync="id" :type="type" />
-    <second v-if="active === 2" :id.sync="id" />
-    <third v-if="active === 3" :id.sync="id" />
-    <four v-if="active === 4" :id.sync="id" />
-    <five v-if="active === 5" :id.sync="id" />
-    <create-case v-if="showDilag" @updateId="updateId" :show.sync="showDilag" />
+    <first
+      v-if="active === 1"
+      @saveData="saveData"
+      :id="formData.id"
+      :textarea="formData.techArea"
+      :type="type"
+    />
+    <second
+      v-if="active === 2"
+      @saveData="saveData"
+      :secondStepsData="secondStepsData"
+      :id="formData.id"
+    />
+    <third
+      v-if="active === 3"
+      @saveData="saveData"
+      :idea="formData.idea"
+      :id="formData.id"
+    />
+    <four
+      v-if="active === 4"
+      @saveData="saveData"
+      :fixDefectMethod="formData.fixDefectMethod"
+      :id="formData.id"
+    />
+    <five v-if="active === 5" @goNextStep="goNextStep" :id="formData.id" />
+    <create-case v-if="showDilag" @updateId="updateId" :show="showDilag" />
   </div>
 </template>
 <script>
@@ -25,42 +46,176 @@ import third from "./components/third.vue";
 import four from "./components/four.vue";
 import five from "./components/five.vue";
 import createCase from "./components/createCase";
-import { caseDetail } from "@/api/table";
-
+import {
+  patentDetail,
+  implementPlan,
+  techArea,
+  saveTechbg,
+  planOutline,
+} from "@/api/table";
 
 export default {
   components: { first, second, third, four, five, createCase },
 
   data() {
     return {
-      active: 1,
+      active: null,
       type: "add",
       id: "",
       showDilag: false,
+      secondStepsData: {},
+      formData: {
+        id: "",
+        claim: [],
+        idea: {
+          text: "",
+          recordFiles: [],
+          attachments: [],
+        },
+        domain: {
+          text: "",
+          attachments: [],
+          recordFiles: [],
+        },
+        painPoint: {
+          text: "",
+          attachments: [],
+          recordFiles: [],
+        },
+        currentSolution: {
+          text: "",
+          attachments: [],
+          recordFiles: [],
+        },
+        pendingDefect: {
+          text: "",
+          attachments: [],
+          recordFiles: [],
+        },
+        fixDefectMethod: {
+          text: "",
+          recordFiles: [],
+          attachments: [],
+        },
+      },
     };
   },
   created() {
     console.log("in", this.$route);
     this.type = this.$route.query.type;
-    this.id = this.$route.query.id;
-    if(this.id){
-      console.log('获取数据')
-      this.getDetail(this.id)
+    this.formData.id = this.$route.query.id;
+    if (this.formData.id) {
+      console.log("获取数据");
+      this.getDetail(this.formData.id);
+    } else {
+      this.showDilag = true;
     }
   },
   methods: {
-    getDetail(id){
-      caseDetail({id}).then(res=>{
-        console.log('data',data)
-      })
+    saveData(data) {
+      console.log("data", data);
+      switch (data.step) {
+        case 1:
+          this.step1Save(data.type);
+          break;
+        case 2:
+          this.step2Save(data.type);
+          break;
+        case 3:
+          this.step3Save(data.type);
+          break;
+        case 4:
+          this.step4Save(data.type);
+          break;
+        default:
+          break;
+      }
+    },
+    step1Save(type) {
+      const params = {
+        id: this.formData.id,
+        fixDefectMethod: this.formData.textarea,
+      };
+      techArea(params).then((res) => {
+        console.log("第一步保存成功");
+        if (type === "save") {
+          this.$message.success("保存成功");
+        } else if (type === "next") {
+          this.active += 1;
+        } else if (type === "last") {
+          this.active -= 1;
+        }
+      });
+    },
+    step2Save(type) {
+      saveTechbg(this.secondStepsData).then((res) => {
+        console.log("第二步保存成功");
+        if (type === "save") {
+          this.$message.success("保存成功");
+        } else if (type === "next") {
+          this.active += 1;
+        } else if (type === "last") {
+          this.active -= 1;
+        }
+      });
+    },
+    step3Save(type) {
+      const params = {
+        id: this.formData.id,
+        idea: this.formData.idea,
+      };
+      planOutline(params).then((res) => {
+        console.log("第三步保存成功");
+        if (type === "save") {
+          this.$message.success("保存成功");
+        } else if (type === "next") {
+          this.active += 1;
+        } else if (type === "last") {
+          this.active -= 1;
+        }
+      });
+    },
+    step4Save(type) {
+      const params = {
+        id: this.formData.id,
+        fixDefectMethod: this.formData.fixDefectMethod,
+      };
+      implementPlan(params).then((res) => {
+        console.log("第四步保存成功");
+        if (type === "save") {
+          this.$message.success("保存成功");
+        } else if (type === "next") {
+          this.active += 1;
+        } else if (type === "last") {
+          this.active -= 1;
+        }
+      });
+    },
+    goNextStep(data) {
+      console.log("data", data);
+      this.active = data.type === "next" ? this.active + 1 : this.active - 1;
+    },
+    getDetail(id) {
+      patentDetail({ id }).then((res) => {
+        console.log("res", res);
+        let data = (this.formData = res.data);
+        this.secondStepsData = {
+          id: data.id,
+          domain: data.domain,
+          painPoint: data.painPoint,
+          currentSolution: data.currentSolution,
+          pendingDefect: data.pendingDefect,
+        };
+        this.active = 1;
+        console.log("THIS", this.formData, this.formData.fixDefectMethod);
+      });
     },
     handleSteps(index) {
-      if(index >= this.active) return
+      // if(index >= this.active) return
       this.active = index;
     },
     updateId(id) {
-      console.log('ID',id)
-      this.id = id;
+      this.formData.id = id;
     },
   },
 };

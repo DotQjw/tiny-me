@@ -84,12 +84,12 @@ export default {
     },
     changeText(item) {
       audioToText({ url:item.url }).then((res) => {
-        console.log("res", res);
+        console.log("res", res.data.text);
         if (res.data && res.data.text) {
           // this.$message.success("录音转文字成功");
           this.$copyText(res.data.text).then(
              (e)=> {
-               console.log('e',e)
+               console.log('res.data.text',res.data.text)
               this.$message.success("录音转文字成功,去复制吧");
             },
              (e)=> {
