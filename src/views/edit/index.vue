@@ -14,7 +14,7 @@
       v-if="active === 1"
       @saveData="saveData"
       :id="formData.id"
-      :textarea="formData.techArea"
+      :techArea.sync="formData.techArea"
       :type="type"
     />
     <second
@@ -35,8 +35,8 @@
       :fixDefectMethod="formData.fixDefectMethod"
       :id="formData.id"
     />
-    <five v-if="active === 5" @goNextStep="goNextStep" :id="formData.id" />
-    <create-case v-if="showDilag" @updateId="updateId" :show="showDilag" />
+    <five v-if="active === 5" @saveData="saveData" :claims="formData.claims" />
+    <create-case v-if="showDilag" @updateId="updateId" :show.sync="showDilag" />
   </div>
 </template>
 <script>
@@ -63,10 +63,46 @@ export default {
       type: "add",
       id: "",
       showDilag: false,
-      secondStepsData: {},
+      secondStepsData: {
+        id: "",
+        domain: {
+          text: "",
+          attachments: [],
+          recordFiles: [],
+        },
+        painPoint: {
+          text: "",
+          attachments: [],
+          recordFiles: [],
+        },
+        currentSolution: {
+          text: "",
+          attachments: [],
+          recordFiles: [],
+        },
+        pendingDefect: {
+          text: "",
+          attachments: [],
+          recordFiles: [],
+        },
+        claims: [
+          {
+            no: null,
+            parentNo: null,
+            name: "",
+            claimContent: {
+              kernel: "",
+              check: {},
+              note: "",
+              attachment: {},
+            },
+          },
+        ],
+      },
       formData: {
         id: "",
         claim: [],
+        techArea: "",
         idea: {
           text: "",
           recordFiles: [],
@@ -106,7 +142,7 @@ export default {
     this.formData.id = this.$route.query.id;
     if (this.formData.id) {
       console.log("获取数据");
-      this.getDetail(this.formData.id);
+      this.getDetail();
     } else {
       this.showDilag = true;
     }
@@ -116,7 +152,7 @@ export default {
       console.log("data", data);
       switch (data.step) {
         case 1:
-          this.step1Save(data.type);
+          this.step1Save(data.type, data.techArea);
           break;
         case 2:
           this.step2Save(data.type);
@@ -131,13 +167,15 @@ export default {
           break;
       }
     },
-    step1Save(type) {
+    step1Save(type, tech) {
       const params = {
         id: this.formData.id,
-        fixDefectMethod: this.formData.textarea,
+        techArea: tech,
       };
+      console.log("this.form.area", this.formData);
       techArea(params).then((res) => {
         console.log("第一步保存成功");
+        this.formData.techArea = tech;
         if (type === "save") {
           this.$message.success("保存成功");
         } else if (type === "next") {
@@ -191,22 +229,20 @@ export default {
         }
       });
     },
-    goNextStep(data) {
-      console.log("data", data);
-      this.active = data.type === "next" ? this.active + 1 : this.active - 1;
-    },
-    getDetail(id) {
-      patentDetail({ id }).then((res) => {
+    getDetail() {
+      patentDetail({ id: this.formData.id }).then((res) => {
         console.log("res", res);
         let data = (this.formData = res.data);
-        this.secondStepsData = {
+        this.secondStepsData = Object.assign(this.secondStepsData, {
           id: data.id,
           domain: data.domain,
           painPoint: data.painPoint,
           currentSolution: data.currentSolution,
           pendingDefect: data.pendingDefect,
-        };
-        this.active = 1;
+        });
+        if (!this.active) {
+          this.active = 1;
+        }
         console.log("THIS", this.formData, this.formData.fixDefectMethod);
       });
     },
@@ -215,7 +251,8 @@ export default {
       this.active = index;
     },
     updateId(id) {
-      this.formData.id = id;
+      this.secondStepsData.id = this.formData.id = id;
+      this.active = 1;
     },
   },
 };

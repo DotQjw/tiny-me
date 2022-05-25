@@ -14,10 +14,10 @@
           :span-method="objectSpanMethod"
           style="width: 100%; margin-top: 20px"
         >
-          <el-table-column prop="index" label="序号">
-            <template slot-scope="scope">
+          <el-table-column prop="parentNo" label="序号">
+            <!-- <template slot-scope="scope">
               <span>{{scope.$index+1}}</span>
-            </template>
+            </template> -->
           </el-table-column>
           <el-table-column prop="name" label="权力名称" width="280">
             <template slot-scope="scope">
@@ -89,11 +89,14 @@ export default {
       allIndex: 2,
       tableData: [
         {
+          no:1,
+          parentNo:1,
           id: "12987122",
           name: "王小虎",
           amount1: "234",
           amount2: "3.2",
           amount3: 10,
+          childMaxNo:1,
           maxRowspan: 0,
           parentId: "12987122",
         },
@@ -106,6 +109,7 @@ export default {
           amount2: "",
           amount3: null,
           maxRowspan: 0,
+          childMaxNo:1
         },
       ],
     };
@@ -124,8 +128,9 @@ export default {
       }
     },
     handleChild(row) {
-      console.log("row", row);
+      console.log("row", row,this.tableData);
       var curIndex;
+      row.childMaxNo = row.childMaxNo? row.childMaxNo + 1 :row.parentNo+1
       this.tableData.some((item, index) => {
         if (item.parentId === row.parentId && item.type === "button") {
           console.log("index", index);
@@ -139,6 +144,7 @@ export default {
         curIndex + 1,
         0,
         {
+          parentNo:row.childMaxNo,
           parentId: id,
           id: id,
           name: `根据${row.name}`,
@@ -148,6 +154,8 @@ export default {
           connectId: row.id,
         },
         {
+          parentNo:row.childMaxNo,
+          childMaxNo:row.childMaxNo,
           parentId: id,
           type: "button",
           id: childId,
@@ -200,7 +208,6 @@ export default {
             this.tableData[index].maxRowspan = 0;
           }
         } else {
-          console.log("diff", item);
           selectedIndex = index;
           this.tableData[selectedIndex].maxRowspan = 1;
         }

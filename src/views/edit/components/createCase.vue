@@ -127,7 +127,10 @@ export default {
         } else {
           this.$message.error("服务器有点忙，请重试");
         }
-      });
+      }).catch(err=>{
+        console.log('err',err)
+        this.$message.error(err.message )
+      })
     },
   },
 };

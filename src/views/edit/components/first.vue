@@ -28,7 +28,7 @@ export default {
       type: String,
       default: "",
     },
-    textarea: {
+    techArea: {
       type: String,
       default: "",
     },
@@ -39,19 +39,21 @@ export default {
       showDilag: this.type === "add" ? true : false,
       content: "",
       form: {
-        techArea: this.textarea,
+        techArea: this.techArea,
         id: "",
       },
     };
   },
   created() {
-    console.log("this.id", this.id, this.textarea);
+    console.log("this.id", this.id, this.techArea);
   },
   methods: {
     saveData(type) {
+      console.log('before',this.form.techArea)
       this.$emit("saveData", {
         type,
         step: 1,
+        techArea:this.form.techArea
       });
     },
     inputChange() {
