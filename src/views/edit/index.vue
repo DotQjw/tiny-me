@@ -241,7 +241,7 @@ export default {
           pendingDefect: data.pendingDefect,
         });
         if (!this.active) {
-          this.active = 1;
+          this.active = 5;
         }
         console.log("THIS", this.formData, this.formData.fixDefectMethod);
       });

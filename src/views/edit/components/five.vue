@@ -2,8 +2,11 @@
   <div class="page">
     <div class="page-top">
       <div>权力要求书</div>
-      <div @click="donwload">下载</div>
-      <el-button type="primary" icon="el-icon-plus" @click="handleSingle"
+      <el-button
+        type="primary"
+        disabled
+        icon="el-icon-plus"
+        @click="handleSingle"
         >添加独权</el-button
       >
     </div>
@@ -14,10 +17,7 @@
           :span-method="objectSpanMethod"
           style="width: 100%; margin-top: 20px"
         >
-          <el-table-column prop="parentNo" label="序号">
-            <!-- <template slot-scope="scope">
-              <span>{{scope.$index+1}}</span>
-            </template> -->
+          <el-table-column prop="no" label="序号">
           </el-table-column>
           <el-table-column prop="name" label="权力名称" width="280">
             <template slot-scope="scope">
@@ -32,7 +32,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="name" label="内核">
+          <el-table-column prop="kernel" label="内核">
             <template slot-scope="scope">
               <div v-if="scope.row.type === 'button'">
                 <el-button icon="el-icon-plus" @click="handleInner(scope.row)">
@@ -40,31 +40,26 @@
                 </el-button>
               </div>
 
-              <el-input v-else v-model="scope.row.name"></el-input>
+              <el-input v-else v-model="scope.row.kernel"></el-input>
             </template>
           </el-table-column>
           <el-table-column prop="amount1" label="校核">
             <template slot-scope="scope">
               <div v-if="!scope.row.type">
-                <el-input v-model="scope.row.amount1"></el-input>
+                <el-checkbox label="必经"></el-checkbox>
+                <el-checkbox label="可视"></el-checkbox>
+                <el-checkbox label="逻辑"></el-checkbox>
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="amount2" label="备注">
+          <el-table-column prop="logic" label="备注">
             <template slot-scope="scope">
               <div v-if="!scope.row.type">
-                <el-input v-model="scope.row.amount2"></el-input>
+                <el-input v-model="scope.row.logic"></el-input>
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="amount3" label="有益效果">
-            <template slot-scope="scope">
-              <div v-if="!scope.row.type">
-                <el-input v-model="scope.row.amount3"></el-input>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="" label=" ">
+          <el-table-column prop="" label="有益效果">
             <template slot-scope="scope">
               <div v-if="!scope.row.type">
                 <el-button>上传附件</el-button>
@@ -82,34 +77,57 @@
   </div>
 </template>
 <script>
+// TODO 组装数据
+// 如何把内核的数据 提取出来
+// 1.parentNo = no， 这样子来判断是同一个集合。 × 貌似不可行
+//  -1 加一个类型判断 是inner?  通过id？
+// 2.从权的parentNo != no,
+
+// ----
+
+// 1. 通过id来判断是否是同一个集合， 统筹内核，
+// 2. 通过parentNo = no 来判断是不是从权。
 export default {
   data() {
     return {
       content: "",
       allIndex: 2,
+      maxParentNo: 1,
       tableData: [
         {
-          no:1,
-          parentNo:1,
-          id: "12987122",
+          no: 1,
+          parentNo: 1,
           name: "王小虎",
-          amount1: "234",
-          amount2: "3.2",
-          amount3: 10,
-          childMaxNo:1,
+          kernel: "",
+          check: {
+            necessaryStep: false,
+            visible: false,
+            logic: false,
+          },
+          note: "",
+          attachment: [],
+          id: "12987122",
+          childMaxNo: 1,
           maxRowspan: 0,
           parentId: "12987122",
         },
         {
+          no: null,
+          parentNo: 1,
+          name: "",
+          kernel: "",
+          check: {
+            necessaryStep: false,
+            visible: false,
+            logic: false,
+          },
+          note: "",
+          attachment: [],
           parentId: "12987122",
           type: "button",
           id: "00000",
-          name: "",
-          amount1: "",
-          amount2: "",
-          amount3: null,
           maxRowspan: 0,
-          childMaxNo:1
+          childMaxNo: 1,
         },
       ],
     };
@@ -120,7 +138,7 @@ export default {
   methods: {
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
       // console.log("rowIndex", { row, column, rowIndex, columnIndex });
-      if (columnIndex === 0 || columnIndex === 1 || columnIndex === 6) {
+      if (columnIndex === 0 || columnIndex === 1 || columnIndex === 5) {
         return {
           rowspan: row.maxRowspan,
           colspan: 1,
@@ -128,14 +146,23 @@ export default {
       }
     },
     handleChild(row) {
-      console.log("row", row,this.tableData);
+      console.log("row", row, this.tableData);
       var curIndex;
-      row.childMaxNo = row.childMaxNo? row.childMaxNo + 1 :row.parentNo+1
+      // row.childMaxNo = row.childMaxNo? row.childMaxNo + 1 :row.parentNo+1
+      let parentRow = this.tableData.find(
+        (v) => v.no === v.parentNo && v.parentNo === row.parentNo
+      );
+      this.maxParentNo = parentRow.childMaxNo = parentRow.childMaxNo + 1;
+      // console.log('parentRow',parentRow, parentRow.childMaxNo)
       this.tableData.some((item, index) => {
-        if (item.parentId === row.parentId && item.type === "button") {
-          console.log("index", index);
+        // if (item.parentId === row.parentId && item.type === "button") {
+        //   console.log("index", index);
+        //   curIndex = index;
+        //   return;
+        // }
+        if (item.parentNo === parentRow.parentNo) {
+          console.log(" 【index】:", index);
           curIndex = index;
-          return;
         }
       });
       const id = this.getRandom(16);
@@ -144,25 +171,19 @@ export default {
         curIndex + 1,
         0,
         {
-          parentNo:row.childMaxNo,
+          no: parentRow.childMaxNo,
+          parentNo: parentRow.no,
           parentId: id,
           id: id,
           name: `根据${row.name}`,
-          amount1: "165",
-          amount2: "4.43",
-          amount3: 12,
           connectId: row.id,
         },
         {
-          parentNo:row.childMaxNo,
-          childMaxNo:row.childMaxNo,
+          parentNo: parentRow.no,
           parentId: id,
           type: "button",
           id: childId,
           name: "",
-          amount1: "",
-          amount2: "",
-          amount3: "",
           maxRowspan: 0,
         }
       );
@@ -184,9 +205,6 @@ export default {
         parentId: row.parentId,
         id: childId,
         name: "INNER1",
-        amount1: "165",
-        amount2: "4.43",
-        amount3: 12,
       });
       this.handleDealData();
     },
@@ -201,7 +219,7 @@ export default {
         } else if (
           this.tableData[index].parentId === this.tableData[index - 1].parentId
         ) {
-          console.log("进来", this.tableData[index].parentId, selectedIndex);
+          // console.log("进来", this.tableData[index].parentId, selectedIndex);
           this.tableData[selectedIndex].maxRowspan =
             this.tableData[selectedIndex].maxRowspan + 1;
           if (selectedIndex != index - 1) {
@@ -217,13 +235,13 @@ export default {
     handleSingle() {
       const id = this.getRandom(16);
       const childId = this.getRandom(8);
+      this, (this.maxParentNo += 1);
       this.tableData.push(
         {
           id: id,
+          no: this.maxParentNo,
+          parentNo: this.maxParentNo,
           name: "443123",
-          amount1: "12313",
-          amount2: "323",
-          amount3: 10,
           maxRowspan: 1,
           parentId: id,
         },
@@ -232,9 +250,6 @@ export default {
           type: "button",
           id: childId,
           name: "",
-          amount1: "",
-          amount2: "",
-          amount3: "",
           maxRowspan: 0,
         }
       );
@@ -249,10 +264,6 @@ export default {
         str += randomStr[parseInt(Math.random() * 65)];
       }
       return str;
-    },
-    donwload() {
-      // window.open('http://43.138.155.219/download/five.zip')
-      window.open("http://tiny-wenql.com/download/five.zip");
     },
   },
 };
