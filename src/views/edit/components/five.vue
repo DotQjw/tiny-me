@@ -2,11 +2,7 @@
   <div class="page">
     <div class="page-top">
       <div>权力要求书</div>
-      <el-button
-        type="primary"
-        disabled
-        icon="el-icon-plus"
-        @click="handleSingle"
+      <el-button type="primary" icon="el-icon-plus" @click="handleSingle"
         >添加独权</el-button
       >
     </div>
@@ -17,12 +13,15 @@
           :span-method="objectSpanMethod"
           style="width: 100%; margin-top: 20px"
         >
-          <el-table-column prop="no" label="序号">
-          </el-table-column>
+          <el-table-column prop="no" label="序号" width="100"> </el-table-column>
           <el-table-column prop="name" label="权力名称" width="280">
             <template slot-scope="scope">
               <div>
-                <el-input v-model="scope.row.name"></el-input>
+                <el-input
+                  type="textarea"
+                  rows="1"
+                  v-model="scope.row.name"
+                ></el-input>
                 <el-button
                   icon="el-icon-plus"
                   style="margin-top: 10px"
@@ -40,10 +39,15 @@
                 </el-button>
               </div>
 
-              <el-input v-else v-model="scope.row.kernel"></el-input>
+              <el-input
+                v-else
+                type="textarea"
+                rows="1"
+                v-model="scope.row.kernel"
+              ></el-input>
             </template>
           </el-table-column>
-          <el-table-column prop="amount1" label="校核">
+          <el-table-column prop="amount1" label="校核"  width="270px">
             <template slot-scope="scope">
               <div v-if="!scope.row.type">
                 <el-checkbox label="必经"></el-checkbox>
@@ -55,7 +59,11 @@
           <el-table-column prop="logic" label="备注">
             <template slot-scope="scope">
               <div v-if="!scope.row.type">
-                <el-input v-model="scope.row.logic"></el-input>
+                <el-input
+                  v-model="scope.row.logic"
+                  type="textarea"
+                  rows="1"
+                ></el-input>
               </div>
             </template>
           </el-table-column>
@@ -90,12 +98,14 @@
 export default {
   data() {
     return {
+      currentNo: 1,
       content: "",
       allIndex: 2,
       maxParentNo: 1,
       tableData: [
         {
           no: 1,
+          realNo: 1,
           parentNo: 1,
           name: "王小虎",
           kernel: "",
@@ -146,13 +156,14 @@ export default {
       }
     },
     handleChild(row) {
-      console.log("row", row, this.tableData);
+      console.log("【handleChild row】", row, this.tableData);
       var curIndex;
       // row.childMaxNo = row.childMaxNo? row.childMaxNo + 1 :row.parentNo+1
       let parentRow = this.tableData.find(
-        (v) => v.no === v.parentNo && v.parentNo === row.parentNo
+        (v) => v.realNo === v.parentNo && v.parentNo === row.parentNo
       );
-      this.maxParentNo = parentRow.childMaxNo = parentRow.childMaxNo + 1;
+      // this.maxParentNo = parentRow.childMaxNo = parentRow.childMaxNo + 1;
+      this.maxParentNo += 1;
       // console.log('parentRow',parentRow, parentRow.childMaxNo)
       this.tableData.some((item, index) => {
         // if (item.parentId === row.parentId && item.type === "button") {
@@ -171,12 +182,13 @@ export default {
         curIndex + 1,
         0,
         {
-          no: parentRow.childMaxNo,
+          realNo: this.maxParentNo,
+          no: this.maxParentNo,
           parentNo: parentRow.no,
           parentId: id,
           id: id,
           name: `根据${row.name}`,
-          connectId: row.id,
+          maxParentNo: this.maxParentNo,
         },
         {
           parentNo: parentRow.no,
@@ -210,8 +222,20 @@ export default {
     },
     handleDealData() {
       var selectedIndex = 0;
+      let currentNo = 1;
       this.tableData.map((item, index) => {
-        // debugger;
+        if (item.no && index > 0) {
+          // console.log("【map No】:", item.no, currentNo);
+          if (item.no < currentNo) {
+            // console.log("进来了");
+            currentNo = item.no;
+          } else {
+            // console.log('我比他大')
+            currentNo = currentNo + 1;
+            // console.log('currenNo',currentNo)
+            item.no = currentNo;
+          }
+        }
         if (index === 0) {
           // 第一个 默认给1
           this.tableData[index].maxRowspan = 1;
@@ -238,19 +262,20 @@ export default {
       this, (this.maxParentNo += 1);
       this.tableData.push(
         {
-          id: id,
           no: this.maxParentNo,
+          realNo: this.maxParentNo,
           parentNo: this.maxParentNo,
-          name: "443123",
-          maxRowspan: 1,
           parentId: id,
+          id: id,
+          name: `独权${this.maxParentNo}`,
+          maxParentNo: this.maxParentNo,
         },
         {
+          parentNo: this.maxParentNo,
           parentId: id,
           type: "button",
           id: childId,
           name: "",
-          maxRowspan: 0,
         }
       );
       console.log("tableData", this.tableData);
@@ -270,8 +295,14 @@ export default {
 </script>
 <style lang="scss">
 .no-border-input {
-  .el-input__inner {
+  .el-textarea__inner {
     border: 1px solid #fff !important;
+  }
+  .el-textarea__inner:focus {
+    border: 1px solid #67c23a !important;
+  }
+  .el-table tbody tr:hover > td {
+    background-color: #fff !important;
   }
 }
 </style>
