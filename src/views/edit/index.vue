@@ -3,11 +3,11 @@
     <div class="custom-navbar">首页/xxxxxx</div>
     <div class="steps-box">
       <el-steps :active="active" finish-status="success" align-center>
-        <el-step title="技术领域" @click.native="handleSteps(1)"></el-step>
-        <el-step title="背景技术" @click.native="handleSteps(2)"></el-step>
-        <el-step title="方案描述 " @click.native="handleSteps(3)"></el-step>
-        <el-step title="实现方案" @click.native="handleSteps(4)"></el-step>
-        <el-step title="权利要求" @click.native="handleSteps(5)"></el-step>
+        <el-step title="技术领域" @click.native="changeSteps(1)"></el-step>
+        <el-step title="背景技术" @click.native="changeSteps(2)"></el-step>
+        <el-step title="方案描述 " @click.native="changeSteps(3)"></el-step>
+        <el-step title="实现方案" @click.native="changeSteps(4)"></el-step>
+        <el-step title="权利要求" @click.native="changeSteps(5)"></el-step>
       </el-steps>
     </div>
     <first
@@ -35,7 +35,11 @@
       :fixDefectMethod="formData.fixDefectMethod"
       :id="formData.id"
     />
-    <five v-if="active === 5" @saveData="saveData" :claims="formData.claims" />
+    <five
+      v-if="active === 5"
+      @saveData="saveData"
+      :claimData="formData.claim"
+    />
     <create-case v-if="showDilag" @updateId="updateId" :show.sync="showDilag" />
   </div>
 </template>
@@ -52,6 +56,8 @@ import {
   techArea,
   saveTechbg,
   planOutline,
+  saveClaim,
+  submit,
 } from "@/api/table";
 
 export default {
@@ -85,7 +91,7 @@ export default {
           attachments: [],
           recordFiles: [],
         },
-        claims: [
+        claim: [
           {
             no: null,
             parentNo: null,
@@ -163,6 +169,9 @@ export default {
         case 4:
           this.step4Save(data.type);
           break;
+        case 5:
+          this.step5Save(data.type, data.claims);
+          break;
         default:
           break;
       }
@@ -229,6 +238,26 @@ export default {
         }
       });
     },
+    step5Save(type, data) {
+      console.log("data", data);
+      const params = {
+        id: this.formData.id,
+        claims: data,
+      };
+      saveClaim(params).then((res) => {
+        console.log("第五步保存成功");
+        if (type === "save") {
+          this.$message.success("保存成功");
+        } else if (type === "next") {
+          this.active += 1;
+        } else if (type === "last") {
+          this.active -= 1;
+        } else if (type === "submit") {
+          this.$message.success("提交成功");
+          this.$router.push({ path: "/data-list" });
+        }
+      });
+    },
     getDetail() {
       patentDetail({ id: this.formData.id }).then((res) => {
         console.log("res", res);
@@ -241,13 +270,13 @@ export default {
           pendingDefect: data.pendingDefect,
         });
         if (!this.active) {
-          this.active = 5;
+          this.active = 1;
         }
         console.log("THIS", this.formData, this.formData.fixDefectMethod);
       });
     },
-    handleSteps(index) {
-      // if(index >= this.active) return
+    changeSteps(index) {
+      if (index >= this.active) return;
       this.active = index;
     },
     updateId(id) {

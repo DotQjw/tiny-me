@@ -50,6 +50,22 @@ export function saveTechbg(params) {
     data:params
   })
 }
+// 第五步权利要求书
+export function saveClaim(params) {
+  return request({
+    url: '/api/v1/patent/claim',
+    method: 'post',
+    data:params
+  })
+}
+// 提交
+export function submit(params) {
+  return request({
+    url: '/api/v1/patent/submit',
+    method: 'post',
+    data:params
+  })
+}
 export function audioToText(params) {
   return request({
     url: '/api/v1/file/audio_to_text',

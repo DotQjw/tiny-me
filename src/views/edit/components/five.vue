@@ -8,7 +8,7 @@
     </div>
     <div class="page-main no-border-input">
       <div class="box">
-        <el-table :data="claims" style="width: 100%; margin-toIp: 20px">
+        <el-table :data="claims" style="width: 100%; margin-toip: 20px">
           <el-table-column prop="realIndex" label="序号" width="100">
           </el-table-column>
           <el-table-column prop="name" label="权力名称" width="280">
@@ -96,15 +96,29 @@
         </el-table>
       </div>
     </div>
+    <div class="bottom">
+      <el-button type="primary" @click="saveData('submit')">提 交</el-button>
+      <el-button type="success" @click="saveData('last')">上一步</el-button>
+      <el-button @click="saveData('save')">保 存</el-button>
+    </div>
   </div>
 </template>
 <script>
 import { cloneDeep } from "lodash";
 
 export default {
+  props: {
+    claimData: {
+      type: Array,
+      default: () => [],
+    },
+  },
   watch: {
     realIndex(n) {
       console.log("realIndex,", n);
+    },
+    treeData(n) {
+      console.log("treeData change", n);
     },
   },
   data() {
@@ -113,9 +127,10 @@ export default {
       treeData: [],
       claims: [],
       template: {
-        realIndex:1,
+        realIndex: 1,
         no: 1,
         parentNo: 1,
+        ancestorNo: 1,
         name: "第一个独权",
         claimContent: [
           {
@@ -126,7 +141,7 @@ export default {
               logic: false,
             },
             note: "备注", //备注
-            attachment: [],
+            attachment: {},
           },
         ],
         children: [],
@@ -134,14 +149,61 @@ export default {
     };
   },
   created() {
-    let id = this.getRandom(8);
-    var template = cloneDeep(this.template);
-    this.treeData.push(template);
-    this.claims = [];
-    this.realIndex = 0;
-    this.handleArrayData(this.treeData);
+    console.log("init", this.claimData);
+    if (this.claimData.length) {
+      console.log("装载一下树结构");
+      this.treeData = [];
+      this.realIndex = 0;
+      this.handleEditData(this.claimData);
+    } else {
+      let id = this.getRandom(8);
+      var template = cloneDeep(this.template);
+      this.treeData.push(template);
+      this.claims = [];
+      this.realIndex = 0;
+      this.handleArrayData(this.treeData);
+    }
   },
   methods: {
+    saveData(type) {
+      console.log("before", this.claims);
+      this.$emit("saveData", {
+        type,
+        step: 5,
+        claims: this.claims,
+      });
+    },
+    handleEditData(data) {
+      var list = cloneDeep(data);
+      list.forEach((item) => {
+        console.log("okok", item);
+        if (item.parentNo === item.no && item.no === item.ancestorNo) {
+          // 子父孙三级相同， 说明是一个，直接push
+          // if (item.no === item.ancestorNo) {
+          console.log("三级相同");
+          this.treeData.push(item);
+          // }
+        } else {
+          //抽离出来
+          this.findSonData(item, this.treeData);
+        }
+      });
+      this.claims = [];
+      this.realIndex = 0;
+      this.handleArrayData(this.treeData);
+      console.log("【treeData】", this.treeData);
+    },
+    findSonData(curData, treeData) {
+      treeData.forEach((child) => {
+        if (curData.parentNo === child.no) {
+          console.log("我找到爹了", curData.name, child.name, child);
+          child.children = child.children ? child.children : [];
+          child.children.push(curData);
+        } else if (child.children&&child.children.length) {
+          this.findSonData(curData,child.children);
+        }
+      });
+    },
     handleInner(item, itemIndex, data) {
       data.forEach((child, index) => {
         if (child.no === item.no) {
@@ -156,12 +218,12 @@ export default {
             note: "备注", //备注
             attachment: [],
           });
-          console.log('add',child)
+          console.log("add", child);
         } else if (child.children) {
           this.handleInner(item, itemIndex, child.children);
         }
       });
-      console.log('treeData',this.treeData)
+      console.log("treeData", this.treeData);
       this.claims = [];
       this.realIndex = 0;
       this.handleArrayData(this.treeData);
@@ -173,7 +235,7 @@ export default {
       data.map((item) => {
         this.realIndex += 1;
         this.claims.push(
-          Object.assign({}, item,{ realIndex: this.realIndex })
+          Object.assign({}, item, { realIndex: this.realIndex, children: [] })
         );
         if (item.children && item.children.length > 0) {
           this.handleArrayData(item.children);
@@ -183,18 +245,19 @@ export default {
     },
     handleChild(item, itemIndex, data) {
       var template = cloneDeep(this.template);
-      console.log("thisc", this.claims, this.claims.length);
+      console.log("treeeeeedata", this.treeData);
+      console.log("thisc", this.claims, data);
       //找到这个东西
       // 这里也要递归
       data.forEach((child, index) => {
         if (child.no === item.no) {
           console.log("找到啦", child);
-          child.children ? child.children : [];
+          child.children = child.children ? child.children : [];
           child.children.push(
             Object.assign({}, template, {
               no: this.claims.length + 1,
               parentNo: item.no,
-              pioneerNo: item.no,
+              ancestorNo: item.no,
               name: `${item.name}的baby`,
             })
           );
@@ -211,10 +274,10 @@ export default {
       var template = cloneDeep(this.template);
       this.treeData.push(
         Object.assign({}, template, {
-          realIndex:this.claims.length + 1,
+          realIndex: this.claims.length + 1,
           no: this.claims.length + 1,
           parentNo: this.claims.length + 1,
-          pioneerNo: this.claims.length + 1,
+          ancestorNo: this.claims.length + 1,
           name: "新独权" + (this.claims.length + 1),
         })
       );
@@ -263,6 +326,10 @@ export default {
   }
   .el-table tbody tr:hover > td {
     background-color: #fff !important;
+  }
+  .el-table td,
+  .el-table th.is-leaf {
+    // border-bottom:20px solid gray;
   }
 }
 </style>

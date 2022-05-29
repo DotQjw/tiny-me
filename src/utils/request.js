@@ -64,8 +64,11 @@ service.interceptors.response.use(
           });
         });
       }
+      if(res.code === 10003){
+        Message.error('参数错误，请重试')
+      }
       console.log('here')
-      return res
+      return Promise.reject(res)
     } else {
       return res
     }
