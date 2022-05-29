@@ -8,16 +8,14 @@
     </div>
     <div class="page-main no-border-input">
       <div class="box">
-        <el-table
-          :data="tableData"
-          :span-method="objectSpanMethod"
-          style="width: 100%; margin-top: 20px"
-        >
-          <el-table-column prop="no" label="序号" width="100"> </el-table-column>
+        <el-table :data="claims" style="width: 100%; margin-toIp: 20px">
+          <el-table-column prop="realIndex" label="序号" width="100">
+          </el-table-column>
           <el-table-column prop="name" label="权力名称" width="280">
             <template slot-scope="scope">
               <div>
                 <el-input
+                  @input="inputChange"
                   type="textarea"
                   rows="1"
                   v-model="scope.row.name"
@@ -25,7 +23,7 @@
                 <el-button
                   icon="el-icon-plus"
                   style="margin-top: 10px"
-                  @click="handleChild(scope.row)"
+                  @click="handleChild(scope.row, scope.$index, treeData)"
                   >添加从权</el-button
                 >
               </div>
@@ -33,37 +31,58 @@
           </el-table-column>
           <el-table-column prop="kernel" label="内核">
             <template slot-scope="scope">
-              <div v-if="scope.row.type === 'button'">
-                <el-button icon="el-icon-plus" @click="handleInner(scope.row)">
+              <span>
+                <div
+                  v-for="(item, index) in scope.row.claimContent"
+                  :key="index"
+                >
+                  <el-input
+                    @input="inputChange"
+                    type="textarea"
+                    rows="1"
+                    v-model="item.kernel"
+                  ></el-input>
+                </div>
+                <el-button
+                  icon="el-icon-plus"
+                  @click="handleInner(scope.row, scope.$index, treeData)"
+                >
                   添加内核
                 </el-button>
-              </div>
-
-              <el-input
-                v-else
-                type="textarea"
-                rows="1"
-                v-model="scope.row.kernel"
-              ></el-input>
+              </span>
             </template>
           </el-table-column>
-          <el-table-column prop="amount1" label="校核"  width="270px">
+          <el-table-column prop="" label="校核" width="270px">
             <template slot-scope="scope">
-              <div v-if="!scope.row.type">
-                <el-checkbox label="必经"></el-checkbox>
-                <el-checkbox label="可视"></el-checkbox>
-                <el-checkbox label="逻辑"></el-checkbox>
+              <div class="check-row-box">
+                <div
+                  v-for="(item, index) in scope.row.claimContent"
+                  class="check-row"
+                  :key="index"
+                >
+                  <el-checkbox v-model="item.check.necessaryStep"
+                    >必经</el-checkbox
+                  >
+                  <el-checkbox v-model="item.check.visible">可视</el-checkbox>
+                  <el-checkbox v-model="item.check.logic">逻辑</el-checkbox>
+                </div>
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="logic" label="备注">
+          <el-table-column prop="note" label="备注">
             <template slot-scope="scope">
-              <div v-if="!scope.row.type">
-                <el-input
-                  v-model="scope.row.logic"
-                  type="textarea"
-                  rows="1"
-                ></el-input>
+              <div class="note-row">
+                <div
+                  v-for="(item, index) in scope.row.claimContent"
+                  :key="index"
+                >
+                  <el-input
+                    @input="inputChange"
+                    v-model="item.note"
+                    type="textarea"
+                    rows="1"
+                  ></el-input>
+                </div>
               </div>
             </template>
           </el-table-column>
@@ -77,209 +96,149 @@
         </el-table>
       </div>
     </div>
-    <div class="bottom">
-      <el-button type="primary">下一步</el-button>
-      <el-button type="success">上一步</el-button>
-      <el-button>保 存</el-button>
-    </div>
   </div>
 </template>
 <script>
-// TODO 组装数据
-// 如何把内核的数据 提取出来
-// 1.parentNo = no， 这样子来判断是同一个集合。 × 貌似不可行
-//  -1 加一个类型判断 是inner?  通过id？
-// 2.从权的parentNo != no,
+import { cloneDeep } from "lodash";
 
-// ----
-
-// 1. 通过id来判断是否是同一个集合， 统筹内核，
-// 2. 通过parentNo = no 来判断是不是从权。
 export default {
+  watch: {
+    realIndex(n) {
+      console.log("realIndex,", n);
+    },
+  },
   data() {
     return {
-      currentNo: 1,
-      content: "",
-      allIndex: 2,
-      maxParentNo: 1,
-      tableData: [
-        {
-          no: 1,
-          realNo: 1,
-          parentNo: 1,
-          name: "王小虎",
-          kernel: "",
-          check: {
-            necessaryStep: false,
-            visible: false,
-            logic: false,
+      realIndex: 1,
+      treeData: [],
+      claims: [],
+      template: {
+        realIndex:1,
+        no: 1,
+        parentNo: 1,
+        name: "第一个独权",
+        claimContent: [
+          {
+            kernel: "第一个内核", //内核
+            check: {
+              necessaryStep: false,
+              visible: false,
+              logic: false,
+            },
+            note: "备注", //备注
+            attachment: [],
           },
-          note: "",
-          attachment: [],
-          id: "12987122",
-          childMaxNo: 1,
-          maxRowspan: 0,
-          parentId: "12987122",
-        },
-        {
-          no: null,
-          parentNo: 1,
-          name: "",
-          kernel: "",
-          check: {
-            necessaryStep: false,
-            visible: false,
-            logic: false,
-          },
-          note: "",
-          attachment: [],
-          parentId: "12987122",
-          type: "button",
-          id: "00000",
-          maxRowspan: 0,
-          childMaxNo: 1,
-        },
-      ],
+        ],
+        children: [],
+      },
     };
   },
   created() {
-    this.handleDealData();
+    let id = this.getRandom(8);
+    var template = cloneDeep(this.template);
+    this.treeData.push(template);
+    this.claims = [];
+    this.realIndex = 0;
+    this.handleArrayData(this.treeData);
   },
   methods: {
-    objectSpanMethod({ row, column, rowIndex, columnIndex }) {
-      // console.log("rowIndex", { row, column, rowIndex, columnIndex });
-      if (columnIndex === 0 || columnIndex === 1 || columnIndex === 5) {
-        return {
-          rowspan: row.maxRowspan,
-          colspan: 1,
-        };
-      }
+    handleInner(item, itemIndex, data) {
+      data.forEach((child, index) => {
+        if (child.no === item.no) {
+          console.log("找到啦", child);
+          child.claimContent.push({
+            kernel: "添加的内核", //内核
+            check: {
+              necessaryStep: false,
+              visible: false,
+              logic: false,
+            },
+            note: "备注", //备注
+            attachment: [],
+          });
+          console.log('add',child)
+        } else if (child.children) {
+          this.handleInner(item, itemIndex, child.children);
+        }
+      });
+      console.log('treeData',this.treeData)
+      this.claims = [];
+      this.realIndex = 0;
+      this.handleArrayData(this.treeData);
     },
-    handleChild(row) {
-      console.log("【handleChild row】", row, this.tableData);
-      var curIndex;
-      // row.childMaxNo = row.childMaxNo? row.childMaxNo + 1 :row.parentNo+1
-      let parentRow = this.tableData.find(
-        (v) => v.realNo === v.parentNo && v.parentNo === row.parentNo
+    inputChange() {
+      console.log("this.claims", this.claims);
+    },
+    handleArrayData(data) {
+      data.map((item) => {
+        this.realIndex += 1;
+        this.claims.push(
+          Object.assign({}, item,{ realIndex: this.realIndex })
+        );
+        if (item.children && item.children.length > 0) {
+          this.handleArrayData(item.children);
+        }
+      });
+      console.log("claims", this.claims);
+    },
+    handleChild(item, itemIndex, data) {
+      var template = cloneDeep(this.template);
+      console.log("thisc", this.claims, this.claims.length);
+      //找到这个东西
+      // 这里也要递归
+      data.forEach((child, index) => {
+        if (child.no === item.no) {
+          console.log("找到啦", child);
+          child.children ? child.children : [];
+          child.children.push(
+            Object.assign({}, template, {
+              no: this.claims.length + 1,
+              parentNo: item.no,
+              pioneerNo: item.no,
+              name: `${item.name}的baby`,
+            })
+          );
+        } else if (child.children) {
+          this.handleChild(item, itemIndex, child.children);
+        }
+      });
+      console.log("tree", this.treeData);
+      this.claims = [];
+      this.realIndex = 0;
+      this.handleArrayData(this.treeData);
+    },
+    handleSingle() {
+      var template = cloneDeep(this.template);
+      this.treeData.push(
+        Object.assign({}, template, {
+          realIndex:this.claims.length + 1,
+          no: this.claims.length + 1,
+          parentNo: this.claims.length + 1,
+          pioneerNo: this.claims.length + 1,
+          name: "新独权" + (this.claims.length + 1),
+        })
       );
-      // this.maxParentNo = parentRow.childMaxNo = parentRow.childMaxNo + 1;
-      this.maxParentNo += 1;
-      // console.log('parentRow',parentRow, parentRow.childMaxNo)
-      this.tableData.some((item, index) => {
-        // if (item.parentId === row.parentId && item.type === "button") {
-        //   console.log("index", index);
-        //   curIndex = index;
-        //   return;
-        // }
-        if (item.parentNo === parentRow.parentNo) {
-          console.log(" 【index】:", index);
-          curIndex = index;
-        }
-      });
-      const id = this.getRandom(16);
-      const childId = this.getRandom(8);
-      this.tableData.splice(
-        curIndex + 1,
-        0,
-        {
-          realNo: this.maxParentNo,
-          no: this.maxParentNo,
-          parentNo: parentRow.no,
-          parentId: id,
-          id: id,
-          name: `根据${row.name}`,
-          maxParentNo: this.maxParentNo,
-        },
-        {
-          parentNo: parentRow.no,
-          parentId: id,
-          type: "button",
-          id: childId,
-          name: "",
-          maxRowspan: 0,
-        }
-      );
-      this.handleDealData();
+      this.claims = [];
+      this.realIndex = 0;
+      this.handleArrayData(this.treeData);
     },
-    handleInner(row) {
-      console.log("row", row);
-      // var obj = this.tableData.find((v) => v.id === row.parentId);
-      var curIndex;
-      this.tableData.some((item, index) => {
-        if (item.parentId === row.parentId && item.type === "button") {
-          console.log("index", index);
-          curIndex = index;
-          return;
-        }
-      });
-      const childId = this.getRandom(8);
-      this.tableData.splice(curIndex, 0, {
-        parentId: row.parentId,
-        id: childId,
-        name: "INNER1",
-      });
-      this.handleDealData();
-    },
-    handleDealData() {
-      var selectedIndex = 0;
+    dealTableData() {
       let currentNo = 1;
-      this.tableData.map((item, index) => {
+      this.claims.map((item, index) => {
         if (item.no && index > 0) {
           // console.log("【map No】:", item.no, currentNo);
           if (item.no < currentNo) {
             // console.log("进来了");
             currentNo = item.no;
           } else {
-            // console.log('我比他大')
+            // console.log("我比他大");
             currentNo = currentNo + 1;
             // console.log('currenNo',currentNo)
             item.no = currentNo;
           }
         }
-        if (index === 0) {
-          // 第一个 默认给1
-          this.tableData[index].maxRowspan = 1;
-          selectedIndex = 0;
-        } else if (
-          this.tableData[index].parentId === this.tableData[index - 1].parentId
-        ) {
-          // console.log("进来", this.tableData[index].parentId, selectedIndex);
-          this.tableData[selectedIndex].maxRowspan =
-            this.tableData[selectedIndex].maxRowspan + 1;
-          if (selectedIndex != index - 1) {
-            this.tableData[index].maxRowspan = 0;
-          }
-        } else {
-          selectedIndex = index;
-          this.tableData[selectedIndex].maxRowspan = 1;
-        }
       });
-      console.log("tableData", this.tableData);
-    },
-    handleSingle() {
-      const id = this.getRandom(16);
-      const childId = this.getRandom(8);
-      this, (this.maxParentNo += 1);
-      this.tableData.push(
-        {
-          no: this.maxParentNo,
-          realNo: this.maxParentNo,
-          parentNo: this.maxParentNo,
-          parentId: id,
-          id: id,
-          name: `独权${this.maxParentNo}`,
-          maxParentNo: this.maxParentNo,
-        },
-        {
-          parentNo: this.maxParentNo,
-          parentId: id,
-          type: "button",
-          id: childId,
-          name: "",
-        }
-      );
-      console.log("tableData", this.tableData);
-      this.handleDealData();
+      // console.log("dealTableData", this.claims);
     },
     getRandom(length) {
       var randomStr =
@@ -296,7 +255,8 @@ export default {
 <style lang="scss">
 .no-border-input {
   .el-textarea__inner {
-    border: 1px solid #fff !important;
+    // border: 1px solid #fff !important;
+    margin: 10px 0;
   }
   .el-textarea__inner:focus {
     border: 1px solid #67c23a !important;
@@ -347,5 +307,13 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+.check-row {
+  // margin: 30px 0;
+  line-height: 53px;
+}
+.note-row,
+.check-row-box {
+  padding-bottom: 41px;
 }
 </style>
