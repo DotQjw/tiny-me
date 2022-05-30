@@ -18,7 +18,7 @@
       :on-remove="handleRemove"
       :on-success="handleSuccess"
       :show-file-list="true"
-      :before-uoload="beforeUpload"
+      :before-upload="beforeUpload"
       :before-remove="beforeRemove"
       multiple
       drag
@@ -33,6 +33,8 @@
 </template>
 <script>
 import store from "@/store";
+import { getToken } from "@/utils/auth";
+
 export default {
   props: {
     maxIndex:{
@@ -50,7 +52,7 @@ export default {
   },
   data() {
     return {
-      token: this.$store.getters.token,
+      token: this.$store.getters.token || getToken(),
       fileList: [],
     };
   },

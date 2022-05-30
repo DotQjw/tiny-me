@@ -19,7 +19,7 @@
             :key="index"
             class="list-item"
           >
-            <span>{{item.name}} </span>
+            <span>{{ item.name }} </span>
             <span class="tool-box">
               <span
                 @click="handlePlay(item)"
@@ -27,7 +27,7 @@
               ></span>
               <span
                 @click="changeText(item)"
-                class="el-icon-delete tool-icon"
+                class="el-icon-refresh tool-icon"
               ></span>
             </span>
           </div>
@@ -68,6 +68,7 @@ export default {
   },
   data() {
     return {
+      copyText: "",
       activeName: "1",
       audioSrc: "",
       baseUrl: "https://x-patent.oss-cn-shenzhen.aliyuncs.com/",
@@ -79,25 +80,33 @@ export default {
   methods: {
     handleClick() {},
     handlePlay(item) {
-      this.audioSrc = this.baseUrl +item.url;
+      this.audioSrc = this.baseUrl + item.url;
       console.log("audioSrc", this.audioSrc);
     },
-    changeText(item) {
-      audioToText({ url:item.url }).then((res) => {
-        console.log("res", res.data.text);
-        if (res.data && res.data.text) {
-          // this.$message.success("录音转文字成功");
-          this.$copyText(res.data.text).then(
-             (e)=> {
-               console.log('res.data.text',res.data.text)
-              this.$message.success("录音转文字成功,去复制吧");
-            },
-             (e)=> {
-               this.$message.success("复制失败,请重试");
-            }
-          );
+    async changeText(item) {
+      this.$notify({
+          title: '提示',
+          message: '录音转文字中，请耐心等待',
+          duration: 3000
+        });
+      const res = await audioToText({ url: item.url });
+      if (res.data && res.data.text) {
+        // this.$message.success("录音转文字成功");
+        this.copyText = res.data.text;
+        setTimeout(() => {
+          this.copyData();
+        }, 10);
+      }
+    },
+    copyData() {
+      this.$copyText(this.copyText).then(
+        (e) => {
+          this.$message.success("已将录音转文字复制到您的粘贴板了,去粘贴吧");
+        },
+        (e) => {
+          this.$message.success("复制失败,请重试");
         }
-      });
+      );
     },
     handleClose() {
       this.$emit("update:show", false);

@@ -60,9 +60,9 @@ export default {
       type: String,
       default: "",
     },
-    maxIndex:{
-      type:Number,
-      default:1
+    maxIndex: {
+      type: Number,
+      default: 1,
     },
     show: {
       type: Boolean,
@@ -71,6 +71,7 @@ export default {
   },
   data() {
     return {
+      fisrtTips: true,
       title: "准备录制",
       src: "",
       fileList: [],
@@ -85,12 +86,28 @@ export default {
   },
   created() {
     console.log("this.type", this.type);
+    if (navigator.mediaDevices.getUserMedia) {
+      const constraints = { audio: true };
+      navigator.mediaDevices.getUserMedia(constraints).then(
+        (stream) => {
+          console.log("授权成功！");
+        },
+        (err) => {
+          console.error("授权失败！");
+        }
+      );
+    } else {
+      console.error("浏览器不支持 getUserMedia");
+    }
     this.recorder = new Recorder({
       sampleBits: 16, // 采样位数，支持 8 或 16，默认是16
       sampleRate: 16000, // 采样率，支持 11025、16000、22050、24000、44100、48000，根据浏览器默认值，我的chrome是48000
       numChannels: 1, // 声道，支持 1 或 2， 默认是1
       // compiling: false,(0.x版本中生效,1.x增加中)  // 是否边录边转换，默认是false
     });
+  },
+  beforeDestroy(){
+      clearInterval(this.timer);
   },
   methods: {
     beforeRemove(file) {},
@@ -114,10 +131,23 @@ export default {
           this.recordTime = 0;
           this.timer = setInterval(() => {
             this.recordTime++;
+            console.log(' this.recordTime', this.recordTime,this.recordTime == 600 , this.fisrtTips)
+            if (this.recordTime == 10 && this.fisrtTips){
+              this.fisrtTips = false;
+              this.$notify({
+                title: "提示",
+                message: "您已录制时间超过10分钟",
+                type: "warning",
+                duration:0
+              });
+            }
           }, 1000);
         },
         (error) => {
           // 出错了
+          if (error.message.includes("Requested device not found")) {
+            this.$message.error("未检查到您的麦克风设备，请检查");
+          }
           console.log(`${error.name} : ${error.message}`);
         }
       );
@@ -132,7 +162,7 @@ export default {
       const data = new FormData();
       let file = new File([wavData], "custom.wav");
       data.append("file", file);
-      console.log('fileSize', this.recorder.fileSize)
+      console.log("fileSize", this.recorder.fileSize);
       this.btnLoading = true;
       uploadAudio(data)
         .then((res) => {
@@ -143,10 +173,10 @@ export default {
           this.btnLoading = false;
           this.recordType = "ready";
           this.$emit("uploadRecord", {
-            name:`录音${this.maxIndex}`,
-            url:res.data.url,
-            size:this.recorder.fileSize,
-            duration:parseInt(this.recorder.duration)
+            name: `录音${this.maxIndex}`,
+            url: res.data.url,
+            size: this.recorder.fileSize,
+            duration: parseInt(this.recorder.duration),
           });
         })
         .catch((err) => {
@@ -155,32 +185,20 @@ export default {
           this.btnLoading = false;
           this.recordType = "uploadFail";
         });
-      // that.play();
     },
     handleCancel() {
       this.$confirm("确定要取消录音吗", "提示", {
-        confirmButtonText: "取消录音",
-        cancelButtonText: "继续录音",
+        confirmButtonText: "继续录音",
+        cancelButtonText: "取消录音",
         type: "warning",
-      }).then(() => {
-        this.recorder.stop();
-        this.title = "录制结束";
-        this.recordType = "ready";
-      });
-    },
-    play() {
-      const blobs = this.recorder.getPCMBlob();
-      // const dataBlob = this.changeMp3()
-      let file = this.changeMp3(this.recorder.getWAV());
-      console.log("dataBlob", file);
-      var audio = document.createElement("audio");
-      this.src = URL.createObjectURL(file);
-      return;
-      audio.src = URL.createObjectURL(file);
-      var box = document.getElementById("box");
-      audio.controls = true;
-      box.appendChild(audio);
-
+      })
+        .then(() => {})
+        .catch((_) => {
+          clearInterval(this.timer);
+          this.recorder.stop();
+          this.title = "录制结束";
+          this.recordType = "ready";
+        });
     },
     changeMp3(wavDataView = {}) {
       // 获取wav头信息

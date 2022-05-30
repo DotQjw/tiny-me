@@ -15,11 +15,23 @@
             <template slot-scope="scope">
               <div>
                 <el-input
-                  @input="inputChange"
+                  v-if="
+                    scope.row.no === scope.row.parentNo &&
+                    scope.row.no === scope.row.ancestorNo
+                  "
+                  @input="nameInputChange($event, scope.row)"
                   type="textarea"
                   rows="1"
                   v-model="scope.row.name"
                 ></el-input>
+                <div v-else>
+                  <span>根据权力要求</span>
+                  <el-input
+                    @input="nameInputChange($event, scope.row)"
+                    v-model="scope.row.name"
+                    class="child-input"
+                  ></el-input>
+                </div>
                 <el-button
                   icon="el-icon-plus"
                   style="margin-top: 10px"
@@ -88,9 +100,29 @@
           </el-table-column>
           <el-table-column prop="" label="有益效果">
             <template slot-scope="scope">
-              <div v-if="!scope.row.type">
-                <el-button>上传附件</el-button>
-              </div>
+              <span>
+                <el-upload
+                  :headers="{
+                    Authorization: `Bearer ${token}`,
+                  }"
+                  :show-file-list="false"
+                  action="http://8.129.8.125:8080/api/v1/file/upload_file"
+                  :on-success="handleSuccess"
+                  :before-upload="(file) => beforeUpload(file, scope.row)"
+                >
+                  <el-button size="small" type="primary">点击上传</el-button>
+                </el-upload>
+                <div v-if="scope.row.attachments" style="margin-top:10px;">
+                  <span
+                    v-for="(item, index) in scope.row.attachments"
+                    :key="index"
+                  >
+                    <div>
+                      {{ item.name }}
+                    </div>
+                  </span>
+                </div>
+              </span>
             </template>
           </el-table-column>
         </el-table>
@@ -105,6 +137,8 @@
 </template>
 <script>
 import { cloneDeep } from "lodash";
+import { getToken } from "@/utils/auth";
+import { uploadFile } from "@/api/upload";
 
 export default {
   props: {
@@ -123,6 +157,7 @@ export default {
   },
   data() {
     return {
+      token: this.$store.getters.toke || getToken(),
       realIndex: 1,
       treeData: [],
       claims: [],
@@ -131,19 +166,19 @@ export default {
         no: 1,
         parentNo: 1,
         ancestorNo: 1,
-        name: "第一个独权",
+        name: "独权1",
         claimContent: [
           {
-            kernel: "第一个内核", //内核
+            kernel: "", //内核
             check: {
               necessaryStep: false,
               visible: false,
               logic: false,
             },
-            note: "备注", //备注
-            attachment: {},
+            note: "", //备注
           },
         ],
+        attachments: [],
         children: [],
       },
     };
@@ -181,6 +216,9 @@ export default {
           // 子父孙三级相同， 说明是一个，直接push
           // if (item.no === item.ancestorNo) {
           console.log("三级相同");
+          if(!item.attachments){
+            item.attachments = []
+          }
           this.treeData.push(item);
           // }
         } else {
@@ -198,9 +236,12 @@ export default {
         if (curData.parentNo === child.no) {
           console.log("我找到爹了", curData.name, child.name, child);
           child.children = child.children ? child.children : [];
+          if(!curData.attachments){
+            curData.attachments= []
+          }
           child.children.push(curData);
-        } else if (child.children&&child.children.length) {
-          this.findSonData(curData,child.children);
+        } else if (child.children && child.children.length) {
+          this.findSonData(curData, child.children);
         }
       });
     },
@@ -216,7 +257,6 @@ export default {
               logic: false,
             },
             note: "备注", //备注
-            attachment: [],
           });
           console.log("add", child);
         } else if (child.children) {
@@ -229,7 +269,29 @@ export default {
       this.handleArrayData(this.treeData);
     },
     inputChange() {
+      if (this.timer) {
+        clearTimeout(this.timer);
+      }
+      this.timer = setTimeout(() => {
+        this.saveData("autoSave");
+      }, 1000);
       console.log("this.claims", this.claims);
+    },
+    nameInputChange(value, row) {
+      console.log("回填数据", value, row);
+      // this.treeData
+      this.fillTreeData(value, row, this.treeData);
+    },
+    fillTreeData(value, row, originData) {
+      originData.forEach((item) => {
+        if (item.no === row.no) {
+          console.log("我找到了");
+          item.name = value;
+        } else if (item.children && item.children.length) {
+          console.log("还没有找到，不过继续");
+          this.fillTreeData(value, row, item.children);
+        }
+      });
     },
     handleArrayData(data) {
       data.map((item) => {
@@ -245,8 +307,6 @@ export default {
     },
     handleChild(item, itemIndex, data) {
       var template = cloneDeep(this.template);
-      console.log("treeeeeedata", this.treeData);
-      console.log("thisc", this.claims, data);
       //找到这个东西
       // 这里也要递归
       data.forEach((child, index) => {
@@ -257,8 +317,8 @@ export default {
             Object.assign({}, template, {
               no: this.claims.length + 1,
               parentNo: item.no,
-              ancestorNo: item.no,
-              name: `${item.name}的baby`,
+              ancestorNo: item.ancestorNo,
+              name: item.ancestorNo + "",
             })
           );
         } else if (child.children) {
@@ -312,13 +372,55 @@ export default {
       }
       return str;
     },
+    handleSuccess(response, file, fileList) {
+      console.log(" this.fileData", this.fileData);
+      if (response.code === 0) {
+        // 两个数据都要填
+        this.fileData.url = response.data.url;
+        this.handFindFileFather(
+          this.fileData,
+          this.uploadFileRow.no,
+          this.treeData
+        );
+        this.uploadFileRow.attachments.push(this.fileData);
+        console.log("claims", this.claims, this.uploadFileRow);
+      } else if (response.code === 20103) {
+        this.$confirm("登录过期,请重新登录", "提示", {
+          confirmButtonText: "重新登录",
+          cancelButtonText: "取消",
+          type: "warning",
+        }).then(() => {
+          this.$store.dispatch("user/resetToken").then(() => {
+            location.reload();
+          });
+        });
+      }
+    },
+    handFindFileFather(fileData, no, treeData) {
+      treeData.map((el) => {
+        if (el.no === fileData.no) {
+          console.log("找到啦");
+          el.attachments.push(fileData);
+        } else if (el.children && el.children.length) {
+          this.handFindFileFather(fileData, no, el.children);
+        }
+      });
+      console.log("this..t", this.treeData);
+    },
+    beforeUpload(file, row) {
+      console.log("file", file, row);
+      const { size, name } = file;
+      const { no } = row;
+      this.fileData = { size, name };
+      this.uploadFileRow = row;
+    },
   },
 };
 </script>
 <style lang="scss">
 .no-border-input {
   .el-textarea__inner {
-    // border: 1px solid #fff !important;
+    border: 1px solid #fff !important;
     margin: 10px 0;
   }
   .el-textarea__inner:focus {
@@ -330,6 +432,13 @@ export default {
   .el-table td,
   .el-table th.is-leaf {
     // border-bottom:20px solid gray;
+  }
+  .child-input {
+    max-width: 50px;
+    .el-input__inner {
+      padding: 0 3px;
+      border: 1px solid #fff !important;
+    }
   }
 }
 </style>
