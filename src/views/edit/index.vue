@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="custom-navbar">首页/xxxxxx</div>
+    <div class="custom-navbar" ><span @click="gotoList">首页</span> / 编辑</div>
     <div class="steps-box">
       <el-steps :active="active" finish-status="success" align-center>
         <el-step title="技术领域" @click.native="changeSteps(1)"></el-step>
@@ -40,7 +40,7 @@
       @saveData="saveData"
       :claimData="formData.claim"
     />
-    <create-case v-if="showDilag" @updateId="updateId" :show.sync="showDilag" />
+    <create-case v-if="showDilag" :createData="createData" @updateId="updateId" :show.sync="showDilag" />
   </div>
 </template>
 <script>
@@ -69,6 +69,7 @@ export default {
       type: "add",
       id: "",
       showDilag: false,
+      createData:{},
       secondStepsData: {
         id: "",
         domain: {
@@ -154,6 +155,33 @@ export default {
     }
   },
   methods: {
+    getDetail() {
+      patentDetail({ id: this.formData.id }).then((res) => {
+        console.log("res", res);
+        let data = (this.formData = res.data);
+        this.secondStepsData = Object.assign(this.secondStepsData, {
+          id: data.id,
+          domain: data.domain,
+          painPoint: data.painPoint,
+          currentSolution: data.currentSolution,
+          pendingDefect: data.pendingDefect,
+        });
+        this.createData = {
+          caseNo: data.caseNo,
+          tianyuan: data.tianyuan,
+          clientName: data.clientName,
+          proposalName: data.proposalName,
+          type: data.type,
+          assistUserId: data.assistUserId,
+          assistUserName:data.assistUserName
+        };
+        if (!this.active) {
+          this.active = 1;
+        }
+        this.showDilag = true;
+        console.log("THIS", this.formData, this.formData.fixDefectMethod);
+      });
+    },
     saveData(data) {
       console.log("data", data);
       switch (data.step) {
@@ -258,23 +286,6 @@ export default {
         }
       });
     },
-    getDetail() {
-      patentDetail({ id: this.formData.id }).then((res) => {
-        console.log("res", res);
-        let data = (this.formData = res.data);
-        this.secondStepsData = Object.assign(this.secondStepsData, {
-          id: data.id,
-          domain: data.domain,
-          painPoint: data.painPoint,
-          currentSolution: data.currentSolution,
-          pendingDefect: data.pendingDefect,
-        });
-        if (!this.active) {
-          this.active = 1;
-        }
-        console.log("THIS", this.formData, this.formData.fixDefectMethod);
-      });
-    },
     changeSteps(index) {
       if (index >= this.active) return;
       this.active = index;
@@ -283,6 +294,9 @@ export default {
       this.secondStepsData.id = this.formData.id = id;
       this.active = 1;
     },
+    gotoList(){
+       this.$router.push({ path: "/data-list" });
+    }
   },
 };
 </script>
@@ -292,6 +306,7 @@ export default {
   margin: 0 auto 20px;
 }
 .custom-navbar {
+  cursor: pointer;
   font-size: 12px;
   color: gray;
   margin-bottom: 20px;

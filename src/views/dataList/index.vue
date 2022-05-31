@@ -50,8 +50,9 @@
       </el-table-column>
       <el-table-column fixed="right" align="center" label="操作" width="200">
         <template slot-scope="scope">
-          <span v-if="role === 2">
+          <span v-if="role === 2 ">
             <el-button
+              v-if="scope.row.status === 1"
               @click="handleEditRichText(scope.row)"
               type="text"
               size="small"
@@ -64,14 +65,14 @@
               >查看详情</el-button
             >
           </span>
-          <span v-else>
-            <el-button
+          <span v-if="role === 1 ">
+            <!-- <el-button
               @click="handleCheck(scope.row)"
               disabled
               type="text"
               size="small"
               >审核</el-button
-            >
+            > -->
             <el-button @click="handleEdit(scope.row)" type="text" size="small"
               >编辑</el-button
             >
@@ -148,6 +149,7 @@ export default {
     },
     handleEditRichText(row) {
       console.log("richMan");
+      this.$router.push({path:"/rich-text-edit", query: { id: row.id }})
     },
     handleSizeChange(val) {
       this.pages.perPage = val;

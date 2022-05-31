@@ -4,6 +4,7 @@
     :before-close="handleClose"
     center
     :visible.sync="show"
+    :close-on-click-modal="false"
     width="480px"
   >
     <el-form :model="form">
@@ -43,7 +44,7 @@
       <el-form-item v-if="showMore" label="协办人：">
         <el-autocomplete
           class="custom-input"
-          v-model="form.userName"
+          v-model="form.assistUserName"
           :fetch-suggestions="querySearch"
           placeholder="请输入内容"
           :trigger-on-focus="false"
@@ -70,19 +71,24 @@ export default {
       type: Boolean,
       default: false,
     },
+    createData:{
+      type:Object,
+      default:()=>{}
+    }
   },
   data() {
     return {
       showMore: false,
-      form: {
-        caseNo: "",
-        tianyuan: "",
-        clientName: "",
-        proposalName: "",
-        type: "",
-        assistUserId: "",
-        userName:""
-      },
+      form:this.createData
+      // form: {
+      //   caseNo: "",
+      //   tianyuan: "",
+      //   clientName: "",
+      //   proposalName: "",
+      //   type: "",
+      //   assistUserId: "",
+      //   assistUserName:""
+      // },
     };
   },
   methods: {
@@ -109,7 +115,7 @@ export default {
     handleSelect(item) {
       console.log(item);
       this.form.assistUserId = item.id;
-      this.form.userName = item.username
+      this.form.assistUserName = item.username
     },
     handleClose() {
       this.$emit("update:show", false);

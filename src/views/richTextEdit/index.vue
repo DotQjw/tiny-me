@@ -19,11 +19,49 @@
     <div id="box1">
       <div class="box1-content">
         <div class="first-left">
-          <div class="custom-title">说明书编辑</div>
+          <div class="left-title">
+            <div class="custom-title">说明书编辑</div>
+            <el-button  v-if="!showTechList"
+              @click="showTechList = true">查看技术交底</el-button>
+          </div>
           <editor selectorId="edit1" :defaultValue="allContent" />
         </div>
-        <div class="first-right">
-          <div class="custom-title">技术交底</div>
+        <div class="first-right" v-if="showTechList">
+          <div class="first-right-title">
+            <div class="">技术交底</div>
+            <el-button @click="showTechList = false">收起</el-button>
+          </div>
+          <div class="right-content">
+            <div class="content-item">
+              <div class="content-item-title">
+                1.技术领域： {{ detailData.techArea }}
+              </div>
+            </div>
+            <div class="content-item">
+              <div class="content-item-title">2.本专利应用在哪个领域</div>
+              <div class="content-item-text">{{ detailData.domain.text }}</div>
+            </div>
+            <div class="content-item">
+              <div class="content-item-title">3.该领域存在什么痛点</div>
+              <div class="content-item-text">
+                {{ detailData.painPoint.text }}
+              </div>
+            </div>
+            <div class="content-item">
+              <div class="content-item-title">4.当前是如何解决这些痛点的的</div>
+              <div class="content-item-text">
+                {{ detailData.currentSolution.text }}
+              </div>
+            </div>
+            <div class="content-item">
+              <div class="content-item-title">
+                5.解决这些痛点的方案所存在的且本专利要解决的问题有哪些
+              </div>
+              <div class="content-item-text">
+                {{ detailData.pendingDefect.text }}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -37,7 +75,9 @@
       <div class="custom-tips">
         要编辑摘要，请先填写好上方的内容，再点击下方的生成摘要按钮
       </div>
-      <el-button v-if="!showMainEdit" @click="handleMainEdit" type="primary">生成摘要</el-button>
+      <el-button v-if="!showMainEdit" @click="handleMainEdit" type="primary"
+        >生成摘要</el-button
+      >
       <div v-show="showMainEdit" class="main-edit">
         <editor selectorId="mainEdit" :defaultValue="mainContent" />
       </div>
@@ -57,27 +97,53 @@
 </template>
 <script>
 import Editor from "@/components/Editor/index";
-
+import {
+  patentDetail,
+  implementPlan,
+  techArea,
+  saveTechbg,
+  planOutline,
+  saveClaim,
+  submit,
+} from "@/api/table";
 export default {
   components: { Editor },
   data() {
     return {
+      showTechList: false,
+      detailData: {},
       toolList: ["攥写", "摘要", "附图", "预览"],
       currentTool: 0,
-      showMainEdit:false,
-      allContent:'<h1 class="custom" style="text-align: center;">权 利 要 求 书</h1><hr style="border: 1px solid #000; background: #000;" size="1px" width="90%"><p>&nbsp;</p><p style="padding-left: 40px; line-height: 1.5;">1. (7.1),其特征在于（7.1.a）</p><p style="padding-left: 40px; line-height: 1.5;">2. (7.1.1),其特征在于（7.1.1.a）</p><p style="padding-left: 40px; line-height: 1.5;">3. (7.1.1.1),其特征在于（7.1.1.a）</p><p style="padding-left: 40px; line-height: 1.5;">4. (8.1),其特征在于（8.1.a）</p>',
-      mainContent:'<h1 class="custom" style="text-align: center;">说 明 书 摘 要</h1><hr width="90%" size="1px" style="border:1px solid #000;background:#000" /'
+      showMainEdit: false,
+      allContent:
+        '<h1 class="custom" style="text-align: center;">权 利 要 求 书</h1><hr style="border: 1px solid #000; background: #000;" size="1px" width="90%"><p>&nbsp;</p><p style="padding-left: 40px; line-height: 1.5;">1. (7.1),其特征在于（7.1.a）</p><p style="padding-left: 40px; line-height: 1.5;">2. (7.1.1),其特征在于（7.1.1.a）</p><p style="padding-left: 40px; line-height: 1.5;">3. (7.1.1.1),其特征在于（7.1.1.a）</p><p style="padding-left: 40px; line-height: 1.5;">4. (8.1),其特征在于（8.1.a）</p>',
+      mainContent:
+        '<h1 class="custom" style="text-align: center;">说 明 书 摘 要</h1><hr width="90%" size="1px" style="border:1px solid #000;background:#000" /',
     };
   },
+  created() {
+    if (this.$route.query.id) {
+      console.log("获取数据");
+      this.getDetail(this.$route.query.id);
+    } else {
+      this.$$message.warning("缺少必需参数");
+    }
+  },
   methods: {
+    getDetail(id) {
+      patentDetail({ id }).then((res) => {
+        console.log("res", res);
+        this.detailData = res.data;
+      });
+    },
     handleTool(index) {
       this.currentTool = index;
       console.log("#", `#box${index}`);
       this.$el.querySelector(`#box${index + 1}`).scrollIntoView();
     },
-    handleMainEdit(){
+    handleMainEdit() {
       this.showMainEdit = true;
-    }
+    },
   },
 };
 </script>
@@ -107,12 +173,44 @@ export default {
     display: flex;
     flex-wrap: nowrap;
     .first-left {
-      width: 70%;
+      // width: 70%;
+      flex: 1;
+      align-items: center;
+      .left-title{
+        display: flex;
+        justify-content: space-between;
+        margin-bottom:20px;
+      }
     }
     .first-right {
-      flex:1;
+      width: 25%;
       margin-left: 20px;
-      border: 1px solid red;
+      padding: 0 20px;
+      // border: 1px solid red;
+      .content-item {
+        margin: 10px 0 20px 0;
+        &-title {
+          margin-bottom: 8px;
+        }
+        &-text {
+          margin-left: 14px;
+        }
+      }
+    }
+    .first-right-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px 0;
+      margin-bottom:20px;
+      .custom-fold {
+        cursor: pointer;
+        display: inline-block;
+        border: 1px solid #e5e6eb;
+        padding: 5px 8px;
+        font-size: 14px;
+        border-radius: 10px;
+      }
     }
   }
 }
@@ -129,13 +227,13 @@ export default {
   background: #fff;
   box-shadow: -2px 2px 100px gainsboro;
   padding: 30px;
-  .addimg{
+  .addimg {
     background: gainsboro;
     padding: 5px 8px;
   }
 }
 
-.left-tool { 
+.left-tool {
   cursor: pointer;
   position: fixed;
   z-index: 10000;
@@ -157,11 +255,11 @@ export default {
     color: #409eff;
   }
 }
-.bottom-btn{
+.bottom-btn {
   text-align: center;
   margin: 30px 0;
 }
-.main-edit{
+.main-edit {
   width: 100%;
   // height: 500px;
 }
