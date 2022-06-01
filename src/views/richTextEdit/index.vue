@@ -21,8 +21,9 @@
         <div class="first-left">
           <div class="left-title">
             <div class="custom-title">说明书编辑</div>
-            <el-button  v-if="!showTechList"
-              @click="showTechList = true">查看技术交底</el-button>
+            <el-button v-if="!showTechList" @click="showTechList = true"
+              >查看技术交底</el-button
+            >
           </div>
           <editor selectorId="edit1" :defaultValue="allContent" />
         </div>
@@ -176,16 +177,18 @@ export default {
       // width: 70%;
       flex: 1;
       align-items: center;
-      .left-title{
+      .left-title {
         display: flex;
         justify-content: space-between;
-        margin-bottom:20px;
+        margin-bottom: 20px;
       }
     }
     .first-right {
       width: 25%;
       margin-left: 20px;
       padding: 0 20px;
+      height: 640px;
+      overflow-y: scroll;
       // border: 1px solid red;
       .content-item {
         margin: 10px 0 20px 0;
@@ -202,7 +205,7 @@ export default {
       align-items: center;
       justify-content: space-between;
       padding: 5px 0;
-      margin-bottom:20px;
+      margin-bottom: 20px;
       .custom-fold {
         cursor: pointer;
         display: inline-block;

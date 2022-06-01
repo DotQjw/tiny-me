@@ -7,6 +7,13 @@ export function createCase(params) {
     data:params
   })
 }
+export function editCase(params) {
+  return request({
+    url: '/api/v1/patent/edit',
+    method: 'post',
+    data:params
+  })
+}
 
 export function getList(params) {
   return request({

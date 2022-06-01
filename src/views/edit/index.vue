@@ -167,6 +167,7 @@ export default {
           pendingDefect: data.pendingDefect,
         });
         this.createData = {
+          id:data.id,
           caseNo: data.caseNo,
           tianyuan: data.tianyuan,
           clientName: data.clientName,
@@ -179,7 +180,6 @@ export default {
           this.active = 1;
         }
         this.showDilag = true;
-        console.log("THIS", this.formData, this.formData.fixDefectMethod);
       });
     },
     saveData(data) {

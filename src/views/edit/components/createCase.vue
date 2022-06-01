@@ -1,42 +1,42 @@
 <template>
   <el-dialog
-    title="创建案件"
+    :title="title"
     :before-close="handleClose"
     center
     :visible.sync="show"
     :close-on-click-modal="false"
     width="480px"
   >
-    <el-form :model="form">
-      <el-form-item label="客户案号：">
+    <el-form :model="form" ref="form" label-width="100px" :rules="formRule">
+      <el-form-item label="客户案号：" prop="caseNo">
         <el-input
           v-model="form.caseNo"
           class="custom-input"
           autocomplete="off"
         ></el-input>
       </el-form-item>
-      <el-form-item label="天元案号：">
+      <el-form-item label="天元案号：" prop="tianyuan">
         <el-input
           v-model="form.tianyuan"
           class="custom-input"
           autocomplete="off"
         ></el-input>
       </el-form-item>
-      <el-form-item label="客户名称：">
+      <el-form-item label="客户名称：" prop="clientName">
         <el-input
           v-model="form.clientName"
           class="custom-input"
           autocomplete="off"
         ></el-input>
       </el-form-item>
-      <el-form-item label="提案名称：">
+      <el-form-item label="提案名称：" prop="proposalName">
         <el-input
           v-model="form.proposalName"
           class="custom-input"
           autocomplete="off"
         ></el-input>
       </el-form-item>
-      <el-form-item label="专利类型：">
+      <el-form-item label="专利类型：" prop="type">
         <el-radio v-model="form.type" :label="1">发明</el-radio>
         <el-radio v-model="form.type" :label="2">实用类型</el-radio>
       </el-form-item>
@@ -63,7 +63,7 @@
   </el-dialog>
 </template>
 <script>
-import { createCase, userSearch } from "@/api/table";
+import { createCase, userSearch, editCase } from "@/api/table";
 
 export default {
   props: {
@@ -71,15 +71,29 @@ export default {
       type: Boolean,
       default: false,
     },
-    createData:{
-      type:Object,
-      default:()=>{}
-    }
+    createData: {
+      type: Object,
+      default: () => {},
+    },
   },
   data() {
     return {
+      title: this.createData.id ? "编辑案件" : "创建案件",
       showMore: false,
-      form:this.createData
+      form: this.createData,
+      formRule: {
+        caseNo: [{ required: true, message: "请输入客户案号", change: "blur" }],
+        tianyuan: [
+          { required: true, message: "请输入天元案号", change: "blur" },
+        ],
+        clientName: [
+          { required: true, message: "请输入客户名称", change: "blur" },
+        ],
+        proposalName: [
+          { required: true, message: "请输入提案名称", change: "blur" },
+        ],
+        type1: [{ required: true, message: "请选择专利类型", change: "change" }],
+      },
       // form: {
       //   caseNo: "",
       //   tianyuan: "",
@@ -115,7 +129,7 @@ export default {
     handleSelect(item) {
       console.log(item);
       this.form.assistUserId = item.id;
-      this.form.assistUserName = item.username
+      this.form.assistUserName = item.username;
     },
     handleClose() {
       this.$emit("update:show", false);
@@ -125,18 +139,46 @@ export default {
       this.showMore = true;
     },
     submit() {
-      createCase(this.form).then((res) => {
-        if (res.code === 0) {
-          this.$message.success("新建成功");
-          this.$emit("updateId", res.data.id);
-          this.$emit("update:show", false);
-        } else {
-          this.$message.error("服务器有点忙，请重试");
+      this.$refs.form.validate((valid) => {
+        if (valid) {
+          if (this.form.id) {
+            this.edit();
+          } else {
+            this.create();
+          }
         }
-      }).catch(err=>{
-        console.log('err',err)
-        this.$message.error(err.message )
-      })
+      });
+    },
+    edit() {
+      editCase(this.form)
+        .then((res) => {
+          if (res.code === 0) {
+            this.$message.success("编辑成功");
+            this.$emit("update:show", false);
+          } else {
+            this.$message.error("服务器有点忙，请重试");
+          }
+        })
+        .catch((err) => {
+          console.log("err", err);
+          this.$message.error(err.message);
+        });
+    },
+    create() {
+      createCase(this.form)
+        .then((res) => {
+          if (res.code === 0) {
+            this.$message.success("新建成功");
+            this.$emit("updateId", res.data.id);
+            this.$emit("update:show", false);
+          } else {
+            this.$message.error("服务器有点忙，请重试");
+          }
+        })
+        .catch((err) => {
+          console.log("err", err);
+          this.$message.error(err.message);
+        });
     },
   },
 };

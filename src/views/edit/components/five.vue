@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <div class="page-top">
-      <div>权力要求书</div>
+      <div>权利要求书</div>
       <el-button type="primary" icon="el-icon-plus" @click="handleSingle"
         >添加独权</el-button
       >
@@ -11,7 +11,7 @@
         <el-table :data="claims" style="width: 100%; margin-toip: 20px">
           <el-table-column prop="realIndex" label="序号" width="100">
           </el-table-column>
-          <el-table-column prop="name" label="权力名称" width="280">
+          <el-table-column prop="name" label="权利名称" width="280">
             <template slot-scope="scope">
               <div>
                 <el-input
@@ -25,7 +25,7 @@
                   v-model="scope.row.name"
                 ></el-input>
                 <div v-else>
-                  <span>根据权力要求</span>
+                  <span>根据权利要求</span>
                   <el-input
                     @input="nameInputChange($event, scope.row)"
                     v-model="scope.row.name"
@@ -35,7 +35,7 @@
                 <el-button
                   icon="el-icon-plus"
                   style="margin-top: 10px"
-                  @click="handleChild(scope.row, scope.$index, treeData)"
+                  @click="handleChild(scope.row, scope.$index)"
                   >添加从权</el-button
                 >
               </div>
@@ -112,7 +112,7 @@
                 >
                   <el-button size="small" type="primary">点击上传</el-button>
                 </el-upload>
-                <div v-if="scope.row.attachments" style="margin-top:10px;">
+                <div v-if="scope.row.attachments" style="margin-top: 10px">
                   <span
                     v-for="(item, index) in scope.row.attachments"
                     :key="index"
@@ -159,6 +159,7 @@ export default {
     return {
       token: this.$store.getters.toke || getToken(),
       realIndex: 1,
+      ancestorName:null,
       treeData: [],
       claims: [],
       template: {
@@ -216,8 +217,8 @@ export default {
           // 子父孙三级相同， 说明是一个，直接push
           // if (item.no === item.ancestorNo) {
           console.log("三级相同");
-          if(!item.attachments){
-            item.attachments = []
+          if (!item.attachments) {
+            item.attachments = [];
           }
           this.treeData.push(item);
           // }
@@ -236,8 +237,8 @@ export default {
         if (curData.parentNo === child.no) {
           console.log("我找到爹了", curData.name, child.name, child);
           child.children = child.children ? child.children : [];
-          if(!curData.attachments){
-            curData.attachments= []
+          if (!curData.attachments) {
+            curData.attachments = [];
           }
           child.children.push(curData);
         } else if (child.children && child.children.length) {
@@ -296,19 +297,38 @@ export default {
     handleArrayData(data) {
       data.map((item) => {
         this.realIndex += 1;
-        this.claims.push(
-          Object.assign({}, item, { realIndex: this.realIndex, children: [] })
-        );
+        if (item.no === item.parentNo && item.no === item.ancestorNo) {
+          this.ancestorName = this.realIndex;
+          this.claims.push(
+            Object.assign({}, item, { realIndex: this.realIndex, children: [] })
+          );
+          console.log('【重置ancestorName】',item,this.ancestorName)
+        } else {
+          console.log('【我走这里】',item,this.ancestorName)
+          // 子孙级的变化就是name变成了 父级的realINdex
+          this.claims.push(
+            Object.assign({}, item, {
+              realIndex: this.realIndex,
+              name:this.ancestorName,
+              children: [],
+            })
+          );
+        }
         if (item.children && item.children.length > 0) {
           this.handleArrayData(item.children);
         }
       });
-      console.log("claims", this.claims);
     },
-    handleChild(item, itemIndex, data) {
+    handleChild(item, itemIndex) {
+      const obj = this.claims.find((v) => v.no === item.no);
+      console.log("obj", obj);
       var template = cloneDeep(this.template);
+      this.handlePushChildData(item, itemIndex, this.treeData);
+    },
+    handlePushChildData(item, itemIndex, data) {
       //找到这个东西
       // 这里也要递归
+      var template = cloneDeep(this.template);
       data.forEach((child, index) => {
         if (child.no === item.no) {
           console.log("找到啦", child);
@@ -322,13 +342,14 @@ export default {
             })
           );
         } else if (child.children) {
-          this.handleChild(item, itemIndex, child.children);
+          this.handlePushChildData(item, itemIndex, child.children);
         }
       });
       console.log("tree", this.treeData);
       this.claims = [];
       this.realIndex = 0;
       this.handleArrayData(this.treeData);
+        console.log("claims", this.claims);
     },
     handleSingle() {
       var template = cloneDeep(this.template);

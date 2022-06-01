@@ -131,8 +131,7 @@ export default {
           this.recordTime = 0;
           this.timer = setInterval(() => {
             this.recordTime++;
-            console.log(' this.recordTime', this.recordTime,this.recordTime == 600 , this.fisrtTips)
-            if (this.recordTime == 10 && this.fisrtTips){
+            if (this.recordTime == 600 && this.fisrtTips){
               this.fisrtTips = false;
               this.$notify({
                 title: "提示",
