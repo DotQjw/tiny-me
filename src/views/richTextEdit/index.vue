@@ -25,7 +25,11 @@
               >查看技术交底</el-button
             >
           </div>
-          <editor selectorId="edit1" :defaultValue="allContent" />
+          <editor
+            v-if="allContent"
+            selectorId="edit1"
+            :defaultValue="allContent"
+          />
         </div>
         <div class="first-right" v-if="showTechList">
           <div class="first-right-title">
@@ -111,13 +115,28 @@ export default {
   components: { Editor },
   data() {
     return {
+      number: [
+        { number: "1", label: "一" },
+        { number: "2", label: "二" },
+        { number: "3", label: "三" },
+        { number: "4", label: "四" },
+        { number: "5", label: "五" },
+        { number: "6", label: "三" },
+        { number: "7", label: "一" },
+        { number: "8", label: "二" },
+        { number: "9", label: "三" },
+      ],
       showTechList: false,
       detailData: {},
       toolList: ["攥写", "摘要", "附图", "预览"],
       currentTool: 0,
       showMainEdit: false,
-      allContent:
-        '<h1 class="custom" style="text-align: center;">权 利 要 求 书</h1><hr style="border: 1px solid #000; background: #000;" size="1px" width="90%"><p>&nbsp;</p><p style="padding-left: 40px; line-height: 1.5;">1. (7.1),其特征在于（7.1.a）</p><p style="padding-left: 40px; line-height: 1.5;">2. (7.1.1),其特征在于（7.1.1.a）</p><p style="padding-left: 40px; line-height: 1.5;">3. (7.1.1.1),其特征在于（7.1.1.a）</p><p style="padding-left: 40px; line-height: 1.5;">4. (8.1),其特征在于（8.1.a）</p>',
+      allContent: "",
+      allContentTemp: `<h1 class="custom" style="text-align: center;">权 利 要 求 书</h1><hr style="border: 1px solid #000; background: #000;" size="1px" width="90%">
+        <p>&nbsp;</p>
+        <p >single</p>
+        <h1 class="custom" style="text-align: center;">说 明 书</h1><hr style="border: 1px solid #000; background: #000;" size="1px" width="90%">
+        `,
       mainContent:
         '<h1 class="custom" style="text-align: center;">说 明 书 摘 要</h1><hr width="90%" size="1px" style="border:1px solid #000;background:#000" /',
     };
@@ -126,6 +145,7 @@ export default {
     if (this.$route.query.id) {
       console.log("获取数据");
       this.getDetail(this.$route.query.id);
+      // this.allContent = this.allContent.replace(/(7.1)/,"")
     } else {
       this.$$message.warning("缺少必需参数");
     }
@@ -135,7 +155,53 @@ export default {
       patentDetail({ id }).then((res) => {
         console.log("res", res);
         this.detailData = res.data;
+        this.claim = res.data.claim;
+        this.handleClaim(res.data.claim);
       });
+    },
+    handleClaim(data) {
+      console.log("claim", data);
+      let name,
+        childName,
+        childKernel,
+        kernel,
+        str = "",
+        childStr;
+      data.forEach((item) => {
+        if (item.no === item.parentNo && item.no === item.ancestorNo) {
+          // 独权
+          name = item.name;
+          if (item.claimContent) {
+            item.claimContent.forEach((childItem) => {
+              kernel = kernel
+                ? kernel + "," + childItem.kernel
+                : childItem.kernel;
+            });
+            str += `${name}其特征在于${kernel}`;
+          }
+        } else {
+          //从权
+          console.log("item", item);
+          childName = this.changeNumToHan(+item.name);
+          if (item.claimContent) {
+            item.claimContent.forEach((childItem) => {
+              childKernel = childKernel
+                ? childKernel + "," + childItem.kernel
+                : childItem.kernel;
+            });
+            str += `<p>根据权利要求${childName}所述的${name},其特征在于${childKernel}</p>`;
+            childKernel = null;
+          }
+          console.log("childKernel", childKernel);
+        }
+      });
+      console.log("str", str);
+      // console.log("str", str, this.allContentTemp);
+      let content;
+      content = this.allContentTemp.replace(/single/, str);
+      // content = content.replace(/inner/, childStr);
+      this.allContent = content;
+      // console.log("all", this.allContent);
     },
     handleTool(index) {
       this.currentTool = index;
@@ -144,6 +210,45 @@ export default {
     },
     handleMainEdit() {
       this.showMainEdit = true;
+    },
+    changeNumToHan(num) {
+      var arr1 = ["零", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
+      var arr2 = [
+        "",
+        "十",
+        "百",
+        "千",
+        "万",
+        "十",
+        "百",
+        "千",
+        "亿",
+        "十",
+        "百",
+        "千",
+        "万",
+        "十",
+        "百",
+        "千",
+        "亿",
+      ];
+      if (!num || isNaN(num)) return "零";
+      var english = num.toString().split("");
+      var result = "";
+      for (var i = 0; i < english.length; i++) {
+        var des_i = english.length - 1 - i; // 倒序排列设值
+        result = arr2[i] + result;
+        var arr1_index = english[des_i];
+        result = arr1[arr1_index] + result;
+      }
+      result = result.replace(/零(千|百|十)/g, "零").replace(/十零/g, "十"); // 将【零千、零百】换成【零】 【十零】换成【十】
+      result = result.replace(/零+/g, "零"); // 合并中间多个零为一个零
+      result = result.replace(/零亿/g, "亿").replace(/零万/g, "万"); // 将【零亿】换成【亿】【零万】换成【万】
+      result = result.replace(/亿万/g, "亿"); // 将【亿万】换成【亿】
+      result = result.replace(/零+$/, ""); // 移除末尾的零
+      // 将【一十】换成【十】
+      result = result.replace(/^一十/g, "十");
+      return result;
     },
   },
 };
