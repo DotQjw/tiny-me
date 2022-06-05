@@ -28,6 +28,7 @@
           <editor
             v-if="allContent"
             selectorId="edit1"
+            @updateRichText="updateRichText"
             :defaultValue="allContent"
           />
         </div>
@@ -72,8 +73,86 @@
 
       <div>
         <hr style="color: grey" />
-        <h4>附图标记</h4>
+        <div class="patent-name-box">
+          <div class="patent-name-title">专利名称</div>
+          <el-button @click="updatePatentName()">添加标记至文档</el-button>
+        </div>
+        <el-input
+          style="max-width: 300px"
+          placeholder="请输入专利名称"
+          v-model="patentName"
+        ></el-input>
       </div>
+    </div>
+    <div id="imgmark">
+      <div class="custom-title">附图标记</div>
+      <div class="custom-tips" v-if="imgMarkList.length === 0">
+        你还没有添加任何附图标记
+      </div>
+      <el-tree
+        v-else
+        style="margin-bottom: 20px"
+        :data="imgMarkList"
+        :props="defaultProps"
+        :expand-on-click-node="false"
+        :default-expand-all="true"
+      >
+        <span class="custom-tree-node" slot-scope="{ node, data }">
+          <div class="custom-tree-row">
+            <span v-if="data.id != 1" @click="treeEdit(node, data, 'name')">{{
+              data.name
+            }}</span>
+            <el-input
+              v-if="data.id == 1"
+              ref="input"
+              size="mini"
+              @blur="() => submitEdit(node, data, 'name')"
+              v-model="labelValue"
+              style="max-width: 100px"
+            ></el-input>
+            <span
+              v-if="data.parentId != 1"
+              style="margin-left: 10px; color: gray"
+              >{{ data.number }}</span
+            >
+            <el-input
+              v-if="data.parentId == 1"
+              ref="input"
+              size="mini"
+              @blur="() => submitEdit(node, data, 'num')"
+              v-model="labelValue"
+              style="max-width: 100px"
+            ></el-input>
+            <span style="margin-left: 20px">
+              <el-button
+                type="text"
+                size="mini"
+                @click="treeEdit(node, data, 'num')"
+              >
+                添加编号
+              </el-button>
+              <el-button
+                type="text"
+                size="mini"
+                @click="() => handleAppendChild(node, data)"
+              >
+                添加子集
+              </el-button>
+              <el-button
+                type="text"
+                size="mini"
+                @click="() => remove(node, data)"
+              >
+                删除
+              </el-button>
+            </span>
+          </div>
+        </span>
+      </el-tree>
+      <span class="addimg" @click="handleImgMark">添加附图标记</span>
+      <!-- <el-button v-if="!showMainEdit" @click="handleMainEdit" type="primary"
+        >生成摘要</el-button
+      > -->
     </div>
     <div id="box2">
       <div class="custom-title">摘要</div>
@@ -84,7 +163,11 @@
         >生成摘要</el-button
       >
       <div v-show="showMainEdit" class="main-edit">
-        <editor selectorId="mainEdit" :defaultValue="mainContent" />
+        <editor
+          ref="mainEdit"
+          selectorId="mainEdit"
+          :defaultValue="mainContent"
+        />
       </div>
     </div>
     <div id="box3">
@@ -94,9 +177,9 @@
     </div>
 
     <div class="bottom-btn">
-      <el-button type="primary">提 交</el-button>
-      <el-button type="success">预 览</el-button>
-      <el-button type="warning">保 存</el-button>
+      <el-button type="primary" @click="handleSave('submit')">提 交</el-button>
+      <el-button type="success" @click="handlePreview()">预 览</el-button>
+      <el-button type="warning" @click="handleSave('save')">保 存</el-button>
     </div>
   </div>
 </template>
@@ -104,38 +187,50 @@
 import Editor from "@/components/Editor/index";
 import {
   patentDetail,
-  implementPlan,
-  techArea,
-  saveTechbg,
-  planOutline,
-  saveClaim,
-  submit,
+  editDescription,
+  download_description,
 } from "@/api/table";
 export default {
   components: { Editor },
   data() {
     return {
-      number: [
-        { number: "1", label: "一" },
-        { number: "2", label: "二" },
-        { number: "3", label: "三" },
-        { number: "4", label: "四" },
-        { number: "5", label: "五" },
-        { number: "6", label: "三" },
-        { number: "7", label: "一" },
-        { number: "8", label: "二" },
-        { number: "9", label: "三" },
-      ],
+      labelValue: "",
+      imgMarkList: [],
+      oldPatentName: "专利名称",
+      defaultProps: {
+        children: "children",
+        label: "label",
+      },
+      typeLabel: "", //类型。1.发明 2。实用类型
+      patentName: "", //专利名称
       showTechList: false,
       detailData: {},
       toolList: ["攥写", "摘要", "附图", "预览"],
       currentTool: 0,
       showMainEdit: false,
       allContent: "",
-      allContentTemp: `<h1 class="custom" style="text-align: center;">权 利 要 求 书</h1><hr style="border: 1px solid #000; background: #000;" size="1px" width="90%">
+      allContentTemp: `<h1 class="custom" style="text-align: center;">权  利  要  求  书</h1>
+      <hr style="border: 1px solid #000; background: #000;" size="0" width="100%">
         <p>&nbsp;</p>
         <p >single</p>
-        <h1 class="custom" style="text-align: center;">说 明 书</h1><hr style="border: 1px solid #000; background: #000;" size="1px" width="90%">
+         <hr style="border: 1px solid #000; background: #000;" size="1px" width="100%">
+        <h1 class="custom" style="text-align: center;">说 明 书</h1>
+        <hr style="border: 1px solid #000; background: #000;" size="1px" width="100%">
+        <h3 style="text-align: center;"><strong>patentName1</strong></h3>
+        <p><span style="text-decoration: underline;">技术领域</span></p>
+        <p>本typeLabel1属于techArea1技术领域，尤其涉及patentName1</p>
+        <p><span style="text-decoration: underline;">背景技术</span></p>
+        domainText
+        painPointText
+        currentSolutionText
+        pendingDefectText
+        patentContent
+        <p><span style="text-decoration: underline;">具体实施方式</span></p>
+        methodDesc
+        ideaText
+        methodWay
+        endText
+        <img  src="https://gimg3.baidu.com/search/src=http%3A%2F%2Fpics7.baidu.com%2Ffeed%2F574e9258d109b3de3fe758f6c67c1c8b810a4c25.jpeg%3Ftoken%3Ddbeb206c9eb518adbf9fcd7314cda629&refer=http%3A%2F%2Fwww.baidu.com&app=2021&size=f360,240&n=0&g=0n&q=75&fmt=auto?sec=1654534800&t=7b2f834a06a0921acd9c1d1fecbe8167" />
         `,
       mainContent:
         '<h1 class="custom" style="text-align: center;">说 明 书 摘 要</h1><hr width="90%" size="1px" style="border:1px solid #000;background:#000" /',
@@ -147,27 +242,56 @@ export default {
       this.getDetail(this.$route.query.id);
       // this.allContent = this.allContent.replace(/(7.1)/,"")
     } else {
-      this.$$message.warning("缺少必需参数");
+      this.$message.warning("缺少必需参数");
     }
   },
   methods: {
+    updateRichText(data) {
+      console.log("我更新啦", data);
+      this.allContent = data;
+    },
     getDetail(id) {
       patentDetail({ id }).then((res) => {
         console.log("res", res);
         this.detailData = res.data;
         this.claim = res.data.claim;
-        this.handleClaim(res.data.claim);
+        this.typeLabel = res.data.type === "1" ? "发明" : "实用类型";
+        this.patentName = res.data.patentName;
+        this.imgMarkList = res.data.drawingReferences;
+        if (res.data.description) {
+          // console.log('进来了吗')
+          this.allContent = res.data.description;
+          return;
+        }
+        console.log("还会进来吗？");
+        // 处理独权从权
+        this.handleClaim(res.data);
+        this.addToRich("edit");
       });
     },
-    handleClaim(data) {
-      console.log("claim", data);
+    handleClaim(detail) {
+      console.log("detail", detail);
       let name,
         childName,
         childKernel,
         kernel,
+        note,
+        typeLabel = this.typeLabel,
         str = "",
-        childStr;
-      data.forEach((item) => {
+        index = 0,
+        goodEffect = "",
+        // 独权的顺序
+        singleIndex = 0,
+        methodStr = "",
+        patentContentBox = "",
+        patentContent = `<p>${typeLabel}内容</p>
+        <p>&#x3000;&#x3000;本${typeLabel}提供${detail.claim[0].name},旨在解决${detail.pendingDefect?.text}的问题</p>`;
+      detail.claim.forEach((item, dataIndex) => {
+        if (item.goodEffect) {
+          goodEffect = goodEffect
+            ? goodEffect + "," + item.goodEffect
+            : item.goodEffect;
+        }
         if (item.no === item.parentNo && item.no === item.ancestorNo) {
           // 独权
           name = item.name;
@@ -176,8 +300,29 @@ export default {
               kernel = kernel
                 ? kernel + "," + childItem.kernel
                 : childItem.kernel;
+              note = note ? note + "," + childItem.note : childItem.note;
             });
-            str += `${name}其特征在于${kernel}`;
+            index += 1;
+            singleIndex += 1;
+            let indexToHan = this.changeNumToHan(dataIndex + 1);
+            let singleIndexToHan = this.changeNumToHan(singleIndex);
+            let nameStr = `实施例${indexToHan}`;
+            methodStr += `<p>${nameStr}</p>`;
+            methodStr += `<p>本${nameStr},提供${name},${kernel}</p>`;
+            methodStr += `<p>${item.goodEffect}</p>`;
+            methodStr += `<p>${note}</p>`;
+            methodStr += `<p>${detail.fixDefectMethod.text}</p>`;
+
+            if (patentContentBox) {
+              //在下一个独权之前，数据拼接走， 把str清空
+              patentContent += patentContentBox;
+              patentContentBox = "";
+            }
+            patentContentBox += `<p>第${singleIndexToHan}方面，本${typeLabel}提供的是${name},${kernel}</p>`;
+
+            str += `<p>${index}. ${name}其特征在于${kernel}</p>`;
+            kernel = "";
+            note = "";
           }
         } else {
           //从权
@@ -188,28 +333,157 @@ export default {
               childKernel = childKernel
                 ? childKernel + "," + childItem.kernel
                 : childItem.kernel;
+              note = note ? note + "," + childItem.note : childItem.note;
             });
-            str += `<p>根据权利要求${childName}所述的${name},其特征在于${childKernel}</p>`;
-            childKernel = null;
+            let noStr = `实施例` + this.changeNumToHan(dataIndex + 1);
+            methodStr += `<p>${noStr}</p>`;
+            methodStr += `<p>在实施例${childName}的基础上,本${noStr}的${childKernel}</p>`;
+            methodStr += `<p>${item.goodEffect}</p>`;
+            methodStr += `<p>${note}</p>`;
+            methodStr += `<p>${detail.fixDefectMethod.text}</p>`;
+
+            patentContentBox += `<p>可选地，${childKernel}</p>`;
+
+            index += 1;
+            str += `<p>${index}. 根据权利要求${childName}所述的${name},其特征在于${childKernel}</p>`;
+            childKernel = "";
+            note = "";
           }
           console.log("childKernel", childKernel);
         }
       });
-      console.log("str", str);
+      // console.log("str", str);
+      console.log("methodStr", methodStr);
       // console.log("str", str, this.allContentTemp);
       let content;
+      //把有益效果插入在patentContent的最后面
+      patentContent += `<p>${goodEffect}</p>`;
       content = this.allContentTemp.replace(/single/, str);
+      content = content.replace(/patentContent/, patentContent);
+      content = content.replace(/methodWay/, methodStr);
       // content = content.replace(/inner/, childStr);
+      console.log("content", content);
       this.allContent = content;
       // console.log("all", this.allContent);
     },
     handleTool(index) {
       this.currentTool = index;
-      console.log("#", `#box${index}`);
+      if (index === 3) {
+        return;
+      }
       this.$el.querySelector(`#box${index + 1}`).scrollIntoView();
     },
     handleMainEdit() {
       this.showMainEdit = true;
+    },
+    addToRich(type) {
+      // 有一个问题。这里找不到他的替换标识了，被编辑的问题所覆盖。要想个解决方案。
+      var content = this.allContent;
+      this.allContent = "";
+      const typeLabel = this.typeLabel;
+      const patentName = this.patentName;
+      const oldPatentName = this.oldPatentName;
+      console.log("patentName", this.patentName);
+      const domainText = this.detailData?.domain.text,
+        techAreaText = this.detailData.techArea,
+        painPointText = this.detailData?.painPoint.text,
+        currentSolutionText = this.detailData?.currentSolution.text,
+        pendingDefectText = this.detailData?.pendingDefect.text,
+        ideaText = this.detailData?.idea.text,
+        endText = `以上仅为本${typeLabel}的较佳实施例而已，并不用以限制本${typeLabel}，凡在本${typeLabel}的精神和原则之内所作的任何修改、等同替换和改进等，均应包含在本${typeLabel}的保护范围之内。`,
+        methodDesc = `为了使本${typeLabel}的目的、
+            技术方案及优点更加清楚明白，以下结合附图及实施例，对本
+            ${typeLabel}进行进一步详细说明。应当理解，此处所描述的具体实施例仅仅用以解释本${typeLabel}，并不用于限定本${typeLabel}。
+            `;
+      let typeLabel1 = type === "edit" ? "typeLabel1" : typeLabel;
+      let typeLabel1Exp = new RegExp(typeLabel1);
+      content = content.replace(typeLabel1Exp, `${typeLabel}`);
+      let techArea1 = type === "edit" ? "techArea1" : techAreaText;
+      let techArea1Exp = new RegExp(techArea1);
+      content = content.replace(techArea1Exp, `${techAreaText}`);
+      let patentName1 = "patentName1";
+      let patentName1Exp = new RegExp(patentName1, "g");
+      content = content.replace(patentName1Exp, patentName);
+      this.oldPatentName = patentName;
+      content = content.replace(
+        /domainText/,
+        `<p style="padding-left:40px">${domainText}</p>`
+      );
+      content = content.replace(
+        /painPointText/,
+        `<p style="padding-left:40px">${painPointText}</p>`
+      );
+      content = content.replace(
+        /currentSolutionText/,
+        `<p style="padding-left:40px">${currentSolutionText}</p>`
+      );
+      content = content.replace(
+        /pendingDefectText/,
+        `<p style="padding-left:40px">${pendingDefectText}</p>`
+      );
+      // 实现方案
+      content = content.replace(/methodDesc/, `<p>${methodDesc}</p>`);
+      // 方案概述
+      content = content.replace(/ideaText/, `<p>${ideaText}</p>`);
+      content = content.replace(/endText/, `<p>${endText}</p>`);
+      this.$nextTick(() => {
+        this.allContent = content;
+        // console.log("this.allContent", this.allContent);
+      });
+    },
+    updatePatentName() {
+      const params = {
+        id: this.detailData.id,
+        patentName: this.patentName,
+        description: this.allContent,
+      };
+      editDescription(params)
+        .then((res) => {
+          this.getDetail(this.detailData.id);
+        })
+        .catch((err) => {
+          this.$message.error(err.message || "服务器繁忙，请稍后重试");
+        });
+    },
+    handleSave(type) {
+      const params = {
+        id: this.detailData.id,
+        patentName: this.patentName,
+        description: this.allContent,
+        drawingReferences: this.imgMarkList,
+      };
+      editDescription(params)
+        .then((res) => {
+          this.$message.success("保存成功");
+          this.getDetail(this.detailData.id);
+        })
+        .catch((err) => {
+          this.$message.error(err.message || "服务器繁忙，请稍后重试");
+        });
+    },
+    handleImgMark() {
+      this.imgMarkList.push({
+        name: "新建",
+        id: 0,
+        number: "",
+        parentId: 0,
+        children: [],
+      });
+      console.log("this", this.imgMarkList);
+    },
+    handleAppendChild(node, data) {
+      console.log("node,data", node, data);
+      data.children.push({
+        name: "子集",
+        id: 0,
+        number: "",
+        parentId: 0,
+        children: [],
+      });
+      console.log("this", this.imgMarkList);
+    },
+    handleparentId(data) {
+      console.log({ data });
     },
     changeNumToHan(num) {
       var arr1 = ["零", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
@@ -250,10 +524,85 @@ export default {
       result = result.replace(/^一十/g, "十");
       return result;
     },
+    handlePreview() {
+      // type:1pdf 2docx
+      const params = {
+        id: this.detailData.id,
+        type: 1,
+      };
+      const params2 = {
+        id: this.detailData.id,
+        type: 2,
+      };
+      // download_description(params).then((blob) => {
+      //   this.download(blob,'1.pdf');
+      // });
+      download_description(params2).then((blob) => {
+        this.download(blob, "2.docx");
+      });
+    },
+    treeEdit(node, data, type) {
+      this.labelValue = "";
+      if (type === "name") {
+        this.$set(data, "id", 1);
+        this.labelValue = data.name;
+        this.$nextTick(() => {
+          console.log("this.$refs.input", this.$refs, data);
+          this.$refs.input.focus();
+        });
+      } else {
+        this.$set(data, "parentId", 1);
+        this.labelValue = data.number;
+        this.$nextTick(() => {
+          this.$refs.input.focus();
+        });
+      }
+    },
+    submitEdit(node, data, type) {
+      if (type === "name") {
+        console.log("name点击了保存按钮");
+        if (data.name == this.labelValue) {
+          console.log("没有修改");
+          this.labelValue = "";
+          this.$set(data, "id", 0);
+        } else {
+          this.$set(data, "name", this.labelValue);
+          this.$set(data, "id", 0);
+          console.log("data", data);
+          this.labelValue = "";
+        }
+      } else {
+        console.log("num点击了保存按钮");
+        if (data.number == this.labelValue) {
+          console.log("没有修改");
+          this.labelValue = "";
+          this.$set(data, "parentId", 0);
+        } else {
+          this.$set(data, "number", this.labelValue);
+          this.labelValue = "";
+          this.$set(data, "parentId", 0);
+        }
+      }
+    },
+    download(content, fileName) {
+      // const blob = new Blob([content],{type:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
+      // const blob = new Blob([content],{type:"application/msword"})
+      const blob = new Blob([content], { type: "application" });
+      const a = document.createElement("a");
+      const url = window.URL.createObjectURL(blob);
+      const filename = fileName;
+      a.href = url;
+      a.download = filename;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    },
   },
 };
 </script>
 <style lang="scss" scoped>
+::v-deep .el-tree-node .el-tree-node__content {
+  height: 40px;
+}
 .page {
   margin: 0 10px;
   .custom-title {
@@ -322,6 +671,13 @@ export default {
     }
   }
 }
+#imgmark {
+  margin-top: 20px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: -2px 2px 100px gainsboro;
+  padding: 30px;
+}
 #box2 {
   margin-top: 20px;
   border-radius: 8px;
@@ -335,12 +691,12 @@ export default {
   background: #fff;
   box-shadow: -2px 2px 100px gainsboro;
   padding: 30px;
-  .addimg {
-    background: gainsboro;
-    padding: 5px 8px;
-  }
 }
-
+.addimg {
+  cursor: pointer;
+  background: #f2f3f5;
+  padding: 5px 12px;
+}
 .left-tool {
   cursor: pointer;
   position: fixed;
@@ -370,5 +726,25 @@ export default {
 .main-edit {
   width: 100%;
   // height: 500px;
+}
+.patent-name-box {
+  display: flex;
+  margin-top: 20px;
+  justify-content: space-around;
+  align-self: center;
+  .patent-name-title {
+    flex: 1;
+  }
+}
+.custom-tree-node {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  padding-right: 8px;
+  .custom-tree-row {
+    // margin:20px 0;
+  }
 }
 </style>

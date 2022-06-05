@@ -112,6 +112,13 @@
                 >
                   <el-button size="small" type="primary">点击上传</el-button>
                 </el-upload>
+
+                <el-input
+                  type="textarea"
+                  rows="1"
+                   @input="inputChange"
+                  v-model="scope.row.goodEffect"
+                ></el-input>
                 <div v-if="scope.row.attachments" style="margin-top: 10px">
                   <span
                     v-for="(item, index) in scope.row.attachments"
@@ -159,7 +166,7 @@ export default {
     return {
       token: this.$store.getters.toke || getToken(),
       realIndex: 1,
-      ancestorName:null,
+      ancestorName: null,
       treeData: [],
       claims: [],
       template: {
@@ -168,6 +175,7 @@ export default {
         parentNo: 1,
         ancestorNo: 1,
         name: "独权1",
+        goodEffect: "",
         claimContent: [
           {
             kernel: "", //内核
@@ -282,6 +290,7 @@ export default {
       console.log("回填数据", value, row);
       // this.treeData
       this.fillTreeData(value, row, this.treeData);
+      this.inputChange();
     },
     fillTreeData(value, row, originData) {
       originData.forEach((item) => {
@@ -302,17 +311,19 @@ export default {
           this.claims.push(
             Object.assign({}, item, { realIndex: this.realIndex, children: [] })
           );
-          console.log('【重置ancestorName】',item,this.ancestorName)
+          console.log("【重置ancestorName】", item, this.ancestorName);
         } else {
-          console.log('【我走这里】',item,this.ancestorName)
+          console.log("【我走这里】", item, this.ancestorName);
           // 子孙级的变化就是name变成了 父级的realINdex
-          this.claims.push(
-            Object.assign({}, item, {
-              realIndex: this.realIndex,
-              name:this.ancestorName,
-              children: [],
-            })
-          );
+          // 如果name有值就不变化
+          let obj = {
+            realIndex: this.realIndex,
+            children: [],
+          };
+          if (!item.name) {
+            obj.name = this.ancestorName + "";
+          }
+          this.claims.push(Object.assign({}, item, obj));
         }
         if (item.children && item.children.length > 0) {
           this.handleArrayData(item.children);
@@ -338,7 +349,7 @@ export default {
               no: this.claims.length + 1,
               parentNo: item.no,
               ancestorNo: item.ancestorNo,
-              name: item.ancestorNo + "",
+              name: String(item.ancestorNo),
             })
           );
         } else if (child.children) {
@@ -349,7 +360,7 @@ export default {
       this.claims = [];
       this.realIndex = 0;
       this.handleArrayData(this.treeData);
-        console.log("claims", this.claims);
+      console.log("claims", this.claims);
     },
     handleSingle() {
       var template = cloneDeep(this.template);

@@ -153,7 +153,7 @@ export default {
       editCase(this.form)
         .then((res) => {
           if (res.code === 0) {
-            this.$message.success("编辑成功");
+            // this.$message.success("编辑成功");
             this.$emit("update:show", false);
           } else {
             this.$message.error("服务器有点忙，请重试");

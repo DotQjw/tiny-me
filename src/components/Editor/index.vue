@@ -56,16 +56,9 @@ export default {
   },
   watch: {
     myValue(n, o) {
-      console.log('n',n)
-      // this.$nextTick(() => {
-      //   this.getData(n);
-      // });
-      if (n.includes("color")) {
-        // console.log("in");
-        // n = n.replace(/color/g, "");
-        // this.setData(n);
-        // console.log("n", n);
-      }
+      // console.log('n',n)
+      this.$emit('updateRichText',n)
+
     },
   },
   data() {
@@ -150,18 +143,18 @@ export default {
           // 将回车键改为 shift+回车
           editor.on("keydown", function (event) {
             console.log("evemt", event);
-            if (event.keyCode === 13) {
-              console.log("editor.selection.getNode()", editor);
-              if (editor.dom.hasClass(editor.selection.getNode(), "custom")) {
-                editor.dom.removeClass(editor.selection.getNode(), "custom");
-                console.log("进来");
-                // editor.selection.setContent("<p>&nbsp;</p>");
-                return false;
-              } else {
-                console.log("DAOZHELI L");
-                return true;
-              }
-            }
+            // if (event.keyCode === 13) {
+            //   console.log("editor.selection.getNode()", editor);
+            //   if (editor.dom.hasClass(editor.selection.getNode(), "custom")) {
+            //     editor.dom.removeClass(editor.selection.getNode(), "custom");
+            //     console.log("进来");
+            //     // editor.selection.setContent("<p>&nbsp;</p>");
+            //     return false;
+            //   } else {
+            //     console.log("DAOZHELI L");
+            //     return true;
+            //   }
+            // }
           });
         },
       },

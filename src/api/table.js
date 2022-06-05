@@ -88,3 +88,19 @@ export function userSearch(params) {
     params
   })
 }
+
+export function editDescription(params) {
+  return request({
+    url: '/api/v1/patent/edit_description',
+    method: 'POST',
+    data:params
+  })
+}
+export function download_description(params) {
+  return request({
+    url: '/api/v1/patent/download_description',
+    method: 'POST',
+    data:params,
+    responseType:'blob'
+  })
+}
