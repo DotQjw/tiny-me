@@ -47,6 +47,8 @@
 </template>
 <script>
 import { audioToText } from "@/api/table";
+import {baseUrl} from "@/utils/baseUrl"
+
 export default {
   props: {
     recordList: {
@@ -71,7 +73,7 @@ export default {
       copyText: "",
       activeName: "1",
       audioSrc: "",
-      baseUrl: "https://x-patent.oss-cn-shenzhen.aliyuncs.com/",
+      baseUrl: baseUrl(),
     };
   },
   created() {

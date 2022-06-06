@@ -54,6 +54,7 @@
 import Recorder from "js-audio-recorder";
 import lamejs from "lamejs";
 import { uploadAudio } from "@/api/upload";
+import { baseUrl } from "@/utils/baseUrl";
 export default {
   props: {
     type: {
@@ -106,8 +107,8 @@ export default {
       // compiling: false,(0.x版本中生效,1.x增加中)  // 是否边录边转换，默认是false
     });
   },
-  beforeDestroy(){
-      clearInterval(this.timer);
+  beforeDestroy() {
+    clearInterval(this.timer);
   },
   methods: {
     beforeRemove(file) {},
@@ -131,13 +132,13 @@ export default {
           this.recordTime = 0;
           this.timer = setInterval(() => {
             this.recordTime++;
-            if (this.recordTime == 600 && this.fisrtTips){
+            if (this.recordTime == 600 && this.fisrtTips) {
               this.fisrtTips = false;
               this.$notify({
                 title: "提示",
                 message: "您已录制时间超过10分钟",
                 type: "warning",
-                duration:0
+                duration: 0,
               });
             }
           }, 1000);
@@ -166,8 +167,7 @@ export default {
       uploadAudio(data)
         .then((res) => {
           console.log("res", res);
-          this.src =
-            "https://x-patent.oss-cn-shenzhen.aliyuncs.com/" + res.data.url;
+          this.src = baseUrl() + res.data.url;
           this.$message.success("录音上传成功");
           this.btnLoading = false;
           this.recordType = "ready";

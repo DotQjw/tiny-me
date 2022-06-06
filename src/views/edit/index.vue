@@ -57,7 +57,6 @@ import {
   saveTechbg,
   planOutline,
   saveClaim,
-  submit,
 } from "@/api/table";
 
 export default {

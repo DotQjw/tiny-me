@@ -28,7 +28,7 @@
       <el-table-column prop="status" align="center" label="状态">
         <template slot-scope="scope">
           <div>
-            {{ formatStatus(scope.row.status) }}
+            {{ formatStatus(scope.row) }}
           </div>
         </template>
       </el-table-column>
@@ -66,13 +66,13 @@
             >
           </span>
           <span v-if="role === 1 ">
-            <!-- <el-button
+            <el-button
               @click="handleCheck(scope.row)"
-              disabled
+              v-if="scope.row.reviewStatus === 1"
               type="text"
               size="small"
               >审核</el-button
-            > -->
+            >
             <el-button @click="handleEdit(scope.row)" type="text" size="small"
               >编辑</el-button
             >
@@ -121,8 +121,9 @@ export default {
     this.fetchData();
   },
   methods: {
-    formatStatus(status) {
-      return this.statusList.find((v) => v.value === status).label;
+    formatStatus(row) {
+      // if(row.status === 1 && row.reviewStatus  === 1) return '审核中'
+      return this.statusList.find((v) => v.value === row.status).label;
     },
     fetchData() {
       const param = {
@@ -142,6 +143,7 @@ export default {
     },
     handleCheck(row) {
       console.log("check", row);
+      this.$router.push({ path: "/data-review", query: { id: row.id } });
     },
     handleEdit(row) {
       console.log("edit", row);

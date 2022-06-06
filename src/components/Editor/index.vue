@@ -1,6 +1,11 @@
 <template>
   <div>
-    <editor :id="selectorId" v-model="myValue" :init="init" :disabled="disabled">
+    <editor
+      :id="selectorId"
+      v-model="myValue"
+      :init="init"
+      :disabled="disabled"
+    >
     </editor>
   </div>
 </template>
@@ -17,6 +22,7 @@ import "tinymce/plugins/code";
 import "tinymce/plugins/table";
 import "tinymce/plugins/lists";
 import "tinymce/plugins/wordcount";
+
 // import "tinymce/themes/mobile/theme";
 // import "tinymce/plugins/colorpicker";
 // import "tinymce/plugins/textcolor";
@@ -29,9 +35,9 @@ export default {
     Editor,
   },
   props: {
-    selectorId:{
-      type:String,
-      defaults:""
+    selectorId: {
+      type: String,
+      defaults: "",
     },
     //传入一个value，使组件支持v-model绑定
     defaultValue: {
@@ -44,23 +50,17 @@ export default {
     },
     plugins: {
       type: [String, Array],
-      default: "",
+      default: "lists image table wordcount  code",
       // "lists image table wordcount  code", //插件
     },
     toolbar: {
       type: [String, Array],
       //菜单
       // default: "undo redo",
-      // "undo redo | formatselect | bold italic forecolor backcolor | alignleft aligncenter alignright  | bullist numlist outdent indent |     | removeformat",
+      // "undo redo | formatselect | bold italic forecolor backcolor | alignleft aligncenter alignright  | bullist numlist outdent indent | removeformat",
     },
   },
-  watch: {
-    myValue(n, o) {
-      // console.log('n',n)
-      this.$emit('updateRichText',n)
-
-    },
-  },
+  watch: {},
   data() {
     var that = this;
     return {
@@ -68,13 +68,7 @@ export default {
       editorVm: "",
       template:
         '<p class="custom" >这里啥都没有-</p><p>我说的是真的</p><p class="custom" style="display:inline-block;">同行1</p><p class="custom" style="display:inline-block;">同行2</p><p></p><p class="custom">第二个段落</p><p></p><p></p><p></p><p class="custom">第三段</p><p></p>',
-      defaultText: [
-        "这里啥都没有-",
-        "第二个段落",
-        "第三段",
-        "同行1",
-        "同行2",
-      ],
+      defaultText: ["这里啥都没有-", "第二个段落", "第三段", "同行1", "同行2"],
       //初始化配置
       init: {
         forced_root_block: "",
@@ -136,9 +130,9 @@ export default {
           editor.setContent(that.myValue);
           this.hasInit = true;
           editor.on("NodeChange Change KeyUp SetContent", () => {
-            // console.log('1', editor.getContent())
             this.hasChange = true;
-            // this.$emit("input", editor.getContent());
+            console.log('editor',editor)
+            that.$emit("updateRichText", {content:editor.getContent(),length:editor.plugins.wordcount.getCount()});
           });
           // 将回车键改为 shift+回车
           editor.on("keydown", function (event) {
@@ -218,7 +212,7 @@ export default {
           // console.log('index',index)
         }
       });
-      console.log('defaultIndex',defaultIndex,this.defaultText.length)
+      console.log("defaultIndex", defaultIndex, this.defaultText.length);
       // if (defaultIndex < this.defaultText.length) {
       //   alert("出事了");
       // }

@@ -66,7 +66,7 @@ export function saveClaim(params) {
   })
 }
 // 提交
-export function submit(params) {
+export function submitData(params) {
   return request({
     url: '/api/v1/patent/submit',
     method: 'post',
@@ -101,6 +101,14 @@ export function download_description(params) {
     url: '/api/v1/patent/download_description',
     method: 'POST',
     data:params,
-    responseType:'blob'
+    // responseType:'blob'
+  })
+}
+export function reviewCase(params) {
+  return request({
+    url: '/api/v1/patent/review',
+    method: 'POST',
+    data:params,
+    // responseType:'blob'
   })
 }

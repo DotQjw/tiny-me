@@ -85,7 +85,11 @@
       </div>
     </div>
     <div id="imgmark">
-      <div class="custom-title">附图标记</div>
+      <div class="patent-name-box">
+        <div class="patent-name-title">附图标记</div>
+        <el-button @click="addImgTextToRich('add')">添加标记至文档</el-button>
+      </div>
+      <!-- <div class="custom-title">附图标记</div> -->
       <div class="custom-tips" v-if="imgMarkList.length === 0">
         你还没有添加任何附图标记
       </div>
@@ -99,11 +103,13 @@
       >
         <span class="custom-tree-node" slot-scope="{ node, data }">
           <div class="custom-tree-row">
-            <span v-if="data.id != 1" @click="treeEdit(node, data, 'name')">{{
-              data.name
-            }}</span>
+            <span
+              v-if="data.nameEdit != 1"
+              @click="treeEdit(node, data, 'name')"
+              >{{ data.name }}</span
+            >
             <el-input
-              v-if="data.id == 1"
+              v-if="data.nameEdit == 1"
               ref="input"
               size="mini"
               @blur="() => submitEdit(node, data, 'name')"
@@ -111,12 +117,12 @@
               style="max-width: 100px"
             ></el-input>
             <span
-              v-if="data.parentId != 1"
+              v-if="data.numberEdit != 1"
               style="margin-left: 10px; color: gray"
               >{{ data.number }}</span
             >
             <el-input
-              v-if="data.parentId == 1"
+              v-if="data.numberEdit == 1"
               ref="input"
               size="mini"
               @blur="() => submitEdit(node, data, 'num')"
@@ -141,7 +147,7 @@
               <el-button
                 type="text"
                 size="mini"
-                @click="() => remove(node, data)"
+                @click="() => handleRemoveTreeData(node, data)"
               >
                 删除
               </el-button>
@@ -155,8 +161,14 @@
       > -->
     </div>
     <div id="box2">
-      <div class="custom-title">摘要</div>
-      <div class="custom-tips">
+      <!-- <div class="custom-title">摘要</div> -->
+      <div class="patent-name-box">
+        <div class="patent-name-title">摘要</div>
+        <el-button v-if="showMainEdit" @click="handleMainEdit"
+          >重新生成摘要</el-button
+        >
+      </div>
+      <div v-if="!showMainEdit" class="custom-tips">
         要编辑摘要，请先填写好上方的内容，再点击下方的生成摘要按钮
       </div>
       <el-button v-if="!showMainEdit" @click="handleMainEdit" type="primary"
@@ -164,8 +176,10 @@
       >
       <div v-show="showMainEdit" class="main-edit">
         <editor
+          v-if="mainContent"
           ref="mainEdit"
           selectorId="mainEdit"
+          @updateRichText="updateMainRichText"
           :defaultValue="mainContent"
         />
       </div>
@@ -178,31 +192,38 @@
 
     <div class="bottom-btn">
       <el-button type="primary" @click="handleSave('submit')">提 交</el-button>
-      <el-button type="success" @click="handlePreview()">预 览</el-button>
+      <el-button type="success" @click="handleSave('preview')">预 览</el-button>
       <el-button type="warning" @click="handleSave('save')">保 存</el-button>
     </div>
   </div>
 </template>
 <script>
 import Editor from "@/components/Editor/index";
+import { baseUrl } from "@/utils/baseUrl";
 import {
   patentDetail,
   editDescription,
   download_description,
+  submitData
 } from "@/api/table";
 export default {
   components: { Editor },
   data() {
     return {
+      mainTextOverLimit: false,
+      treeDataStr: "",
+      // 默认标识符
+      treeDataStrDefalut: "<p><span>&#x3000;&#x3000;附图说明</span></p>",
       labelValue: "",
       imgMarkList: [],
-      oldPatentName: "专利名称",
+      patentName: "", //专利名称
+      oldPatentName1: "patentName1", //标识符
+      oldPatentName2: "patentName2", //标识符
       defaultProps: {
         children: "children",
         label: "label",
       },
       typeLabel: "", //类型。1.发明 2。实用类型
-      patentName: "", //专利名称
       showTechList: false,
       detailData: {},
       toolList: ["攥写", "摘要", "附图", "预览"],
@@ -218,13 +239,15 @@ export default {
         <hr style="border: 1px solid #000; background: #000;" size="1px" width="100%">
         <h3 style="text-align: center;"><strong>patentName1</strong></h3>
         <p><span style="text-decoration: underline;">技术领域</span></p>
-        <p>本typeLabel1属于techArea1技术领域，尤其涉及patentName1</p>
+        <p>本typeLabel1属于techArea1技术领域，尤其涉及patentName2</p>
         <p><span style="text-decoration: underline;">背景技术</span></p>
         domainText
         painPointText
         currentSolutionText
         pendingDefectText
         patentContent
+        <p><span style="text-decoration: underline;">附图说明</span></p>
+        <p><span>&#x3000;&#x3000;附图说明</span></p>
         <p><span style="text-decoration: underline;">具体实施方式</span></p>
         methodDesc
         ideaText
@@ -232,34 +255,58 @@ export default {
         endText
         <img  src="https://gimg3.baidu.com/search/src=http%3A%2F%2Fpics7.baidu.com%2Ffeed%2F574e9258d109b3de3fe758f6c67c1c8b810a4c25.jpeg%3Ftoken%3Ddbeb206c9eb518adbf9fcd7314cda629&refer=http%3A%2F%2Fwww.baidu.com&app=2021&size=f360,240&n=0&g=0n&q=75&fmt=auto?sec=1654534800&t=7b2f834a06a0921acd9c1d1fecbe8167" />
         `,
-      mainContent:
-        '<h1 class="custom" style="text-align: center;">说 明 书 摘 要</h1><hr width="90%" size="1px" style="border:1px solid #000;background:#000" /',
+      mainContentTemplete: `<h1 class="custom" style="text-align: center;">说 明 书 摘 要</h1>
+                    <hr style="border: 1px solid #000; background: #000;" size="1px" width="100%">
+                    <p><span style="color: rgb(224, 62, 45);">（限字300字）</span></p>
+        `,
+      mainContent: ``,
     };
   },
   created() {
     if (this.$route.query.id) {
       console.log("获取数据");
-      this.getDetail(this.$route.query.id);
-      // this.allContent = this.allContent.replace(/(7.1)/,"")
+      this.fetchData(this.$route.query.id);
     } else {
       this.$message.warning("缺少必需参数");
     }
   },
   methods: {
     updateRichText(data) {
-      console.log("我更新啦", data);
-      this.allContent = data;
+      // console.log("我更新啦", data);
+      this.allContent = data.content;
     },
-    getDetail(id) {
+    updateMainRichText(data) {
+      // console.log("摘要更新", data);
+      this.mainContent = data.content;
+      console.log(this.mainContent);
+      this.mainTextOverLimit = false;
+      if (data.length > 320) {
+        this.mainTextOverLimit = true;
+        this.$message.error("说明书摘要内容不能超过300个字");
+      }
+    },
+    fetchData(id) {
       patentDetail({ id }).then((res) => {
         console.log("res", res);
         this.detailData = res.data;
         this.claim = res.data.claim;
         this.typeLabel = res.data.type === "1" ? "发明" : "实用类型";
-        this.patentName = res.data.patentName;
-        this.imgMarkList = res.data.drawingReferences;
+        if (res.data.abstract) {
+          this.mainContent = res.data.abstract;
+          // console.log("mainContent", this.mainContent);
+          this.showMainEdit = true;
+        }
+        if (res.data.drawingReferences[0]) {
+          this.imgMarkList = res.data.drawingReferences;
+          this.addImgTextToRich("edit");
+        }
+        if (res.data.patentName) {
+          this.patentName = res.data.patentName;
+          this.oldPatentName1 = res.data.patentName;
+          this.oldPatentName2 = res.data.patentName;
+        }
+
         if (res.data.description) {
-          // console.log('进来了吗')
           this.allContent = res.data.description;
           return;
         }
@@ -292,7 +339,10 @@ export default {
             ? goodEffect + "," + item.goodEffect
             : item.goodEffect;
         }
+        console.log("patentContentBox 1", patentContentBox);
         if (item.no === item.parentNo && item.no === item.ancestorNo) {
+          console.log("item", item);
+          console.log("patentContentBox 2", patentContentBox);
           // 独权
           name = item.name;
           if (item.claimContent) {
@@ -349,40 +399,51 @@ export default {
             childKernel = "";
             note = "";
           }
+          console.log("patentContentBox", patentContentBox);
           console.log("childKernel", childKernel);
+        }
+        // 防止最后一个的数据没提交上去length
+        if (dataIndex + 1 === detail.claim.length) {
+          console.log("我是最后一个了", patentContentBox, item);
+          patentContent += patentContentBox;
+          patentContentBox = "";
         }
       });
       // console.log("str", str);
-      console.log("methodStr", methodStr);
+      // console.log("methodStr", methodStr);
       // console.log("str", str, this.allContentTemp);
       let content;
       //把有益效果插入在patentContent的最后面
       patentContent += `<p>${goodEffect}</p>`;
+      // console.log('patentContent',patentContent)
       content = this.allContentTemp.replace(/single/, str);
       content = content.replace(/patentContent/, patentContent);
       content = content.replace(/methodWay/, methodStr);
       // content = content.replace(/inner/, childStr);
-      console.log("content", content);
+      // console.log("content", content);
       this.allContent = content;
       // console.log("all", this.allContent);
     },
     handleTool(index) {
       this.currentTool = index;
       if (index === 3) {
+        this.handleSave("preview");
         return;
       }
       this.$el.querySelector(`#box${index + 1}`).scrollIntoView();
     },
     handleMainEdit() {
-      this.showMainEdit = true;
+      this.mainContent = "";
+      this.$nextTick(() => {
+        this.mainContent = this.mainContentTemplete;
+        this.showMainEdit = true;
+      });
     },
     addToRich(type) {
       // 有一个问题。这里找不到他的替换标识了，被编辑的问题所覆盖。要想个解决方案。
       var content = this.allContent;
       this.allContent = "";
       const typeLabel = this.typeLabel;
-      const patentName = this.patentName;
-      const oldPatentName = this.oldPatentName;
       console.log("patentName", this.patentName);
       const domainText = this.detailData?.domain.text,
         techAreaText = this.detailData.techArea,
@@ -401,10 +462,6 @@ export default {
       let techArea1 = type === "edit" ? "techArea1" : techAreaText;
       let techArea1Exp = new RegExp(techArea1);
       content = content.replace(techArea1Exp, `${techAreaText}`);
-      let patentName1 = "patentName1";
-      let patentName1Exp = new RegExp(patentName1, "g");
-      content = content.replace(patentName1Exp, patentName);
-      this.oldPatentName = patentName;
       content = content.replace(
         /domainText/,
         `<p style="padding-left:40px">${domainText}</p>`
@@ -432,58 +489,107 @@ export default {
       });
     },
     updatePatentName() {
-      const params = {
-        id: this.detailData.id,
-        patentName: this.patentName,
-        description: this.allContent,
-      };
-      editDescription(params)
-        .then((res) => {
-          this.getDetail(this.detailData.id);
-        })
-        .catch((err) => {
-          this.$message.error(err.message || "服务器繁忙，请稍后重试");
-        });
+      const patentName = this.patentName;
+      let content = this.allContent;
+      this.allContent = "";
+      let patentName1 = this.oldPatentName1;
+      let patentName2 = `尤其涉及${this.oldPatentName2}`;
+      let patentName1Exp = new RegExp(patentName1);
+      let patentName2Exp = new RegExp(patentName2);
+      console.log({ patentName, patentName1, patentName2 });
+      content = content.replace(patentName1Exp, patentName);
+      content = content.replace(patentName2Exp, `尤其涉及${patentName}`);
+      this.$nextTick(() => {
+        this.allContent = content;
+        this.handleSave("updatePatentName");
+      });
     },
     handleSave(type) {
+      if (this.mainTextOverLimit) {
+        this.$message.error("说明书摘要内容不能超过300个字");
+        return;
+      }
       const params = {
         id: this.detailData.id,
         patentName: this.patentName,
         description: this.allContent,
         drawingReferences: this.imgMarkList,
+        abstract: this.mainContent,
       };
       editDescription(params)
         .then((res) => {
-          this.$message.success("保存成功");
-          this.getDetail(this.detailData.id);
+          if (type === "save") {
+            this.$message.success("保存成功");
+            this.fetchData(this.detailData.id);
+          } else if (type === "preview") {
+            this.handlePreview();
+          } else if (type === "submit") {
+            this.handleSubmitData();
+          } else if (type === "updatePatentName") {
+            this.fetchData(this.detailData.id);
+          }
         })
         .catch((err) => {
           this.$message.error(err.message || "服务器繁忙，请稍后重试");
         });
     },
+    handleSubmitData() {
+      submitData({
+        id:this.detailData.id
+      }).then(res=>{
+        this.$message.success("提交成功");
+        this.$router.push({path:"data-list"});
+      }).catch(err=>{
+        this.$message.error(err.message)
+      })
+    },
     handleImgMark() {
+      const id = this.imgMarkList.length + 1;
       this.imgMarkList.push({
         name: "新建",
-        id: 0,
+        id: id,
+        nameEdit: 0,
         number: "",
-        parentId: 0,
+        numberEdit: 0,
+        parentId: id,
         children: [],
       });
       console.log("this", this.imgMarkList);
     },
     handleAppendChild(node, data) {
       console.log("node,data", node, data);
+      let parentId = data.id;
+      let id = +(parentId + "" + (data.children.length + 1));
       data.children.push({
         name: "子集",
-        id: 0,
+        id: id,
         number: "",
-        parentId: 0,
+        parentId: parentId,
         children: [],
       });
       console.log("this", this.imgMarkList);
     },
-    handleparentId(data) {
-      console.log({ data });
+    handleRemoveTreeData(node, data) {
+      console.log({ node, data });
+      this.$confirm("删除当前数据，会将子级数据一起删除，确定删除吗", "提示", {
+        confirmButtonText: "确定删除",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        const parent = node.parent;
+        const children = parent.data.children || parent.data;
+        const index = children.findIndex((d) => d.id === data.id);
+        children.splice(index, 1);
+      });
+    },
+    getRandom(length) {
+      var randomStr = "1234567890";
+      // "1234567890abcdefghijklnmopqovwrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      var str = "";
+      for (let i = 0; i < length; i++) {
+        str += randomStr[parseInt(Math.random() * 65)];
+      }
+      return str;
     },
     changeNumToHan(num) {
       var arr1 = ["零", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
@@ -532,26 +638,28 @@ export default {
       };
       const params2 = {
         id: this.detailData.id,
-        type: 2,
+        type: 1,
       };
-      // download_description(params).then((blob) => {
-      //   this.download(blob,'1.pdf');
-      // });
-      download_description(params2).then((blob) => {
-        this.download(blob, "2.docx");
+      download_description(params).then((res) => {
+        console.log("res", res);
+        // this.download(blob, "1.pdf");
+        window.open(baseUrl() + res.data.url);
       });
+      // download_description(params2).then((blob) => {
+      //   this.download(blob, "2.docx");
+      // });
     },
     treeEdit(node, data, type) {
       this.labelValue = "";
       if (type === "name") {
-        this.$set(data, "id", 1);
+        this.$set(data, "nameEdit", 1);
         this.labelValue = data.name;
         this.$nextTick(() => {
           console.log("this.$refs.input", this.$refs, data);
           this.$refs.input.focus();
         });
       } else {
-        this.$set(data, "parentId", 1);
+        this.$set(data, "numberEdit", 1);
         this.labelValue = data.number;
         this.$nextTick(() => {
           this.$refs.input.focus();
@@ -564,10 +672,10 @@ export default {
         if (data.name == this.labelValue) {
           console.log("没有修改");
           this.labelValue = "";
-          this.$set(data, "id", 0);
+          this.$set(data, "nameEdit", 0);
         } else {
           this.$set(data, "name", this.labelValue);
-          this.$set(data, "id", 0);
+          this.$set(data, "nameEdit", 0);
           console.log("data", data);
           this.labelValue = "";
         }
@@ -576,18 +684,57 @@ export default {
         if (data.number == this.labelValue) {
           console.log("没有修改");
           this.labelValue = "";
-          this.$set(data, "parentId", 0);
+          this.$set(data, "numberEdit", 0);
         } else {
           this.$set(data, "number", this.labelValue);
           this.labelValue = "";
-          this.$set(data, "parentId", 0);
+          this.$set(data, "numberEdit", 0);
         }
       }
+    },
+    addImgTextToRich(type) {
+      this.treeDataStr = "";
+      this.handleImgMarkList(this.imgMarkList);
+      console.log("treeDataStr", this.treeDataStr);
+      if (type === "add") {
+        console.log("添加到富文本");
+        this.handleChangeImgStr(this.treeDataStr);
+      } else {
+        console.log("编辑设置默认标识符");
+        this.treeDataStrDefalut = this.treeDataStr;
+      }
+    },
+    handleImgMarkList(data) {
+      data.forEach((el) => {
+        this.treeDataStr = this.treeDataStr
+          ? this.treeDataStr + "，" + el.name + el.number
+          : this.treeDataStr + el.name + el.number;
+        if (el.children) {
+          this.handleImgMarkList(el.children);
+        }
+      });
+    },
+    handleChangeImgStr(str) {
+      // <p data-str="imgStr"></p>
+      let content = this.allContent;
+      this.allContent = "";
+      const richStr = this.treeDataStrDefalut;
+      let aExp = new RegExp("a");
+      let stg1Exp = new RegExp(richStr);
+      content = content.replace(
+        stg1Exp,
+        `<p><span>&#x3000;&#x3000;附图说明</span></p><p>&#x3000;&#x3000;${str}</p>`
+      );
+      this.treeDataStrDefalut = str;
+      console.log("content", content);
+      this.$nextTick(() => {
+        this.allContent = content;
+      });
     },
     download(content, fileName) {
       // const blob = new Blob([content],{type:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
       // const blob = new Blob([content],{type:"application/msword"})
-      const blob = new Blob([content], { type: "application" });
+      const blob = new Blob([content], { type: "application/pdf" });
       const a = document.createElement("a");
       const url = window.URL.createObjectURL(blob);
       const filename = fileName;
@@ -729,11 +876,12 @@ export default {
 }
 .patent-name-box {
   display: flex;
-  margin-top: 20px;
+  margin-bottom: 10px;
   justify-content: space-around;
   align-self: center;
   .patent-name-title {
     flex: 1;
+    line-height: 40px;
   }
 }
 .custom-tree-node {

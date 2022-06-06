@@ -28,7 +28,7 @@
                   <span>根据权利要求</span>
                   <el-input
                     @input="nameInputChange($event, scope.row)"
-                    v-model="scope.row.name"
+                    v-model.number="scope.row.name"
                     class="child-input"
                   ></el-input>
                 </div>
@@ -200,7 +200,6 @@ export default {
       this.realIndex = 0;
       this.handleEditData(this.claimData);
     } else {
-      let id = this.getRandom(8);
       var template = cloneDeep(this.template);
       this.treeData.push(template);
       this.claims = [];
