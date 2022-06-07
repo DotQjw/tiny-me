@@ -20,6 +20,13 @@
       <div class="box1-content">
         <div class="first-left">
           <div class="left-title">
+            <div v-if="bigPicUrl" class="big-pic">
+              <i
+                class="el-icon-error close-bigPic"
+                @click="() => (bigPicUrl = '')"
+              ></i>
+              <el-image :src="bigPicUrl"></el-image>
+            </div>
             <div class="custom-title">说明书编辑</div>
             <el-button v-if="!showTechList" @click="showTechList = true"
               >查看技术交底</el-button
@@ -46,17 +53,29 @@
             <div class="content-item">
               <div class="content-item-title">2.本专利应用在哪个领域</div>
               <div class="content-item-text">{{ detailData.domain.text }}</div>
+              <div class="tool-item" @click="openFileList('domain')">
+                <i class="el-icon-paperclip"></i>
+                <span class="tool-label">附件列表</span>
+              </div>
             </div>
             <div class="content-item">
               <div class="content-item-title">3.该领域存在什么痛点</div>
               <div class="content-item-text">
                 {{ detailData.painPoint.text }}
+                <div class="tool-item" @click="openFileList('painPoint')">
+                  <i class="el-icon-paperclip"></i>
+                  <span class="tool-label">附件列表</span>
+                </div>
               </div>
             </div>
             <div class="content-item">
               <div class="content-item-title">4.当前是如何解决这些痛点的的</div>
               <div class="content-item-text">
                 {{ detailData.currentSolution.text }}
+                <div class="tool-item" @click="openFileList('currentSolution')">
+                  <i class="el-icon-paperclip"></i>
+                  <span class="tool-label">附件列表</span>
+                </div>
               </div>
             </div>
             <div class="content-item">
@@ -65,6 +84,11 @@
               </div>
               <div class="content-item-text">
                 {{ detailData.pendingDefect.text }}
+
+                <div class="tool-item" @click="openFileList('pendingDefect')">
+                  <i class="el-icon-paperclip"></i>
+                  <span class="tool-label">附件列表</span>
+                </div>
               </div>
             </div>
           </div>
@@ -156,9 +180,6 @@
         </span>
       </el-tree>
       <span class="addimg" @click="handleImgMark">添加附图标记</span>
-      <!-- <el-button v-if="!showMainEdit" @click="handleMainEdit" type="primary"
-        >生成摘要</el-button
-      > -->
     </div>
     <div id="box2">
       <!-- <div class="custom-title">摘要</div> -->
@@ -185,9 +206,37 @@
       </div>
     </div>
     <div id="box3">
-      <div class="custom-title">附图</div>
-      <div class="custom-tips">你还没有任何附图</div>
-      <span class="el-icon-picture-outline addimg">添加附图</span>
+      <!-- <div class="custom-title">附图</div> -->
+      <div class="patent-name-box">
+        <div class="patent-name-title" style="line-height: 20px">附图</div>
+        <span
+          class="el-icon-picture-outline addimg"
+          v-if="drawings.length"
+          @click="handleUpload"
+          >添加附图</span
+        >
+      </div>
+      <div class="custom-tips" v-if="!drawings.length">你还没有任何附图</div>
+      <span
+        class="el-icon-picture-outline addimg"
+        v-if="!drawings.length"
+        @click="handleUpload"
+        >添加附图</span
+      >
+      <draggable v-model="drawings">
+        <transition-group>
+          <div class="img-box" v-for="(item, index) in drawings" :key="index">
+            <div :key="index" class="item-content">
+              <el-image
+                @click="handleBigPic(fileBaseUrl + item.url)"
+                class="item-img"
+                :src="fileBaseUrl + item.url"
+              ></el-image>
+              <div>{{ item.name }}</div>
+            </div>
+          </div>
+        </transition-group>
+      </draggable>
     </div>
 
     <div class="bottom-btn">
@@ -195,21 +244,54 @@
       <el-button type="success" @click="handleSave('preview')">预 览</el-button>
       <el-button type="warning" @click="handleSave('save')">保 存</el-button>
     </div>
+
+    <upload-file
+      v-if="showUpload"
+      :show.sync="showUpload"
+      @uploadFile="handleSave('savePic')"
+      :imgList="drawings"
+    />
+    <file-list
+      :recordList="currentRecordList"
+      :fileList="currentFileList"
+      v-if="showFileList"
+      :show.sync="showFileList"
+    />
   </div>
 </template>
 <script>
+import fileList from "./fileList";
 import Editor from "@/components/Editor/index";
+import uploadFile from "./uploadFile";
+import draggable from "vuedraggable";
 import { baseUrl } from "@/utils/baseUrl";
 import {
   patentDetail,
   editDescription,
   download_description,
-  submitData
+  submitData,
 } from "@/api/table";
 export default {
-  components: { Editor },
+  components: { Editor, uploadFile, draggable, fileList },
+  watch: {
+    drawings(n, o) {
+      console.log({
+        n,
+        o,
+      });
+      n.forEach((el, index) => {
+        el.name = `图${index + 1}`;
+      });
+    },
+  },
   data() {
     return {
+      timer: null,
+      showFileList: false,
+      bigPicUrl: "",
+      fileBaseUrl: baseUrl(),
+      drawings: [],
+      showUpload: false,
       mainTextOverLimit: false,
       treeDataStr: "",
       // 默认标识符
@@ -274,22 +356,35 @@ export default {
     updateRichText(data) {
       // console.log("我更新啦", data);
       this.allContent = data.content;
+
+      if (this.timer) {
+        clearTimeout(this.timer);
+      }
+      this.timer = setTimeout(() => {
+        // this.fetchData("autosave")
+      }, 1000);
     },
     updateMainRichText(data) {
-      // console.log("摘要更新", data);
       this.mainContent = data.content;
-      console.log(this.mainContent);
       this.mainTextOverLimit = false;
-      if (data.length > 320) {
-        this.mainTextOverLimit = true;
-        this.$message.error("说明书摘要内容不能超过300个字");
+
+      if (this.timer) {
+        clearTimeout(this.timer);
       }
+      this.timer = setTimeout(() => {
+        if (data.length > 320) {
+          this.mainTextOverLimit = true;
+          this.$message.error("说明书摘要内容不能超过300个字");
+        }
+        // this.fetchData("autosave")
+      }, 1000);
     },
     fetchData(id) {
       patentDetail({ id }).then((res) => {
         console.log("res", res);
         this.detailData = res.data;
         this.claim = res.data.claim;
+        this.drawings = res.data.drawings;
         this.typeLabel = res.data.type === "1" ? "发明" : "实用类型";
         if (res.data.abstract) {
           this.mainContent = res.data.abstract;
@@ -505,15 +600,16 @@ export default {
       });
     },
     handleSave(type) {
-      if (this.mainTextOverLimit) {
+      // 自动保存或者保存其他数据不提示
+      if (this.mainTextOverLimit && ['save','preview',"submit"].includes(type)) {
         this.$message.error("说明书摘要内容不能超过300个字");
-        return;
       }
       const params = {
         id: this.detailData.id,
         patentName: this.patentName,
         description: this.allContent,
         drawingReferences: this.imgMarkList,
+        drawings: this.drawings,
         abstract: this.mainContent,
       };
       editDescription(params)
@@ -524,6 +620,10 @@ export default {
           } else if (type === "preview") {
             this.handlePreview();
           } else if (type === "submit") {
+            if (this.mainTextOverLimit) {
+              this.$message.error("说明书摘要内容超过300个字不能提交，请修改");
+              return;
+            }
             this.handleSubmitData();
           } else if (type === "updatePatentName") {
             this.fetchData(this.detailData.id);
@@ -535,13 +635,15 @@ export default {
     },
     handleSubmitData() {
       submitData({
-        id:this.detailData.id
-      }).then(res=>{
-        this.$message.success("提交成功");
-        this.$router.push({path:"data-list"});
-      }).catch(err=>{
-        this.$message.error(err.message)
+        id: this.detailData.id,
       })
+        .then((res) => {
+          this.$message.success("提交成功");
+          this.$router.push({ path: "data-list" });
+        })
+        .catch((err) => {
+          this.$message.error(err.message);
+        });
     },
     handleImgMark() {
       const id = this.imgMarkList.length + 1;
@@ -638,16 +740,16 @@ export default {
       };
       const params2 = {
         id: this.detailData.id,
-        type: 1,
+        type: 2,
       };
-      download_description(params).then((res) => {
-        console.log("res", res);
-        // this.download(blob, "1.pdf");
-        window.open(baseUrl() + res.data.url);
-      });
-      // download_description(params2).then((blob) => {
-      //   this.download(blob, "2.docx");
+      // download_description(params).then((res) => {
+      //   console.log("res", res);
+      //   // this.download(blob, "1.pdf");
+      //   window.open(this.fileBaseUrl + res.data.url);
       // });
+      download_description(params2).then((blob) => {
+        this.download(blob, "2.docx");
+      });
     },
     treeEdit(node, data, type) {
       this.labelValue = "";
@@ -742,6 +844,21 @@ export default {
       a.download = filename;
       a.click();
       window.URL.revokeObjectURL(url);
+    },
+    handleUpload() {
+      this.showUpload = true;
+    },
+    updateUploadFile(data) {
+      console.log("data", data);
+    },
+    handleBigPic(url) {
+      console.log("url", url);
+      this.bigPicUrl = url;
+    },
+    openFileList(type) {
+      this.currentRecordList = this.detailData[type].recordFiles;
+      this.currentFileList = this.detailData[type].attachments;
+      this.showFileList = true;
     },
   },
 };
@@ -894,5 +1011,54 @@ export default {
   .custom-tree-row {
     // margin:20px 0;
   }
+}
+
+.img-box {
+  // display: flex;
+  // flex-wrap: wrap;
+  display: inline-block;
+  width: 81px;
+  margin-right: 20px;
+  margin-top: 20px;
+
+  .item-content {
+    // display: inline-block;
+    // margin-right: 20px;
+    // margin-top: 20px;
+  }
+  .item-img {
+    width: 81px;
+    height: 81px;
+    border-radius: 4px;
+  }
+}
+.tool-item {
+  display: block;
+  width: 150px;
+  padding: 5px 20px;
+  background: #f2f3f5;
+  margin-right: 10px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+.tool-label {
+  margin-left: 10px;
+}
+.big-pic {
+  position: fixed;
+  top: 100px;
+  right: 20px;
+  width: 182px;
+  height: 182px;
+  z-index: 9998;
+}
+.close-bigPic {
+  position: relative;
+  top: 10px;
+  left: -15px;
+  font-size: 26px;
+  z-index: 9999;
+  cursor: pointer;
+  color: red;
 }
 </style>

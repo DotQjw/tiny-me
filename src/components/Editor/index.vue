@@ -118,7 +118,6 @@ export default {
         images_upload_url: "www.baidu.com",
         automatic_uploads: false,
         images_upload_handler: (blobInfo, success, failure) => {
-          console.log({ blobInfo, success, failure });
           // console.log(blobInfo, success, failure);
         },
         setup: function (editor) {
@@ -131,12 +130,10 @@ export default {
           this.hasInit = true;
           editor.on("NodeChange Change KeyUp SetContent", () => {
             this.hasChange = true;
-            console.log('editor',editor)
             that.$emit("updateRichText", {content:editor.getContent(),length:editor.plugins.wordcount.getCount()});
           });
           // 将回车键改为 shift+回车
           editor.on("keydown", function (event) {
-            console.log("evemt", event);
             // if (event.keyCode === 13) {
             //   console.log("editor.selection.getNode()", editor);
             //   if (editor.dom.hasClass(editor.selection.getNode(), "custom")) {

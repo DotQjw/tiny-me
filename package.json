@@ -58,6 +58,7 @@
     "svgo": "1.2.2",
     "vue-clipboard2": "^0.3.3",
     "vue-template-compiler": "2.6.10",
+    "vuedraggable": "^2.24.3",
     "webpack": "^4.46.0"
   },
   "browserslist": [

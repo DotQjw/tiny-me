@@ -59,10 +59,6 @@ export default {
       type: Array,
       default: () => [],
     },
-    type: {
-      type: String,
-      default: "",
-    },
     show: {
       type: Boolean,
       default: false,
@@ -77,7 +73,7 @@ export default {
     };
   },
   created() {
-    console.log("this.type", this.type, this.recordList, this.fileList);
+    console.log("this.type",  this.recordList, this.fileList);
   },
   methods: {
     handleClick() {},

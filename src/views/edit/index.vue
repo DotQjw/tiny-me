@@ -143,7 +143,6 @@ export default {
     };
   },
   created() {
-    console.log("in", this.$route);
     this.type = this.$route.query.type;
     this.formData.id = this.$route.query.id;
     if (this.formData.id) {
