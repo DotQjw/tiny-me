@@ -133,7 +133,7 @@ export default {
             .then((res) => {
               console.log('res',res)
               if(res.role === 1){
-                this.$router.push({ path: "/fuceng" });
+                this.$router.push({ path: "/guide" });
               }else{
                 this.$router.push({ path: "/data-list" });
               }

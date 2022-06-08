@@ -1,5 +1,7 @@
 import axios from "axios";
 import { MessageBox, Message } from "element-ui";
+import Nprogress from "nprogress"; //js实现进度条效果
+import "nprogress/nprogress.css"; //css美化进度条
 import store from "@/store";
 import { getToken } from "@/utils/auth";
 
@@ -13,6 +15,7 @@ const service = axios.create({
 // request interceptor
 service.interceptors.request.use(
   (config) => {
+    Nprogress.start();
     if (getToken()) {
       const token = getToken();
       config.headers["Authorization"] = "Bearer " + token;
@@ -42,7 +45,7 @@ service.interceptors.response.use(
    */
   (response) => {
     const res = response.data;
-
+    Nprogress.done();
     if (res.code != 0) {
       // if the custom code is not 20000, it is judged as an error.
       // Message({
@@ -64,13 +67,13 @@ service.interceptors.response.use(
           });
         });
       }
-      if(res.code === 10003){
-        Message.error('参数错误，请重试')
+      if (res.code === 10003) {
+        Message.error("参数错误，请重试");
       }
       // return res
-      return Promise.reject(res)
+      return Promise.reject(res);
     } else {
-      return res
+      return res;
     }
   },
   (error) => {

@@ -248,8 +248,9 @@
     <upload-file
       v-if="showUpload"
       :show.sync="showUpload"
-      @uploadFile="handleSave('savePic')"
+      @uploadFile="updateUploadFile"
       :imgList="drawings"
+      :abstractUrl="abstractUrl"
     />
     <file-list
       :recordList="currentRecordList"
@@ -287,6 +288,7 @@ export default {
   data() {
     return {
       timer: null,
+      abstractUrl: "",
       showFileList: false,
       bigPicUrl: "",
       fileBaseUrl: baseUrl(),
@@ -294,6 +296,8 @@ export default {
       showUpload: false,
       mainTextOverLimit: false,
       treeDataStr: "",
+      futushuomingList:
+        '<p><span style="text-decoration: underline;">附图说明</span></p>',
       // 默认标识符
       treeDataStrDefalut: "<p><span>&#x3000;&#x3000;附图说明</span></p>",
       labelValue: "",
@@ -329,13 +333,13 @@ export default {
         pendingDefectText
         patentContent
         <p><span style="text-decoration: underline;">附图说明</span></p>
+        <p>&#x3000;&#x3000;主要元件符号说明：</p>
         <p><span>&#x3000;&#x3000;附图说明</span></p>
         <p><span style="text-decoration: underline;">具体实施方式</span></p>
         methodDesc
         ideaText
         methodWay
         endText
-        <img  src="https://gimg3.baidu.com/search/src=http%3A%2F%2Fpics7.baidu.com%2Ffeed%2F574e9258d109b3de3fe758f6c67c1c8b810a4c25.jpeg%3Ftoken%3Ddbeb206c9eb518adbf9fcd7314cda629&refer=http%3A%2F%2Fwww.baidu.com&app=2021&size=f360,240&n=0&g=0n&q=75&fmt=auto?sec=1654534800&t=7b2f834a06a0921acd9c1d1fecbe8167" />
         `,
       mainContentTemplete: `<h1 class="custom" style="text-align: center;">说 明 书 摘 要</h1>
                     <hr style="border: 1px solid #000; background: #000;" size="1px" width="100%">
@@ -386,6 +390,7 @@ export default {
         this.claim = res.data.claim;
         this.drawings = res.data.drawings;
         this.typeLabel = res.data.type === "1" ? "发明" : "实用类型";
+        this.abstractUrl = res.data.abstractUrl;
         if (res.data.abstract) {
           this.mainContent = res.data.abstract;
           // console.log("mainContent", this.mainContent);
@@ -599,11 +604,48 @@ export default {
         this.handleSave("updatePatentName");
       });
     },
+    handleRichText() {
+      const imgUrl = baseUrl() + this.abstractUrl;
+      const zhaiyaoImg = `<h1 class="custom" style="text-align: center;">附 图 摘 要</h1>
+                    <hr style="border: 1px solid #000; background: #000;" size="1px" width="100%">
+                    <p><img src="${imgUrl}" /</p>
+        `;
+      let firstSingleName = this.claim[0].name;
+      let textStr = "";
+      let imgStr = "";
+      this.drawings.forEach((item) => {
+        textStr += `<p><span style="text-decoration: underline;">附图说明</span></p><p>${item.name}是本${this.typeLabel}实施例（或者现有技术）提供的${firstSingleName}的（流程）示意图</p>`;
+        const imgUrl = baseUrl() + item.url;
+        imgStr += `<p ><img src="${imgUrl}" /><div style="text-align:center;">${item.name}</div></p>`;
+      });
+      console.log({ textStr, imgStr });
+      let content = this.allContent;
+      let futushuomingList = this.futushuomingList;
+      let futushuomingListExp = new RegExp(futushuomingList);
+      content = content.replace(futushuomingListExp, `${textStr}`);
+      this.allContent = content;
+      const shuomingshuImg = `
+              <hr style="border: 1px solid #000; background: #000;" size="1px" width="100%">
+              <h1 class="custom" style="text-align: center;">说 明 书 附 图</h1>
+              <hr style="border: 1px solid #000; background: #000;" size="1px" width="100%">
+              ${imgStr}
+        `;
+      var richText =
+        this.mainContent + zhaiyaoImg + this.allContent + shuomingshuImg;
+      // 去除所有的格式
+      richText = richText.replace(/color/g, "");
+      return richText;
+    },
     handleSave(type) {
       // 自动保存或者保存其他数据不提示
-      if (this.mainTextOverLimit && ['save','preview',"submit"].includes(type)) {
+      // savesave
+      if (
+        this.mainTextOverLimit &&
+        ["save", "preview", "submit"].includes(type)
+      ) {
         this.$message.error("说明书摘要内容不能超过300个字");
       }
+      const richText = this.handleRichText();
       const params = {
         id: this.detailData.id,
         patentName: this.patentName,
@@ -611,14 +653,16 @@ export default {
         drawingReferences: this.imgMarkList,
         drawings: this.drawings,
         abstract: this.mainContent,
+        abstractUrl: this.abstractUrl,
+        richText: richText,
       };
       editDescription(params)
         .then((res) => {
           if (type === "save") {
             this.$message.success("保存成功");
-            this.fetchData(this.detailData.id);
           } else if (type === "preview") {
             this.handlePreview();
+            return;
           } else if (type === "submit") {
             if (this.mainTextOverLimit) {
               this.$message.error("说明书摘要内容超过300个字不能提交，请修改");
@@ -626,8 +670,8 @@ export default {
             }
             this.handleSubmitData();
           } else if (type === "updatePatentName") {
-            this.fetchData(this.detailData.id);
           }
+          this.fetchData(this.detailData.id);
         })
         .catch((err) => {
           this.$message.error(err.message || "服务器繁忙，请稍后重试");
@@ -738,18 +782,28 @@ export default {
         id: this.detailData.id,
         type: 1,
       };
-      const params2 = {
-        id: this.detailData.id,
-        type: 2,
-      };
-      // download_description(params).then((res) => {
-      //   console.log("res", res);
-      //   // this.download(blob, "1.pdf");
-      //   window.open(this.fileBaseUrl + res.data.url);
-      // });
-      download_description(params2).then((blob) => {
-        this.download(blob, "2.docx");
+      this.startLoading();
+      download_description(params)
+        .then((res) => {
+          console.log("res", res);
+          this.closeLoading();
+          window.open(this.fileBaseUrl + res.data.url);
+        })
+        .catch((err) => {
+          this.closeLoading();
+        });
+    },
+    startLoading() {
+      this.loading = this.$loading({
+        lock: true,
+        text: "生成预览中，请耐心等候",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.8)",
       });
+    },
+    /**关闭loading**/
+    closeLoading() {
+      this.loading.close();
     },
     treeEdit(node, data, type) {
       this.labelValue = "";
@@ -802,8 +856,8 @@ export default {
         console.log("添加到富文本");
         this.handleChangeImgStr(this.treeDataStr);
       } else {
-        console.log("编辑设置默认标识符");
-        this.treeDataStrDefalut = this.treeDataStr;
+        this.treeDataStrDefalut = `${this.treeDataStr}`;
+        console.log("编辑设置默认标识符", this.treeDataStrDefalut);
       }
     },
     handleImgMarkList(data) {
@@ -823,33 +877,32 @@ export default {
       const richStr = this.treeDataStrDefalut;
       let aExp = new RegExp("a");
       let stg1Exp = new RegExp(richStr);
-      content = content.replace(
-        stg1Exp,
-        `<p><span>&#x3000;&#x3000;附图说明</span></p><p>&#x3000;&#x3000;${str}</p>`
-      );
+      //新增以附图标识为标识符，加回去
+      if (richStr === "<p><span>&#x3000;&#x3000;附图说明</span></p>") {
+        content = content.replace(
+          stg1Exp,
+          `<p><span>&#x3000;&#x3000;附图说明</span></p><p>&#x3000;&#x3000;${str}</p>`
+        );
+      } else {
+        // 编辑就覆盖文本
+        content = content.replace(stg1Exp, `<p>${str}</p>`);
+      }
+
       this.treeDataStrDefalut = str;
       console.log("content", content);
       this.$nextTick(() => {
         this.allContent = content;
+        this.handleSave("saveTreeData");
       });
-    },
-    download(content, fileName) {
-      // const blob = new Blob([content],{type:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
-      // const blob = new Blob([content],{type:"application/msword"})
-      const blob = new Blob([content], { type: "application/pdf" });
-      const a = document.createElement("a");
-      const url = window.URL.createObjectURL(blob);
-      const filename = fileName;
-      a.href = url;
-      a.download = filename;
-      a.click();
-      window.URL.revokeObjectURL(url);
     },
     handleUpload() {
       this.showUpload = true;
     },
     updateUploadFile(data) {
       console.log("data", data);
+      this.abstractUrl = data;
+
+      this.handleSave("savePic");
     },
     handleBigPic(url) {
       console.log("url", url);
@@ -964,7 +1017,7 @@ export default {
 .left-tool {
   cursor: pointer;
   position: fixed;
-  z-index: 10000;
+  z-index: 1888;
   left: 0;
   top: 30vh;
   background: #fff;

@@ -112,3 +112,17 @@ export function reviewCase(params) {
     // responseType:'blob'
   })
 }
+export function updateStatus(params) {
+  return request({
+    url: '/api/v1/patent/update_status',
+    method: 'POST',
+    data:params,
+  })
+}
+export function deleteCase(params) {
+  return request({
+    url: '/api/v1/patent/delete',
+    method: 'POST',
+    data:params,
+  })
+}

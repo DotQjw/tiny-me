@@ -23,14 +23,19 @@
           <span
             v-if="item.showSpan"
             v-on:mouseout="handleOut(item, index)"
+            @click="handleSetImg(item, index)"
             class="item-span"
             >设置为<br />摘要附图</span
           >
+
+          <span v-if="selectedUrl === item.url" class="selected-item">
+            摘要附图
+          </span>
           <div class="item-title">
             <div class="item-main-title">{{ item.name }}</div>
             <div @click="handleEditSub(item, index)" v-if="!item.edit">
               <span v-if="item.desc">
-                 {{ item.desc }}
+                {{ item.desc }}
               </span>
               <span v-else>请添加附图说明</span>
             </div>
@@ -54,16 +59,19 @@
         :on-success="handleSuccess"
         :before-upload="beforeUpload"
         :before-remove="beforeRemove"
+        :show-file-list="false"
         :limit="30"
         :on-exceed="handleExceed"
       >
-        <div style="background: #f2f3f5; width: 100%; padding:20px 0;">
+        <div style="background: #f2f3f5; width: 100%; padding: 20px 0">
           <i class="el-icon-picture"></i>
           <div class="el-upload__text">添加附图</div>
         </div>
       </el-upload>
     </div>
-    <div style="border-top:1px solid #E5E6E8;padding:10px;text-align:right;">
+    <div
+      style="border-top: 1px solid #e5e6e8; padding: 10px; text-align: right"
+    >
       <el-button @click="handleClose">关 闭</el-button>
     </div>
   </el-dialog>
@@ -87,19 +95,22 @@ export default {
       type: Boolean,
       default: false,
     },
+    abstractUrl: {
+      type: String,
+      default: "",
+    },
   },
   data() {
     return {
       inputValue: "",
+      selectedUrl: this.abstractUrl,
       uploadUrl: uploadFileUrl(),
       imgBaseUrl: baseUrl(),
       token: this.$store.getters.token || getToken(),
       fileList: this.imgList,
     };
   },
-  created() {
-    console.log("this.type", this.type, this.id);
-  },
+  created() {},
   methods: {
     beforeRemove(file) {},
     handlePreview(file) {},
@@ -133,7 +144,7 @@ export default {
       this.$message.warning("最多同时上传三个文件");
     },
     handleClose() {
-      this.$emit("uploadFile");
+      this.$emit("uploadFile", this.selectedUrl);
       this.$emit("update:show", false);
     },
     handleEditSub(item, index) {
@@ -155,6 +166,7 @@ export default {
     },
     handleOver(item, index) {
       console.log("我路过了", item.name);
+      if (item.url === this.selectedUrl) return;
       if (item.showSpan) return;
       this.$set(this.fileList[index], "showSpan", true);
     },
@@ -167,15 +179,20 @@ export default {
       //   this.$set(this.fileList[index], "showSpan", false);
       // }, 300);
     },
+    handleSetImg(item, index) {
+      console.log("img", item.url);
+      this.selectedUrl = item.url;
+      this.$set(this.fileList[index], "showSpan", false);
+    },
   },
 };
 </script>
 <style lang="scss" scoped>
-::v-deep .el-dialog__body{
-  padding:0;
+::v-deep .el-dialog__body {
+  padding: 0;
 }
 .dialog-box {
-  padding:20px 30px;
+  padding: 20px 30px;
   max-height: 500px;
   overflow-y: scroll;
 }
@@ -202,7 +219,7 @@ export default {
   margin-bottom: 10px;
 }
 .item-span {
-  border: 1px solid red;
+  border: 1px solid purple;
   display: block;
   width: 81px;
   padding: 0 10px;
@@ -216,5 +233,18 @@ export default {
   text-align: center;
   padding-top: 20px;
   cursor: pointer;
+}
+.selected-item {
+  position: absolute;
+  z-index: 2;
+  background: #498edf;
+  border-radius: 6px;
+  line-height: 22px;
+  color: #fff;
+  width: 61px;
+  left: 10px;
+  font-size: 12px;
+  bottom: 10px;
+  text-align: center;
 }
 </style>

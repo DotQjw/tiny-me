@@ -40,7 +40,7 @@ export const constantRoutes = [
     hidden: true
   },
   {
-    path: '/fuceng',
+    path: '/guide',
     component: () => import('@/views/fuceng/index'),
     hidden: false
   },

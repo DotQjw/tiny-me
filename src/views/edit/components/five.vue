@@ -8,7 +8,7 @@
     </div>
     <div class="page-main no-border-input">
       <div class="box">
-        <el-table :data="claims" style="width: 100%; margin-toip: 20px">
+        <el-table :data="claims" style="width: 100%; margin-top: 20px">
           <el-table-column prop="realIndex" label="序号" width="100">
           </el-table-column>
           <el-table-column prop="name" label="权利名称" width="280">
@@ -453,6 +453,7 @@ export default {
   .el-textarea__inner {
     border: 1px solid #fff !important;
     margin: 10px 0;
+    padding:5px 2px;
   }
   .el-textarea__inner:focus {
     border: 1px solid #67c23a !important;
