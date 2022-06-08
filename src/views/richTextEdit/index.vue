@@ -412,8 +412,12 @@ export default {
         }
         console.log("还会进来吗？");
         // 处理独权从权
-        this.handleClaim(res.data);
-        this.addToRich("edit");
+        if (res.data.claim[0]) {
+          this.handleClaim(res.data);
+          this.addToRich("edit");
+        }else{
+          this.allContent = this.allContentTemp
+        }
       });
     },
     handleClaim(detail) {
