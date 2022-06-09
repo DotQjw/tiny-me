@@ -59,7 +59,7 @@ export default {
         })
         .catch((err) => {
           // this.closeLoading()
-          this.$message.error(res.message);
+          this.$message.error(err.message);
         });
     },
     handleReview(type) {
@@ -102,7 +102,7 @@ export default {
         })
         .catch((err) => {
           // this.closeLoading()
-          this.$message.error(res.message);
+          this.$message.error(err.message);
         });
     },
     gotoList() {

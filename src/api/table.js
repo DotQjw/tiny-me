@@ -126,3 +126,11 @@ export function deleteCase(params) {
     data:params,
   })
 }
+
+export function userList(params) {
+  return request({
+    url: '/api/v1/user/list',
+    method: 'get',
+    params:params,
+  })
+}

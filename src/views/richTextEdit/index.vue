@@ -336,14 +336,14 @@ export default {
         <p>&#x3000;&#x3000;主要元件符号说明：</p>
         <p><span>&#x3000;&#x3000;附图说明</span></p>
         <p><span style="text-decoration: underline;">具体实施方式</span></p>
-        methodDesc
+        methodDescp
         ideaText
         methodWay
         endText
         `,
       mainContentTemplete: `<h1 class="custom" style="text-align: center;">说 明 书 摘 要</h1>
                     <hr style="border: 1px solid #000; background: #000;" size="1px" width="100%">
-                    <p><span style="color: rgb(224, 62, 45);">（限字300字）</span></p>
+                    <p></p>
         `,
       mainContent: ``,
     };
@@ -365,7 +365,7 @@ export default {
         clearTimeout(this.timer);
       }
       this.timer = setTimeout(() => {
-        // this.fetchData("autosave")
+        this.handleSave("autosave")
       }, 1000);
     },
     updateMainRichText(data) {
@@ -380,7 +380,7 @@ export default {
           this.mainTextOverLimit = true;
           this.$message.error("说明书摘要内容不能超过300个字");
         }
-        // this.fetchData("autosave")
+        this.handleSave("autosave")
       }, 1000);
     },
     fetchData(id) {
@@ -614,7 +614,10 @@ export default {
                     <hr style="border: 1px solid #000; background: #000;" size="1px" width="100%">
                     <p><img src="${imgUrl}" /</p>
         `;
-      let firstSingleName = this.claim[0].name;
+      let firstSingleName = "";
+        if(this.claim[0]){
+           firstSingleName = this.claim[0].name;
+        }
       let textStr = "";
       let imgStr = "";
       this.drawings.forEach((item) => {
@@ -687,7 +690,7 @@ export default {
       })
         .then((res) => {
           this.$message.success("提交成功");
-          this.$router.push({ path: "data-list" });
+          this.$router.push({ path: "case-list" });
         })
         .catch((err) => {
           this.$message.error(err.message);

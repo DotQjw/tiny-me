@@ -10,7 +10,6 @@
         @keyup.enter.native="fetchData"
       >
       </el-input>
-      <el-button type="primary" @click="handleEdit"> 创建案件 </el-button>
     </div>
     <el-table
       @sort-change="sortChange"
@@ -18,8 +17,6 @@
       :data="tableData"
       style="width: 100%"
     >
-      <el-table-column prop="caseNo" label="客户案号" width="180">
-      </el-table-column>
       <el-table-column prop="tianyuan" label="天元案号" width="180">
       </el-table-column>
       <el-table-column prop="proposalName" label="提案名称"> </el-table-column>
@@ -33,43 +30,12 @@
       <el-table-column sortable="custom" prop="status" label="状态">
         <template slot-scope="scope">
           <div>
-            <span>
-              <span
-                v-if="![1, 2].includes(scope.row.status) "
-                :class="`status-item status-item${scope.row.status}`"
-              >
-                {{ formatStatus(scope.row) }}</span
-              >
-              <el-popover v-else placement="bottom" width="50" trigger="click">
-                <div
-                  class="pause-case"
-                  v-if="scope.row.status === 1"
-                  @click="updateStatus(scope.row, 2)"
-                >
-                  暂停
-                </div>
-                <div
-                  class="doing-case"
-                  v-if="scope.row.status === 2"
-                  @click="updateStatus(scope.row, 1)"
-                >
-                  进行
-                </div>
-                <div class="cancel-case" @click="updateStatus(scope.row, 4)">
-                  撤案
-                </div>
-                <span
-                  :class="`status-item status-item${scope.row.status}`"
-                  slot="reference"
-                >
-                  {{ formatStatus(scope.row) }}</span
-                >
-              </el-popover>
+            <span :class="`status-item status-item${scope.row.status}`">
+              {{ formatStatus(scope.row) }}
             </span>
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="clientName" label="客户名称"> </el-table-column>
       <el-table-column prop="createdAt" label="时间" sortable="custom">
         <template slot-scope="scope">
           <div>
@@ -83,42 +49,33 @@
       <el-table-column prop="finishedAt" label="联系人" sortable="custom">
         <template slot-scope="scope">
           <div>
-            <div style="margin-bottom: 10px">
-              P1:{{ scope.row.createUserName }}
+            <div>
+              {{ scope.row.createUserName }}
             </div>
-            <div>P2:{{ scope.row.assistUserName || "-" }}</div>
           </div>
         </template>
       </el-table-column>
-
       <el-table-column fixed="right" label="操作" width="200">
         <template slot-scope="scope">
           <span>
             <el-button
-              @click="handleCheck(scope.row, 'review')"
-              v-if="scope.row.reviewStatus === 1 && scope.row.status === 1"
+              v-if="scope.row.status === 1"
+              :disabled="scope.row.reviewStatus === 1"
+              @click="handleEditRichText(scope.row)"
               type="text"
               size="small"
-              >审核</el-button
+              >撰写</el-button
             >
-            <el-button @click="handleEdit(scope.row)" type="text" size="small"
-              >编辑</el-button
-            >
-            <span
-              @click="handleRemove(scope.row)"
-              v-if="[2, 4].includes(scope.row.status)"
-              style="color: red; margin-left: 10px;font-size:12px; cursor: pointer"
-              >删除</span
-            >
-
-            <el-button
-              v-if="scope.row.status === 3"
-              @click="handleCheck(scope.row, 'check')"
-              type="text"
-              size="small"
-              style="margin-left: 5px"
-              >查看详情</el-button
-            >
+            <span>
+              <el-button
+                v-if="scope.row.status === 3"
+                @click="handleCheck(scope.row, 'check')"
+                type="text"
+                size="small"
+                style="margin-left: 5px"
+                >查看详情</el-button
+              >
+            </span>
           </span>
         </template>
       </el-table-column>
@@ -143,6 +100,7 @@ import { getList, updateStatus, deleteCase } from "@/api/table";
 export default {
   data() {
     return {
+      showPopover: false,
       pages: {
         total: 0,
         currentPage: 1,
@@ -163,7 +121,7 @@ export default {
     };
   },
   created() {
-    console.log("roles", this.$store.getters);
+    console.log("roles", this.$store.getters.roles);
     this.fetchData();
   },
   methods: {
@@ -181,7 +139,7 @@ export default {
       this.fetchData();
     },
     formatStatus(row) {
-      if(!row.status ) return ""
+      // if(row.status === 1 && row.reviewStatus  === 1) return '审核中'
       return this.statusList.find((v) => v.value === row.status).label;
     },
     handleRemove(row) {
@@ -197,7 +155,7 @@ export default {
         });
     },
     updateStatus(row, status) {
-      row.status =  null;
+      this.showPopover = true;
       updateStatus({
         id: row.id,
         status,
@@ -225,7 +183,6 @@ export default {
           this.tableLoading = false;
           this.tableData = res.data.list;
           this.pages.total = res.data.count;
-
         })
         .catch((err) => {
           this.tableLoading = false;

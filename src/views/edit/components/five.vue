@@ -258,13 +258,13 @@ export default {
         if (child.no === item.no) {
           console.log("找到啦", child);
           child.claimContent.push({
-            kernel: "添加的内核", //内核
+            kernel: "", //内核
             check: {
               necessaryStep: false,
               visible: false,
               logic: false,
             },
-            note: "备注", //备注
+            note: "", //备注
           });
           console.log("add", child);
         } else if (child.children) {
@@ -319,7 +319,8 @@ export default {
             realIndex: this.realIndex,
             children: [],
           };
-          if (!item.name) {
+          if (!item.name || item.isAdd) {
+            console.log('我是新增的走这里')
             obj.name = this.ancestorName + "";
           }
           this.claims.push(Object.assign({}, item, obj));
@@ -349,6 +350,7 @@ export default {
               parentNo: item.no,
               ancestorNo: item.ancestorNo,
               name: String(item.ancestorNo),
+              isAdd:true
             })
           );
         } else if (child.children) {

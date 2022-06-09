@@ -3,7 +3,7 @@
     <div class="page-main">
       <div class="box">
         <div class="custom-label">
-          <span> 实现方案 </span>
+          <span>本专利如何解决上述缺陷的</span>
           <span class="right-tool">
             <span class="tool-item" @click="openFileList('fixDefectMethod')">
               <i class="el-icon-paperclip"></i>

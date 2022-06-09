@@ -135,7 +135,7 @@ export default {
               if(res.role === 1){
                 this.$router.push({ path: "/guide" });
               }else{
-                this.$router.push({ path: "/data-list" });
+                this.$router.push({ path: "/case-list" });
               }
               this.loading = false;
             })
