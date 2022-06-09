@@ -365,7 +365,7 @@ export default {
         clearTimeout(this.timer);
       }
       this.timer = setTimeout(() => {
-        this.handleSave("autosave")
+        this.handleSave("autosave");
       }, 1000);
     },
     updateMainRichText(data) {
@@ -380,7 +380,7 @@ export default {
           this.mainTextOverLimit = true;
           this.$message.error("说明书摘要内容不能超过300个字");
         }
-        this.handleSave("autosave")
+        this.handleSave("autosave");
       }, 1000);
     },
     fetchData(id) {
@@ -415,8 +415,8 @@ export default {
         if (res.data.claim[0]) {
           this.handleClaim(res.data);
           this.addToRich("edit");
-        }else{
-          this.allContent = this.allContentTemp
+        } else {
+          this.allContent = this.allContentTemp;
         }
       });
     },
@@ -609,15 +609,17 @@ export default {
       });
     },
     handleRichText() {
-      const imgUrl = baseUrl() + this.abstractUrl;
-      const zhaiyaoImg = `<h1 class="custom" style="text-align: center;">附 图 摘 要</h1>
+      let zhaiyaoImg = `<h1 class="custom" style="text-align: center;">附 图 摘 要</h1>
                     <hr style="border: 1px solid #000; background: #000;" size="1px" width="100%">
-                    <p><img src="${imgUrl}" /</p>
         `;
+      if (this.abstractUrl) {
+        const imgUrl = baseUrl() + this.abstractUrl;
+        zhaiyaoImg += `<p><img src="${imgUrl}" /</p>`;
+      }
       let firstSingleName = "";
-        if(this.claim[0]){
-           firstSingleName = this.claim[0].name;
-        }
+      if (this.claim[0]) {
+        firstSingleName = this.claim[0].name;
+      }
       let textStr = "";
       let imgStr = "";
       this.drawings.forEach((item) => {
