@@ -45,6 +45,19 @@ export const constantRoutes = [
     hidden: false
   },
   {
+    path:'/account',
+    redirect:'/account-manage1',
+    component:Layout,
+    children:[
+      {
+        path: '/account-manage1',
+        name: '账号管理',
+        component: () => import('@/views/accountManage/index'),
+        meta: { title: '账号管理', icon: 'edit' }
+      },
+    ]     
+  },
+  {
     path:'/',
     redirect:'/data-list',
     component:LayoutTop,

@@ -67,9 +67,10 @@ service.interceptors.response.use(
           });
         });
       }
-      if (res.code === 10003) {
-        Message.error("参数错误，请重试");
-      }
+      // if (res.code === 10003) {
+      //   Message.error("参数错误，请重试");
+      //   return
+      // }
       // return res
       return Promise.reject(res);
     } else {

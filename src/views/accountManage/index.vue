@@ -16,13 +16,14 @@
         @keyup.enter.native="fetchData"
       >
       </el-input>
-      <el-button type="primary" @click="handleEdit"> 新增账号 </el-button>
+      <el-button type="primary" @click="handleEdit({})"> 新增账号 </el-button>
     </div>
     <el-table
       @sort-change="sortChange"
       v-loading="tableLoading"
       :data="tableData"
       style="width: 100%"
+      v-if="showTable"
     >
       <el-table-column prop="phoneNo" label="手机号" width="180">
       </el-table-column>
@@ -34,12 +35,12 @@
           <span
             style="margin-left: 10px; color: #409eff; cursor: pointer"
             @click="handleShow('showId')"
-            >{{ showId ? "隐藏" : "显示" }}</span
+            >{{ formatLabel() }}</span
           >
         </template>
         <template slot-scope="scope">
           <div>
-            {{ scope.row.address || "-" }}
+            {{ formatId(scope.row.idCard) || "-" }}
           </div>
         </template>
       </el-table-column>
@@ -60,9 +61,27 @@
             <el-button @click="handleEdit(scope.row)" type="text" size="small"
               >编辑</el-button
             >
-            <el-button @click="handleEdit(scope.row)" type="text" size="small"
+            <!-- <el-button @click="handleEdit(scope.row)" type="text" size="small"
               >更多</el-button
-            >
+            > -->
+            <el-popover placement="bottom" width="50" trigger="click">
+              <div
+                class="delete-suer"
+                v-if="scope.row.showDelete"
+                @click="handleDelete(scope.row)"
+              >
+                删除
+              </div>
+              <div class="edit-psw" @click="handleEditPsw(scope.row)">
+                修改密码
+              </div>
+              <span
+                slot="reference"
+                style="cursor: pointer; color: #409eff; font-size: 12px"
+              >
+                更多</span
+              >
+            </el-popover>
           </span>
           <span>
             <el-button
@@ -89,15 +108,25 @@
       :total="pages.total"
     >
     </el-pagination>
-    {{ showPassword }}
+
+    <edit v-if="showEdit" :show.sync="showEdit" :curData="curData" />
+    <editpsw v-if="showEditPsw" :show.sync="showEditPsw" :pswData="pswData" />
   </div>
 </template>
 <script>
-import { userList } from "@/api/table";
-
+import { userList, userDelete } from "@/api/table";
+import edit from "./edit.vue";
+import editpsw from "./editpsw.vue";
 export default {
+  components: { edit, editpsw },
   data() {
+    var that = this;
     return {
+      showTable: true,
+      curData: {},
+      showEdit: false,
+      showEditPsw: false,
+      pswData: {},
       role: 0,
       showPassword: false,
       showId: false,
@@ -123,18 +152,44 @@ export default {
     this.fetchData();
   },
   methods: {
+    formatId(id) {
+      if (!id) return "-";
+      if (this.showId) return id;
+      var ids = id.slice(0,14);
+      console.log('ids',ids,id)
+      return ids + "****";
+    },
+    formatLabel() {
+      return this.showId ? "隐藏" : "显示";
+    },
     formatRole(role) {
       return role === 1 ? "主办人" : "协办人";
     },
-    handleShow(type) {
-      if (type === "showId") {
-        this.showId = !this.showId;
-      } else {
-        this.showPassword = !this.showPassword;
-      }
-      this.$forceUpdate();
-      // this[type] = !this[type];
-      // console.log("this,", type, this[type]);
+    handleDelete(row) {
+      this.$confirm("确定要删除当前账号数据吗", "提示", {
+        confirmButtonText: "确定删除",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        userDelete({ id: row.id }).then((res) => {
+          this.$message.success("删除成功");
+          this.fetchData();
+        });
+      });
+    },
+    handleEditPsw(row) {
+      this.showEditPsw = true;
+      this.pswData = {
+        id: row.id,
+        username: row.username,
+      };
+    },
+    handleShow() {
+      this.showId = !this.showId;
+      this.showTable = false;
+      this.$nextTick(() => {
+        this.showTable = true;
+      });
     },
     sortChange(column, prop, order) {
       console.log({ column, prop, order });
@@ -205,16 +260,10 @@ export default {
         query: { id: row.id, type: type },
       });
     },
-    handleEdit(row) {
+    handleEdit(row = {}) {
       console.log("edit", row);
-      this.$router.push({ path: "/data-edit", query: { id: row.id } });
-    },
-    handleEditRichText(row) {
-      console.log("type");
-      this.$router.push({
-        path: "/rich-text-edit",
-        query: { id: row.id },
-      });
+      this.curData = row;
+      this.showEdit = true;
     },
     handleSizeChange(val) {
       this.pages.perPage = val;
@@ -249,6 +298,25 @@ export default {
   padding: 3px 8px;
   color: #ff7d00;
   background: #fff7e8;
+}
+.title-box {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.page-title {
+  flex: 1;
+}
+.delete-suer {
+  padding-left: 10px;
+  color: red;
+  margin-bottom: 6px;
+  cursor: pointer;
+}
+.edit-psw {
+  padding-left: 10px;
+  color: #409eff;
+  cursor: pointer;
 }
 </style>
 <style lang="scss">

@@ -1,23 +1,37 @@
 <template>
   <div>
     <div class="custom-navbar"><span @click="gotoList">首页</span> / 编辑</div>
-    <div style="float: right" v-if="type === 'review'">
-      <el-button type="plain" @click="handleWord()">下载文档</el-button>
-      <el-button type="danger" @click="handleReview('nopass')"
-        >打回修改</el-button
-      >
-      <el-button type="success" @click="handleReview('pass')"
-        >审核通过</el-button
-      >
+    <div v-if="!fetchDataLoading">
+      <div style="float: right;margin-bottom:20px;" v-if="type === 'review'">
+        <el-button type="plain" @click="handleWord()">下载文档</el-button>
+        <el-button type="danger" @click="handleReview('nopass')"
+          >打回修改</el-button
+        >
+        <el-button type="success" @click="handleReview('pass')"
+          >审核通过</el-button
+        >
+      </div>
+      <div class="iframeContent">
+        <iframe
+          v-if="pdfUrl"
+          :src="pdfUrl"
+          width="100%"
+          height="100%"
+          frameborder="0"
+        ></iframe>
+      </div>
     </div>
-    <div class="iframeContent">
-      <iframe
-        v-if="pdfUrl"
-        :src="pdfUrl"
-        width="100%"
-        height="100%"
-        frameborder="0"
-      ></iframe>
+
+    <div v-if="fetchDataLoading">
+      <div style="text-align: center">预览生成中，请耐心等候</div>
+      <div style="float: right">
+        <div class="custom-div"></div>
+        <div class="custom-div"></div>
+        <div class="custom-div"></div>
+      </div>
+      <div class="iframeContent gujiapin">
+        <div class="content"></div>
+      </div>
     </div>
   </div>
 </template>
@@ -30,13 +44,14 @@ export default {
     return {
       id: "",
       pdfUrl: "",
-      type:"check",
+      type: "check",
+      fetchDataLoading:true,
     };
   },
   created() {
     console.log("in", this.$route);
     this.id = this.$route.query.id;
-    this.type =  this.$route.query.type;
+    this.type = this.$route.query.type;
     if (this.id) {
       console.log("获取数据");
       this.getPdfUrl();
@@ -98,10 +113,12 @@ export default {
       download_description(param)
         .then((res) => {
           // this.closeLoading()
+          this.fetchDataLoading = false;
           this.pdfUrl = baseUrl() + res.data.url;
         })
         .catch((err) => {
           // this.closeLoading()
+          this.fetchDataLoading = false;
           this.$message.error(err.message);
         });
     },
@@ -123,7 +140,34 @@ export default {
   margin-bottom: 20px;
 }
 .iframeContent {
-  height: calc(100vh - 200px);
-  margin-top: 80px;
+  height: calc(100vh - 250px);
+  margin-top: 60px;
+}
+.gujiapin {
+  background: gray;
+  margin-top:80px;
+  .content {
+    width: 50%;
+    height: 100%;
+    background: gainsboro;
+    margin: 0 auto;
+    animation: blink 1.2s ease-in-out infinite;
+  }
+}
+.custom-div {
+  display: inline-block;
+  margin-left: 10px;
+  margin-top:20px;
+  width: 98px;
+  height: 40px;
+  background: gainsboro;
+  animation: blink 1.2s ease-in-out infinite;
+  border-radius: 4px;
+  // border:1px solid red;
+}
+@keyframes blink {
+  50% {
+    opacity: 0.5;
+  }
 }
 </style>

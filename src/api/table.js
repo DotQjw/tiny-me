@@ -134,3 +134,31 @@ export function userList(params) {
     params:params,
   })
 }
+export function userCreate(params) {
+  return request({
+    url: '/api/v1/user/create',
+    method: 'POSt',
+    data:params,
+  })
+}
+export function userEdit(params) {
+  return request({
+    url: '/api/v1/user/edit',
+    method: 'POSt',
+    data:params,
+  })
+}
+export function userDelete(params) {
+  return request({
+    url: '/api/v1/user/delete',
+    method: 'POSt',
+    data:params,
+  })
+}
+export function changePassword(params) {
+  return request({
+    url: '/api/v1/user/change_password',
+    method: 'POSt',
+    data:params,
+  })
+}

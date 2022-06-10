@@ -141,7 +141,7 @@ export default {
             })
             .catch((error) => {
               console.log('error',error)
-              this.$message.error('密码错误，请确认账号密码')
+              this.$message.error(error.message || '密码错误，请确认账号密码')
               this.loading = false;
             });
         } else {
