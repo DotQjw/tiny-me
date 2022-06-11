@@ -20,9 +20,7 @@
       :show-file-list="true"
       :before-upload="beforeUpload"
       :before-remove="beforeRemove"
-      multiple
       drag
-      :limit="3"
       :on-exceed="handleExceed"
       :file-list="fileList"
     >
@@ -54,6 +52,7 @@ export default {
     return {
       token: this.$store.getters.token || getToken(),
       fileList: [],
+      filename:'',
     };
   },
   created() {
@@ -66,8 +65,9 @@ export default {
     handleSuccess(response, file, fileList) {
       console.log("handleSuccess", { response, file, fileList });
       if(response.code === 0){
+        this.$message.success('文件上传成功');
         this.$emit('uploadFile',{
-          name:`文件${this.maxIndex}`,
+          name:this.filename,
           url:response.data.url,
           size:file.size
         })
@@ -85,6 +85,7 @@ export default {
     },
     beforeUpload(file){
       console.log('file',file)
+      this.filename = file.name
     },
     handleExceed(file) {
       console.log("handleExceed", file);

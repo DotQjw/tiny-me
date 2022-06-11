@@ -8,7 +8,7 @@
     width="480px"
   >
     <el-form :model="form" ref="form" label-width="100px" :rules="formRule">
-      <el-form-item label="客户案号：" prop="caseNo">
+      <el-form-item label="客户案号：">
         <el-input
           v-model="form.caseNo"
           class="custom-input"
@@ -92,7 +92,9 @@ export default {
         proposalName: [
           { required: true, message: "请输入提案名称", change: "blur" },
         ],
-        type1: [{ required: true, message: "请选择专利类型", change: "change" }],
+        type1: [
+          { required: true, message: "请选择专利类型", change: "change" },
+        ],
       },
       // form: {
       //   caseNo: "",
@@ -133,7 +135,10 @@ export default {
     },
     handleClose() {
       this.$emit("update:show", false);
-      this.$router.go(-1);
+      console.log('this.form',this.form)
+      if (!this.form.id) {
+        this.$router.go(-1);
+      }
     },
     handleMore() {
       this.showMore = true;

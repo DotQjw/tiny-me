@@ -72,6 +72,7 @@ export default {
   },
   data() {
     return {
+      maxLenght:this.maxIndex,
       fisrtTips: true,
       title: "准备录制",
       src: "",
@@ -164,6 +165,7 @@ export default {
       data.append("file", file);
       console.log("fileSize", this.recorder.fileSize);
       this.btnLoading = true;
+      console.log('this.recorder.duration',this.recorder.duration)
       uploadAudio(data)
         .then((res) => {
           console.log("res", res);
@@ -172,11 +174,12 @@ export default {
           this.btnLoading = false;
           this.recordType = "ready";
           this.$emit("uploadRecord", {
-            name: `录音${this.maxIndex}`,
+            name: `录音${this.maxLenght}`,
             url: res.data.url,
             size: this.recorder.fileSize,
             duration: parseInt(this.recorder.duration),
           });
+          this.maxLenght +=1;
         })
         .catch((err) => {
           console.log("err", err);

@@ -3,7 +3,7 @@
     <div class="page-main">
       <div class="box">
         <div class="custom-label">
-          <span> 本专利属于哪个技术领域 </span>
+          <span> 本专利应用在哪个领域 </span>
           <span class="right-tool">
             <span class="tool-item" @click="openFileList('domain')">
               <i class="el-icon-paperclip"></i>
@@ -112,7 +112,7 @@
     </div>
     <div class="bottom">
       <el-button type="primary" @click="saveData('next')">下一步</el-button>
-      <el-button type="success" @click="saveData('last')">上一步</el-button>
+      <el-button @click="saveData('last')">上一步</el-button>
       <el-button @click="saveData('save')">保 存</el-button>
     </div>
     <upload-file
@@ -185,10 +185,12 @@ export default {
     },
     uploadRecord(data) {
       this.formData[this.recordType]["recordFiles"].push(data);
+      this.saveData("autoFile");
       console.log("formData", this.formData[this.recordType]["recordFiles"]);
     },
     uploadFile(data) {
       this.formData[this.uploadFileType]["attachments"].push(data);
+      this.saveData("autoFile");
       console.log(
         "formData",
         this.formData[this.uploadFileType]["attachments"]

@@ -25,7 +25,7 @@
                   v-model="scope.row.name"
                 ></el-input>
                 <div v-else>
-                  <span>根据权利要求</span>
+                  <span>根据<span style="color:#409EFF;">权利要求</span></span>
                   <el-input
                     @input="nameInputChange($event, scope.row)"
                     v-model.number="scope.row.name"
@@ -110,7 +110,7 @@
                   :on-success="handleSuccess"
                   :before-upload="(file) => beforeUpload(file, scope.row)"
                 >
-                  <el-button size="small" type="primary">点击上传</el-button>
+                  <el-button size="small" class="el-icon-plus">点击上传</el-button>
                 </el-upload>
 
                 <el-input
@@ -137,7 +137,7 @@
     </div>
     <div class="bottom">
       <el-button type="primary" @click="saveData('submit')">提 交</el-button>
-      <el-button type="success" @click="saveData('last')">上一步</el-button>
+      <el-button @click="saveData('last')">上一步</el-button>
       <el-button @click="saveData('save')">保 存</el-button>
     </div>
   </div>
@@ -303,7 +303,7 @@ export default {
       });
     },
     handleArrayData(data) {
-      data.map((item) => {
+      data.map((item,index) => {
         this.realIndex += 1;
         if (item.no === item.parentNo && item.no === item.ancestorNo) {
           this.ancestorName = this.realIndex;
@@ -320,8 +320,8 @@ export default {
             children: [],
           };
           if (!item.name || item.isAdd) {
-            console.log('我是新增的走这里')
-            obj.name = this.ancestorName + "";
+            console.log('我是新增的走这里',data[index-1])
+            // obj.name = this.ancestorName + "";
           }
           this.claims.push(Object.assign({}, item, obj));
         }
@@ -342,14 +342,14 @@ export default {
       var template = cloneDeep(this.template);
       data.forEach((child, index) => {
         if (child.no === item.no) {
-          console.log("找到啦", child);
+          console.log("找到啦", child,item.realIndex);
           child.children = child.children ? child.children : [];
           child.children.push(
             Object.assign({}, template, {
               no: this.claims.length + 1,
               parentNo: item.no,
               ancestorNo: item.ancestorNo,
-              name: String(item.ancestorNo),
+              name: String(item.realIndex),
               isAdd:true
             })
           );
@@ -453,7 +453,7 @@ export default {
 <style lang="scss">
 .no-border-input {
   .el-textarea__inner {
-    border: 1px solid #fff !important;
+    // border: 1px solid #fff !important;
     margin: 10px 0;
     padding:5px 2px;
   }
@@ -472,6 +472,7 @@ export default {
     .el-input__inner {
       padding: 0 3px;
       border: 1px solid #fff !important;
+      color:#409EFF;
     }
   }
 }

@@ -31,7 +31,7 @@
     </div>
     <div class="bottom">
       <el-button type="primary" @click="saveData('next')">下一步</el-button>
-      <el-button type="success" @click="saveData('last')">上一步</el-button>
+      <el-button @click="saveData('last')">上一步</el-button>
       <el-button @click="saveData('save')">保 存</el-button>
     </div>
     <upload-file

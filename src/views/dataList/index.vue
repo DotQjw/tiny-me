@@ -16,16 +16,32 @@
       @sort-change="sortChange"
       v-loading="tableLoading"
       :data="tableData"
-      style="width: 100%"
+      style="width: 100%;cursor:pointer;"
     >
       <el-table-column prop="caseNo" label="客户案号" width="180">
+        <template slot-scope="scope">
+          <div @click="handleEdit(scope.row)">
+            {{ scope.row.caseNo }}
+          </div>
+        </template>
       </el-table-column>
       <el-table-column prop="tianyuan" label="天元案号" width="180">
+        <template slot-scope="scope">
+          <div @click="handleEdit(scope.row)">
+            {{ scope.row.tianyuan }}
+          </div>
+        </template>
       </el-table-column>
-      <el-table-column prop="proposalName" label="提案名称"> </el-table-column>
+      <el-table-column prop="proposalName" label="提案名称">
+        <template slot-scope="scope">
+          <div @click="handleEdit(scope.row)">
+            {{ scope.row.proposalName }}
+          </div>
+        </template>
+      </el-table-column>
       <el-table-column prop="patentName" label="专利名称">
         <template slot-scope="scope">
-          <div>
+          <div @click="handleEdit(scope.row)">
             {{ scope.row.patentName || "-" }}
           </div>
         </template>
@@ -35,7 +51,7 @@
           <div>
             <span>
               <span
-                v-if="![1, 2].includes(scope.row.status) "
+                v-if="![1, 2].includes(scope.row.status)"
                 :class="`status-item status-item${scope.row.status}`"
               >
                 {{ formatStatus(scope.row) }}</span
@@ -72,17 +88,17 @@
       <el-table-column prop="clientName" label="客户名称"> </el-table-column>
       <el-table-column prop="createdAt" label="时间" sortable="custom">
         <template slot-scope="scope">
-          <div>
+          <div @click="handleEdit(scope.row)">
             <div style="margin-bottom: 10px">
-              创建:{{ scope.row.createdAt }}
+              创建:{{ formatTime(scope.row.createdAt) }}
             </div>
-            <div>完成:{{ scope.row.finishedAt || "-" }}</div>
+            <div>完成:{{ formatTime(scope.row.finishedAt) || "-" }}</div>
           </div>
         </template>
       </el-table-column>
       <el-table-column prop="finishedAt" label="联系人" sortable="custom">
         <template slot-scope="scope">
-          <div>
+          <div @click="handleEdit(scope.row)">
             <div style="margin-bottom: 10px">
               P1:{{ scope.row.createUserName }}
             </div>
@@ -107,7 +123,12 @@
             <span
               @click="handleRemove(scope.row)"
               v-if="[2, 4].includes(scope.row.status)"
-              style="color: red; margin-left: 10px;font-size:12px; cursor: pointer"
+              style="
+                color: red;
+                margin-left: 10px;
+                font-size: 12px;
+                cursor: pointer;
+              "
               >删除</span
             >
 
@@ -167,6 +188,10 @@ export default {
     this.fetchData();
   },
   methods: {
+    formatTime(time) {
+      if (!time) return "-";
+      return time.slice(0, 16);
+    },
     sortChange(column, prop, order) {
       console.log({ column, prop, order });
       this.sortField = column.prop;
@@ -181,7 +206,7 @@ export default {
       this.fetchData();
     },
     formatStatus(row) {
-      if(!row.status ) return ""
+      if (!row.status) return "";
       return this.statusList.find((v) => v.value === row.status).label;
     },
     handleRemove(row) {
@@ -197,7 +222,7 @@ export default {
         });
     },
     updateStatus(row, status) {
-      row.status =  null;
+      row.status = null;
       updateStatus({
         id: row.id,
         status,
@@ -225,7 +250,6 @@ export default {
           this.tableLoading = false;
           this.tableData = res.data.list;
           this.pages.total = res.data.count;
-
         })
         .catch((err) => {
           this.tableLoading = false;

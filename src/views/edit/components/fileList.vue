@@ -8,14 +8,20 @@
   >
     <div class="dialog-main">
       <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-        <el-tab-pane label="录音文件" name="1"></el-tab-pane>
-        <el-tab-pane label="上传文件" name="2"></el-tab-pane>
+        <el-tab-pane
+          :label="`录音文件${recordAry.length}`"
+          name="1"
+        ></el-tab-pane>
+        <el-tab-pane
+          :label="`上传文件${fileAry.length}`"
+          name="2"
+        ></el-tab-pane>
       </el-tabs>
       <div v-if="activeName === '1'">
         <audio v-if="audioSrc" :src="audioSrc" controls></audio>
-        <div v-if="recordList && recordList.length">
+        <div v-if="recordAry && recordAry.length">
           <div
-            v-for="(item, index) in recordList"
+            v-for="(item, index) in recordAry"
             :key="index"
             class="list-item"
           >
@@ -29,15 +35,20 @@
                 @click="changeText(item)"
                 class="el-icon-refresh tool-icon"
               ></span>
+              <span @click="handleRemove(item,index,'recordAry')" class="el-icon-delete-solid tool-icon"></span>
             </span>
           </div>
         </div>
         <div v-else>还没有录音文件</div>
       </div>
       <div v-else>
-        <div v-if="fileList && fileList.length">
-          <div v-for="(item, index) in fileList" :key="index">
-            {{ item.name }}
+        <div v-if="fileAry && fileAry.length">
+          <div v-for="(item, index) in fileAry" :key="index"  class="list-item">
+            <span> {{ item.name }}</span>
+            <span class="tool-box">
+              <span @click="handleDownLoad(item)" class="el-icon-download tool-icon"></span>
+              <span @click="handleRemove(item,index,'fileAry')" class="el-icon-delete-solid tool-icon"></span>
+            </span>
           </div>
         </div>
         <div v-else>还没有上传文件</div>
@@ -47,7 +58,7 @@
 </template>
 <script>
 import { audioToText } from "@/api/table";
-import {baseUrl} from "@/utils/baseUrl"
+import { baseUrl } from "@/utils/baseUrl";
 
 export default {
   props: {
@@ -70,6 +81,8 @@ export default {
   },
   data() {
     return {
+      recordAry:this.recordList,
+      fileAry:this.fileList,
       copyText: "",
       activeName: "1",
       audioSrc: "",
@@ -77,20 +90,24 @@ export default {
     };
   },
   created() {
-    console.log("this.type", this.type, this.recordList, this.fileList);
+    console.log("this.type", this.type, this.recordAry, this.fileAry);
   },
   methods: {
     handleClick() {},
+    handleDownLoad(item){
+      const url = this.baseUrl + item.ur
+      window.open(url)
+    },
     handlePlay(item) {
       this.audioSrc = this.baseUrl + item.url;
       console.log("audioSrc", this.audioSrc);
     },
     async changeText(item) {
       this.$notify({
-          title: '提示',
-          message: '录音转文字中，请耐心等待',
-          duration: 3000
-        });
+        title: "提示",
+        message: "录音转文字中，请耐心等待",
+        duration: 3000,
+      });
       const res = await audioToText({ url: item.url });
       if (res.data && res.data.text) {
         // this.$message.success("录音转文字成功");
@@ -109,6 +126,10 @@ export default {
           this.$message.success("复制失败,请重试");
         }
       );
+    },
+    handleRemove(item,index,type){
+      this[type].splice(index,1);
+      this.$parent.saveData('updaetFile')
     },
     handleClose() {
       this.$emit("update:show", false);

@@ -3,40 +3,41 @@
     <div class="custom-navbar" ><span @click="gotoList">首页</span> / 编辑</div>
     <div class="steps-box">
       <el-steps :active="active" finish-status="success" align-center>
-        <el-step title="技术领域" @click.native="changeSteps(1)"></el-step>
-        <el-step title="背景技术" @click.native="changeSteps(2)"></el-step>
-        <el-step title="方案描述 " @click.native="changeSteps(3)"></el-step>
-        <el-step title="实现方案" @click.native="changeSteps(4)"></el-step>
-        <el-step title="权利要求" @click.native="changeSteps(5)"></el-step>
+        <el-step title="技术领域" @click.native="changeSteps(0)"></el-step>
+        <el-step title="背景技术" @click.native="changeSteps(1)"></el-step>
+        <el-step title="方案描述 " @click.native="changeSteps(2)"></el-step>
+        <el-step title="实现方案" @click.native="changeSteps(3)"></el-step>
+        <el-step title="权利要求" @click.native="changeSteps(4)"></el-step>
       </el-steps>
     </div>
+    <!-- <custom-step></custom-step> -->
     <first
-      v-if="active === 1"
+      v-if="active === 0"
       @saveData="saveData"
       :id="formData.id"
       :techArea.sync="formData.techArea"
       :type="type"
     />
     <second
-      v-if="active === 2"
+      v-if="active === 1"
       @saveData="saveData"
       :secondStepsData="secondStepsData"
       :id="formData.id"
     />
     <third
-      v-if="active === 3"
+      v-if="active === 2"
       @saveData="saveData"
       :idea="formData.idea"
       :id="formData.id"
     />
     <four
-      v-if="active === 4"
+      v-if="active === 3"
       @saveData="saveData"
       :fixDefectMethod="formData.fixDefectMethod"
       :id="formData.id"
     />
     <five
-      v-if="active === 5"
+      v-if="active === 4"
       @saveData="saveData"
       :claimData="formData.claim"
     />
@@ -50,6 +51,7 @@ import third from "./components/third.vue";
 import four from "./components/four.vue";
 import five from "./components/five.vue";
 import createCase from "./components/createCase";
+import customStep from "./components/customStep.vue"
 import {
   patentDetail,
   implementPlan,
@@ -58,13 +60,12 @@ import {
   planOutline,
   saveClaim,
 } from "@/api/table";
-
 export default {
-  components: { first, second, third, four, five, createCase },
+  components: { first, second, third, four, five, createCase,customStep },
 
   data() {
     return {
-      active: null,
+      active: 0,
       type: "add",
       id: "",
       showDilag: false,
@@ -149,7 +150,7 @@ export default {
       console.log("获取数据");
       this.getDetail();
     } else {
-      this.showDilag = true;
+      this.showDilag = false;
     }
   },
   methods: {
@@ -175,7 +176,7 @@ export default {
           assistUserName:data.assistUserName
         };
         if (!this.active) {
-          this.active = 1;
+          this.active = 0;
         }
         this.showDilag = true;
       });
@@ -290,7 +291,7 @@ export default {
     },
     updateId(id) {
       this.secondStepsData.id = this.formData.id = id;
-      this.active = 1;
+      this.active = 0;
     },
     gotoList(){
        this.$router.push({ path: "/data-list" });
