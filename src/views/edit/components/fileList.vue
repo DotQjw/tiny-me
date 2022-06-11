@@ -95,7 +95,7 @@ export default {
   methods: {
     handleClick() {},
     handleDownLoad(item){
-      const url = this.baseUrl + item.ur
+      const url = this.baseUrl + item.url
       window.open(url)
     },
     handlePlay(item) {

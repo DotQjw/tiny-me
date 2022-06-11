@@ -3,31 +3,13 @@
     <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
 
     <breadcrumb class="breadcrumb-container" />
-
-    <div class="right-menu">
-      <el-dropdown class="avatar-container" trigger="click">
-        <div class="avatar-wrapper">
-          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
-          <i class="el-icon-caret-bottom" />
-        </div>
-        <el-dropdown-menu slot="dropdown" class="user-dropdown">
-          <router-link to="/">
-            <el-dropdown-item>
-              Home
-            </el-dropdown-item>
-          </router-link>
-          <!-- <a target="_blank" href="https://github.com/PanJiaChen/vue-admin-template/">
-            <el-dropdown-item>Github</el-dropdown-item>
-          </a>
-          <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
-            <el-dropdown-item>Docs</el-dropdown-item>
-          </a> -->
-          <el-dropdown-item divided @click.native="logout">
-            <span style="display:block;">退出登录</span>
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
+    <div class="big-title">
+      <span>账号管理</span>
+      <span class="sub-title">
+        你可以在这里增加、删除、编辑主办人或者协办人的账号信息
+      </span>
     </div>
+  
   </div>
 </template>
 
@@ -61,7 +43,7 @@ export default {
 
 <style lang="scss" scoped>
 .navbar {
-  height: 50px;
+  height: 80px;
   overflow: hidden;
   position: relative;
   background: #fff;
@@ -83,7 +65,24 @@ export default {
   .breadcrumb-container {
     float: left;
   }
-
+  .big-title{
+    // margin-top:50px;
+    position: absolute;
+    top:50px;
+    font-size: 18px;
+    font-weight: bold;
+    left:20px;
+  }
+  .sub-title{
+    position: relative;
+    border-left:1px solid #E5E6EB;
+    font-size: 14px;
+    color: #86909C;
+    margin-left:10px;
+    padding-left:10px;
+    font-weight: 400;
+    top:-2px;
+  }
   .right-menu {
     float: right;
     height: 100%;

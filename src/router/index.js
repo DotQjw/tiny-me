@@ -46,14 +46,14 @@ export const constantRoutes = [
   },
   {
     path:'/account',
-    redirect:'/account-manage1',
+    redirect:'/account-manage',
     component:Layout,
     children:[
       {
-        path: '/account-manage1',
+        path: '/account-manage',
         name: '账号管理',
         component: () => import('@/views/accountManage/index'),
-        meta: { title: '账号管理', icon: 'edit' }
+        meta: { title: '账号管理', icon: 'table' }
       },
     ]     
   },
@@ -92,13 +92,13 @@ export const constantRoutes = [
         component: () => import('@/views/review/index'),
         meta: { title: '审核', icon: 'edit' }
       },
-      {
-        path: '/account-manage',
-        name: '账号管理',
-        component: () => import('@/views/accountManage/index'),
-        meta: { title: '账号管理', icon: 'edit' }
+      // {
+      //   path: '/account-manage',
+      //   name: '账号管理',
+      //   component: () => import('@/views/accountManage/index'),
+      //   meta: { title: '账号管理', icon: 'edit' }
         
-      }
+      // }
     ]
   },
   {

@@ -64,9 +64,15 @@
 </template>
 <script>
 export default {
+  props:{
+    active:{
+      type:Number,
+      default:0
+    }
+  },
   data() {
     return {
-      active: 1,
+      // active: 1,
       content1: true,
       content2: false,
       content3: true,
@@ -80,7 +86,8 @@ export default {
   },
   methods: {
     handleClick(index) {
-      this.active = index;
+      // this.active = index;
+      this.$emit('changeSteps',+index);
     },
   },
 };

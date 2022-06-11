@@ -2,42 +2,42 @@
   <div>
     <div class="custom-navbar" ><span @click="gotoList">首页</span> / 编辑</div>
     <div class="steps-box">
-      <el-steps :active="active" finish-status="success" align-center>
+      <!-- <el-steps :active.sync="active" finish-status="success" align-center>
         <el-step title="技术领域" @click.native="changeSteps(0)"></el-step>
         <el-step title="背景技术" @click.native="changeSteps(1)"></el-step>
         <el-step title="方案描述 " @click.native="changeSteps(2)"></el-step>
         <el-step title="实现方案" @click.native="changeSteps(3)"></el-step>
         <el-step title="权利要求" @click.native="changeSteps(4)"></el-step>
-      </el-steps>
+      </el-steps> -->
     </div>
-    <!-- <custom-step></custom-step> -->
+    <custom-step  :active="active"  @changeSteps="changeSteps"></custom-step>
     <first
-      v-if="active === 0"
+      v-if="active === 1"
       @saveData="saveData"
       :id="formData.id"
       :techArea.sync="formData.techArea"
       :type="type"
     />
     <second
-      v-if="active === 1"
+      v-if="active === 2"
       @saveData="saveData"
       :secondStepsData="secondStepsData"
       :id="formData.id"
     />
     <third
-      v-if="active === 2"
+      v-if="active === 3"
       @saveData="saveData"
       :idea="formData.idea"
       :id="formData.id"
     />
     <four
-      v-if="active === 3"
+      v-if="active === 4"
       @saveData="saveData"
       :fixDefectMethod="formData.fixDefectMethod"
       :id="formData.id"
     />
     <five
-      v-if="active === 4"
+      v-if="active === 5"
       @saveData="saveData"
       :claimData="formData.claim"
     />
@@ -65,7 +65,7 @@ export default {
 
   data() {
     return {
-      active: 0,
+      active: 1,
       type: "add",
       id: "",
       showDilag: false,
@@ -176,7 +176,7 @@ export default {
           assistUserName:data.assistUserName
         };
         if (!this.active) {
-          this.active = 0;
+          this.active = 1;
         }
         this.showDilag = true;
       });
@@ -286,12 +286,13 @@ export default {
       });
     },
     changeSteps(index) {
+      console.log('index',index)
       if (index >= this.active) return;
       this.active = index;
     },
     updateId(id) {
       this.secondStepsData.id = this.formData.id = id;
-      this.active = 0;
+      this.active = 1;
     },
     gotoList(){
        this.$router.push({ path: "/data-list" });
