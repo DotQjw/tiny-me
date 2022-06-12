@@ -12,8 +12,8 @@ const getDefaultState = () => {
 };
 
 const state = {
-  userInfo:JSON.parse(localStorage.getItem("USER_INFO")) || {}
-}
+  userInfo: JSON.parse(localStorage.getItem("USER_INFO")) || {},
+};
 
 const mutations = {
   RESET_STATE: (state) => {
@@ -36,7 +36,7 @@ const mutations = {
     state.avatar = avatar;
   },
   SET_USER_INFO(state, data) {
-    console.log('data',data)
+    console.log("data", data);
     state.userInfo = data;
     localStorage.setItem("USER_INFO", JSON.stringify(data));
   },
@@ -53,7 +53,12 @@ const actions = {
           // commit("SET_TOKEN", data.token);
           // commit("SET_NAME", data.username);
           // commit("SET_ROLES", data.role);
-          commit("SET_USER_INFO",{token: data.token,username:data.username,role:data.role})
+          commit("SET_USER_INFO", {
+            token: data.token,
+            username: data.username,
+            role: data.role,
+            isAdmin: data.isAdmin,
+          });
           setToken(data.token);
           // localStorage.setItem('token',data.token)
           console.log("出来了");

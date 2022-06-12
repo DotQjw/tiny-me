@@ -10,18 +10,27 @@
         @keyup.enter.native="fetchData"
       >
       </el-input>
-      <el-button type="primary" @click="handleEdit"> 创建案件 </el-button>
+      <el-button type="primary" @click="handleCreate"> 创建案件 </el-button>
     </div>
     <el-table
       @sort-change="sortChange"
       v-loading="tableLoading"
       :data="tableData"
-      style="width: 100%;cursor:pointer;"
+      style="width: 100%; cursor: pointer"
     >
       <el-table-column prop="caseNo" label="客户案号" width="180">
         <template slot-scope="scope">
           <div @click="handleEdit(scope.row)">
-            {{ scope.row.caseNo }}
+            <el-tooltip
+              class="item"
+              effect="dark"
+              content="点击进入撰写流程"
+              placement="bottom-start"
+            >
+              <div>
+                {{ scope.row.caseNo }}
+              </div>
+            </el-tooltip>
           </div>
         </template>
       </el-table-column>
@@ -86,7 +95,12 @@
         </template>
       </el-table-column>
       <el-table-column prop="clientName" label="客户名称"> </el-table-column>
-      <el-table-column prop="createdAt" label="时间" sortable="custom">
+      <el-table-column
+        prop="createdAt"
+        label="时间"
+        width="180px"
+        sortable="custom"
+      >
         <template slot-scope="scope">
           <div @click="handleEdit(scope.row)">
             <div style="margin-bottom: 10px">
@@ -96,7 +110,12 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="finishedAt" label="联系人" sortable="custom">
+      <el-table-column
+        prop="finishedAt"
+        width="140px;"
+        label="联系人"
+        sortable="custom"
+      >
         <template slot-scope="scope">
           <div @click="handleEdit(scope.row)">
             <div style="margin-bottom: 10px">
@@ -117,7 +136,7 @@
               size="small"
               >审核</el-button
             >
-            <el-button @click="handleEdit(scope.row)" type="text" size="small"
+            <el-button @click="handleCreate(scope.row)" type="text" size="small"
               >编辑</el-button
             >
             <span
@@ -156,14 +175,21 @@
       :total="pages.total"
     >
     </el-pagination>
+    <create-case
+      v-if="showDialog"
+      :createData="createData"
+      :show.sync="showDialog"
+    />
   </div>
 </template>
 <script>
 import { getList, updateStatus, deleteCase } from "@/api/table";
-
+import createCase from "@/views/commonComponents/createCase.vue";
 export default {
+  components: { createCase },
   data() {
     return {
+      showDialog: false,
       pages: {
         total: 0,
         currentPage: 1,
@@ -263,8 +289,23 @@ export default {
         query: { id: row.id, type: type },
       });
     },
+    handleCreate(data) {
+      this.createData = {};
+      if (data.id) {
+        this.createData = {
+          id: data.id,
+          caseNo: data.caseNo,
+          tianyuan: data.tianyuan,
+          clientName: data.clientName,
+          proposalName: data.proposalName,
+          type: data.type,
+          assistUserId: data.assistUserId,
+          assistUserName: data.assistUserName,
+        };
+      }
+      this.showDialog = true;
+    },
     handleEdit(row) {
-      console.log("edit", row);
       this.$router.push({ path: "/data-edit", query: { id: row.id } });
     },
     handleEditRichText(row) {
@@ -286,6 +327,12 @@ export default {
   },
 };
 </script>
+<style lang="scss">
+.el-table td,
+.el-table th {
+  vertical-align: text-top;
+}
+</style>
 <style lang="scss" scoped>
 .page {
   &-title {

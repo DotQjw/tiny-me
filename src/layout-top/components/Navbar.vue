@@ -31,7 +31,7 @@
         </el-dropdown-menu>
       </el-dropdown>
     </div>
-        <span class="account" @click="gotoAccount">账号管理</span>
+    <span v-if="userInfo.isAdmin" class="account" @click="gotoAccount">账号管理</span>
   </div>
 </template>
 
@@ -46,11 +46,14 @@ export default {
     Hamburger,
   },
   computed: {
-    ...mapGetters(["sidebar", "avatar", "name"]),
+    ...mapGetters(["sidebar", "avatar", "name",'userInfo']),
+  },
+  created(){
+  console.log('userInfo',this.userInfo)
   },
   methods: {
-    gotoAccount(){
-      window.open('/#/account-manage')
+    gotoAccount() {
+      window.open("/#/account-manage");
     },
     toggleSideBar() {
       this.$store.dispatch("app/toggleSideBar");

@@ -41,7 +41,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="kernel" label="内核">
+          <el-table-column prop="kernel" min-width="150px" label="内核">
             <template slot-scope="scope">
               <span>
                 <div
@@ -451,6 +451,10 @@ export default {
 };
 </script>
 <style lang="scss">
+.el-table td,
+.el-table th {
+  vertical-align: text-top;
+}
 .no-border-input {
   .el-textarea__inner {
     // border: 1px solid #fff !important;

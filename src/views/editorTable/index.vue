@@ -95,7 +95,7 @@
   </div>
 </template>
 <script>
-import { getList, updateStatus, deleteCase } from "@/api/table";
+import { getList, deleteCase } from "@/api/table";
 
 export default {
   data() {
@@ -148,20 +148,6 @@ export default {
       })
         .then((res) => {
           this.$message.success("删除成功");
-          this.fetchData();
-        })
-        .catch((err) => {
-          this.$message.error(res.message);
-        });
-    },
-    updateStatus(row, status) {
-      this.showPopover = true;
-      updateStatus({
-        id: row.id,
-        status,
-      })
-        .then((res) => {
-          this.$message.success("状态更新成功");
           this.fetchData();
         })
         .catch((err) => {
@@ -229,7 +215,7 @@ export default {
 .status-item {
   display: inline-block;
   padding: 1px 8px;
-  cursor: pointer;
+  // cursor: pointer;
 }
 .status-item1 {
   color: #00b42a;

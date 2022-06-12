@@ -4,41 +4,27 @@
       <div class="sub" @click="handleClick(1)">管理案件</div>
       <div class="sub" @click="handleClick(2)">创建案件</div>
     </div>
+    <create-case
+      v-if="showDialog"
+      :createData="createData"
+      :show.sync="showDialog"
+    />
   </div>
 </template>
 
 <script>
-import { validUsername } from "@/utils/validate";
+import createCase from "@/views/commonComponents/createCase.vue";
 
 export default {
-  name: "Login",
+  name: "daohan",
+  components: { createCase },
   data() {
-    const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error("Please enter the correct user name"));
-      } else {
-        callback();
-      }
-    };
-    const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error("The password can not be less than 6 digits"));
-      } else {
-        callback();
-      }
-    };
     return {
+      showDialog:false,
+      createData:{},
       loginForm: {
         username: "admin",
         password: "",
-      },
-      loginRules: {
-        username: [
-          { required: true, trigger: "blur", validator: validateUsername },
-        ],
-        password: [
-          { required: true, trigger: "blur", validator: validatePassword },
-        ],
       },
       loading: false,
       passwordType: "password",
@@ -54,48 +40,47 @@ export default {
     },
   },
   methods: {
-    handleClick(index){
-        console.log('index',index)
-        if(index === 1){
-          this.$router.push({path:'/data-list'})
-        }else{
-          this.$router.push({path:'/data-edit',query:{type:'add'}})
-        }
+    handleClick(index) {
+      console.log("index", index);
+      if (index === 1) {
+        this.$router.push({ path: "/data-list" });
+      } else {
+        this.showDialog = true;
+        // this.$router.push({ path: "/data-edit", query: { type: "add" } });
+      }
     },
   },
 };
 </script>
-
-
 
 <style lang="scss" scoped>
 $bg: #f8f8f8;
 $dark_gray: #889aa4;
 $light_gray: #eee;
 
-.box{
-    width: 300px;
-    height: 300px;
-    // border:2px solid palegoldenrod;
-    // background: skyblue;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: auto;
-    .sub{
-        text-align: center;
-        background: #fff;
-        // height: 50%;
-        margin-top:30px;
-        padding:30px 50px;
+.box {
+  width: 300px;
+  height: 300px;
+  // border:2px solid palegoldenrod;
+  // background: skyblue;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  .sub {
+    text-align: center;
+    background: #fff;
+    // height: 50%;
+    margin-top: 30px;
+    padding: 30px 50px;
 
-        // line-height: 100px;
-        // border: 1px solid red;
-        font-weight: bold;
-        cursor: pointer;
-    }
+    // line-height: 100px;
+    // border: 1px solid red;
+    font-weight: bold;
+    cursor: pointer;
+  }
 }
 .login-container {
   min-height: 100%;

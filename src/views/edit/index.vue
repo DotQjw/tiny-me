@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="custom-navbar" ><span @click="gotoList">首页</span> / 编辑</div>
+    <div class="custom-navbar"><span @click="gotoList">首页</span> / 编辑</div>
     <div class="steps-box">
       <!-- <el-steps :active.sync="active" finish-status="success" align-center>
         <el-step title="技术领域" @click.native="changeSteps(0)"></el-step>
@@ -10,12 +10,16 @@
         <el-step title="权利要求" @click.native="changeSteps(4)"></el-step>
       </el-steps> -->
     </div>
-    <custom-step  :active="active"  @changeSteps="changeSteps"></custom-step>
+    <custom-step
+      :active="active"
+      @changeSteps="changeSteps"
+      :steps.sync="steps"
+    ></custom-step>
     <first
       v-if="active === 1"
       @saveData="saveData"
       :id="formData.id"
-      :techArea.sync="formData.techArea"
+      :techArea="formData.techArea"
       :type="type"
     />
     <second
@@ -41,7 +45,6 @@
       @saveData="saveData"
       :claimData="formData.claim"
     />
-    <create-case v-if="showDilag" :createData="createData" @updateId="updateId" :show.sync="showDilag" />
   </div>
 </template>
 <script>
@@ -50,8 +53,7 @@ import second from "./components/second.vue";
 import third from "./components/third.vue";
 import four from "./components/four.vue";
 import five from "./components/five.vue";
-import createCase from "./components/createCase";
-import customStep from "./components/customStep.vue"
+import customStep from "./components/customStep.vue";
 import {
   patentDetail,
   implementPlan,
@@ -61,15 +63,80 @@ import {
   saveClaim,
 } from "@/api/table";
 export default {
-  components: { first, second, third, four, five, createCase,customStep },
-
+  components: { first, second, third, four, five, customStep },
+  watch: {
+    formData: {
+      handler(n, o) {
+        console.log("formData", n, o);
+        // console.log('n.techArea',n.techArea)
+        if (n.techArea) {
+          console.log("步骤一");
+          this.steps.content1 = true;
+        } else {
+          this.steps.content1 = false;
+        }
+        const domain = n.domain;
+        const painPoint = n.painPoint;
+        const currentSolution = n.currentSolution;
+        const pendingDefect = n.pendingDefect;
+        const idea = n.idea;
+        const fixDefectMethod = n.fixDefectMethod;
+        if (
+          domain.text ||
+          domain.attachments.length ||
+          domain.recordFiles.length ||
+          painPoint.text ||
+          painPoint.attachments.length ||
+          painPoint.recordFiles.length ||
+          currentSolution.text ||
+          currentSolution.attachments.length ||
+          currentSolution.recordFiles.length ||
+          pendingDefect.text ||
+          pendingDefect.attachments.length ||
+          pendingDefect.recordFiles.length
+        ) {
+          console.log("contetn2 ok");
+          this.steps.content2 = true;
+        } else {
+          console.log("contetn2");
+          this.steps.content2 = false;
+        }
+        if (idea.text || idea.attachments.length || idea.recordFiles.length) {
+          this.steps.content3 = true;
+        } else {
+          this.steps.content3 = false;
+        }
+        if (
+          fixDefectMethod.text ||
+          fixDefectMethod.attachments.length ||
+          fixDefectMethod.attachments.length
+        ) {
+          this.steps.content4 = true;
+        } else {
+          this.steps.content4 = false;
+        }
+        if (n.claim[0]) {
+          this.steps.content5 = true;
+        } else {
+          this.steps.content5 = false;
+        }
+      },
+      immediate: true,
+      deep: true,
+    },
+  },
   data() {
     return {
-      active: 1,
+      steps: {
+        content1: false,
+        content2: false,
+        content3: false,
+        content4: false,
+        content5: false,
+      },
+      active: 0,
       type: "add",
       id: "",
-      showDilag: false,
-      createData:{},
       secondStepsData: {
         id: "",
         domain: {
@@ -149,8 +216,6 @@ export default {
     if (this.formData.id) {
       console.log("获取数据");
       this.getDetail();
-    } else {
-      this.showDilag = false;
     }
   },
   methods: {
@@ -158,6 +223,7 @@ export default {
       patentDetail({ id: this.formData.id }).then((res) => {
         console.log("res", res);
         let data = (this.formData = res.data);
+        console.log('formData^^^^^',this.formData.techArea)
         this.secondStepsData = Object.assign(this.secondStepsData, {
           id: data.id,
           domain: data.domain,
@@ -165,20 +231,9 @@ export default {
           currentSolution: data.currentSolution,
           pendingDefect: data.pendingDefect,
         });
-        this.createData = {
-          id:data.id,
-          caseNo: data.caseNo,
-          tianyuan: data.tianyuan,
-          clientName: data.clientName,
-          proposalName: data.proposalName,
-          type: data.type,
-          assistUserId: data.assistUserId,
-          assistUserName:data.assistUserName
-        };
         if (!this.active) {
           this.active = 1;
         }
-        this.showDilag = true;
       });
     },
     saveData(data) {
@@ -286,17 +341,17 @@ export default {
       });
     },
     changeSteps(index) {
-      console.log('index',index)
-      if (index >= this.active) return;
+      console.log("index", index);
+      // if (index >= this.active) return;
       this.active = index;
     },
     updateId(id) {
       this.secondStepsData.id = this.formData.id = id;
       this.active = 1;
     },
-    gotoList(){
-       this.$router.push({ path: "/data-list" });
-    }
+    gotoList() {
+      this.$router.push({ path: "/data-list" });
+    },
   },
 };
 </script>
