@@ -209,12 +209,17 @@
       <!-- <div class="custom-title">附图</div> -->
       <div class="patent-name-box">
         <div class="patent-name-title" style="line-height: 20px">附图</div>
-        <span
-          class="el-icon-picture-outline addimg"
-          v-if="drawings.length"
-          @click="handleUpload"
-          >添加附图</span
-        >
+        <div class="main-add-img">
+          <span
+            class="el-icon-picture-outline"
+            style="font-size: 10px"
+            v-if="drawings.length"
+            @click="handleUpload"
+          ></span>
+          <span class="addimg" v-if="drawings.length" @click="handleUpload"
+            >添加附图</span
+          >
+        </div>
       </div>
       <div class="custom-tips" v-if="!drawings.length">你还没有任何附图</div>
       <span
@@ -241,8 +246,8 @@
 
     <div class="bottom-btn">
       <el-button type="primary" @click="handleSave('submit')">提 交</el-button>
-      <el-button type="success" @click="handleSave('preview')">预 览</el-button>
-      <el-button type="warning" @click="handleSave('save')">保 存</el-button>
+      <el-button type="" @click="handleSave('preview')">预 览</el-button>
+      <el-button type="plain" @click="handleSave('save')">保 存</el-button>
     </div>
 
     <upload-file
@@ -687,16 +692,22 @@ export default {
         });
     },
     handleSubmitData() {
-      submitData({
-        id: this.detailData.id,
-      })
-        .then((res) => {
-          this.$message.success("提交成功");
-          this.$router.push({ path: "case-list" });
+      this.$confirm("提交后将进入审核流程，文档不能再次编辑", "提示", {
+        confirmButtonText: "提交",
+        cancelButtonText: "返回编辑",
+        type: "warning",
+      }).then(() => {
+        submitData({
+          id: this.detailData.id,
         })
-        .catch((err) => {
-          this.$message.error(err.message);
-        });
+          .then((res) => {
+            this.$message.success("提交成功");
+            this.$router.push({ path: "case-list" });
+          })
+          .catch((err) => {
+            this.$message.error(err.message);
+          });
+      });
     },
     handleImgMark() {
       const id = this.imgMarkList.length + 1;
@@ -947,8 +958,9 @@ export default {
   width: 100%;
   // min-height: 195vh;
   margin-top: 20px;
-  box-shadow: -2px 2px 100px gainsboro;
-  padding: 30px;
+  // box-shadow: -2px 2px 100px gainsboro;
+  border: 1px solid #f2f3f5;
+  padding: 24px;
   border-radius: 8px;
   .box1-content {
     display: flex;
@@ -1001,27 +1013,40 @@ export default {
   margin-top: 20px;
   border-radius: 8px;
   background: #fff;
-  box-shadow: -2px 2px 100px gainsboro;
-  padding: 30px;
+  border: 1px solid #f2f3f5;
+  // box-shadow: -2px 2px 100px gainsboro;
+  padding: 24px;
 }
 #box2 {
   margin-top: 20px;
   border-radius: 8px;
   background: #fff;
-  box-shadow: -2px 2px 100px gainsboro;
-  padding: 30px;
+  // box-shadow: -2px 2px 100px f2f3f5;
+  border: 1px solid #f2f3f5;
+  padding: 24px;
 }
 #box3 {
   margin-top: 20px;
   border-radius: 8px;
   background: #fff;
-  box-shadow: -2px 2px 100px gainsboro;
-  padding: 30px;
+  // box-shadow: -2px 2px 100px gainsboro;
+  border: 1px solid #f2f3f5;
+  padding: 24px;
+}
+.main-add-img {
+  display: inline-block;
+  // height: 20px;
+  padding: 5px 4px 5px 16px;
+  background: #f2f3f5;
+  font-size: 14px;
 }
 .addimg {
   cursor: pointer;
   background: #f2f3f5;
   padding: 5px 12px;
+  font-size: 14px;
+  line-height: 22px;
+  // margin-left:10px;
 }
 .left-tool {
   cursor: pointer;
@@ -1099,7 +1124,7 @@ export default {
   width: 150px;
   padding: 5px 20px;
   background: #f2f3f5;
-  margin-right: 10px;
+  margin-left: 15px;
   cursor: pointer;
   margin-top: 20px;
 }

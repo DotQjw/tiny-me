@@ -1,8 +1,8 @@
 <template>
-  <div class="login-container">
+  <div class="guide-container">
     <div class="box">
-      <div class="sub" @click="handleClick(1)">管理案件</div>
       <div class="sub" @click="handleClick(2)">创建案件</div>
+      <div class="sub" @click="handleClick(1)">管理案件</div>
     </div>
     <create-case
       v-if="showDialog"
@@ -20,8 +20,8 @@ export default {
   components: { createCase },
   data() {
     return {
-      showDialog:false,
-      createData:{},
+      showDialog: false,
+      createData: {},
       loginForm: {
         username: "admin",
         password: "",
@@ -75,6 +75,7 @@ $light_gray: #eee;
     // height: 50%;
     margin-top: 30px;
     padding: 30px 50px;
+    border-radius: 8px;
 
     // line-height: 100px;
     // border: 1px solid red;
@@ -82,7 +83,7 @@ $light_gray: #eee;
     cursor: pointer;
   }
 }
-.login-container {
+.guide-container {
   min-height: 100%;
   width: 100%;
   background-color: $bg;

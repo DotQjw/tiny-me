@@ -25,17 +25,25 @@
             :key="index"
             class="list-item"
           >
-            <span>{{ item.name }} </span>
-            <span class="tool-box">
-              <span
-                @click="handlePlay(item)"
-                class="el-icon-video-play tool-icon"
-              ></span>
+            <div class="item-box">
+              <i class="el-icon-service" style="margin: 0 13px"></i>
+              <span @click="handlePlay(item)" style="cursor:pointer;">{{ item.name }} </span>
               <span
                 @click="changeText(item)"
+                style="float: right; margin-top: 7px;"
                 class="el-icon-refresh tool-icon"
+                >&#x3000;转文字</span
+              >
+            </div>
+            <span class="tool-box">
+              <!-- <span
+                @click="handlePlay(item)"
+                class="el-icon-video-play tool-icon"
+              ></span> -->
+              <span
+                @click="handleRemove(item, index, 'recordAry')"
+                class="el-icon-delete-solid tool-icon"
               ></span>
-              <span @click="handleRemove(item,index,'recordAry')" class="el-icon-delete-solid tool-icon"></span>
             </span>
           </div>
         </div>
@@ -43,11 +51,21 @@
       </div>
       <div v-else>
         <div v-if="fileAry && fileAry.length">
-          <div v-for="(item, index) in fileAry" :key="index"  class="list-item">
-            <span> {{ item.name }}</span>
+          <div v-for="(item, index) in fileAry" :key="index" class="list-item">
+            <div class="item-box">
+              <span> {{ item.name }}</span>
+              <span
+               style="float: right; margin-top: 7px"
+                @click="handleDownLoad(item)"
+                class="el-icon-download tool-icon"
+              ></span>
+            </div>
+
             <span class="tool-box">
-              <span @click="handleDownLoad(item)" class="el-icon-download tool-icon"></span>
-              <span @click="handleRemove(item,index,'fileAry')" class="el-icon-delete-solid tool-icon"></span>
+              <span
+                @click="handleRemove(item, index, 'fileAry')"
+                class="el-icon-delete-solid tool-icon"
+              ></span>
             </span>
           </div>
         </div>
@@ -81,8 +99,8 @@ export default {
   },
   data() {
     return {
-      recordAry:this.recordList,
-      fileAry:this.fileList,
+      recordAry: this.recordList,
+      fileAry: this.fileList,
       copyText: "",
       activeName: "1",
       audioSrc: "",
@@ -94,9 +112,9 @@ export default {
   },
   methods: {
     handleClick() {},
-    handleDownLoad(item){
-      const url = this.baseUrl + item.url
-      window.open(url)
+    handleDownLoad(item) {
+      const url = this.baseUrl + item.url;
+      window.open(url);
     },
     handlePlay(item) {
       this.audioSrc = this.baseUrl + item.url;
@@ -127,9 +145,9 @@ export default {
         }
       );
     },
-    handleRemove(item,index,type){
-      this[type].splice(index,1);
-      this.$parent.saveData('updaetFile')
+    handleRemove(item, index, type) {
+      this[type].splice(index, 1);
+      this.$parent.saveData("updaetFile");
     },
     handleClose() {
       this.$emit("update:show", false);
@@ -138,20 +156,34 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-// .tool-box{
-//   float:right;
-// }
+::v-deep .el-tabs__item.is-active{
+  color:#165DFF;
+}
+.tool-box {
+  // float:right;
+  position: relative;
+  top: -6px;
+}
 .list-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+.item-box {
+  flex: 1;
+  vertical-align: middle;
+  background: #f7f8fa;
+  border-radius: 2px;
+  margin-bottom: 10px;
+}
 .tool-icon {
-  margin-right: 10px;
+  margin: 0 10px;
   cursor: pointer;
+  // position: relative;
+  margin-top: -8px;
 }
 .tool-icon:hover {
-  color: #409eff;
+  color: #165DFF;
 }
 .dialog-main {
   line-height: 30px;

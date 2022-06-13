@@ -19,6 +19,7 @@
       <el-button type="primary" @click="handleEdit({})"> 新增账号 </el-button>
     </div>
     <el-table
+      header-cell-class-name="table_header"
       @sort-change="sortChange"
       v-loading="tableLoading"
       :data="tableData"
@@ -155,8 +156,8 @@ export default {
     formatId(id) {
       if (!id) return "-";
       if (this.showId) return id;
-      var ids = id.slice(0,14);
-      console.log('ids',ids,id)
+      var ids = id.slice(0, 14);
+      console.log("ids", ids, id);
       return ids + "****";
     },
     formatLabel() {

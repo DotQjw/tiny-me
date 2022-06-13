@@ -89,11 +89,9 @@ export default {
       },
       loginRules: {
         username: [
-          { required: true, trigger: "blur",message:'请输入手机号'},
+          { required: true, trigger: "blur", message: "请输入手机号" },
         ],
-        password: [
-          { required: true, trigger: "blur",message:'请输入密码' },
-        ],
+        password: [{ required: true, trigger: "blur", message: "请输入密码" }],
       },
       loading: false,
       passwordType: "password",
@@ -131,17 +129,17 @@ export default {
           this.$store
             .dispatch("user/login", this.loginForm)
             .then((res) => {
-              console.log('res',res)
-              if(res.role === 1){
+              console.log("res", res);
+              if (res.role === 1) {
                 this.$router.push({ path: "/guide" });
-              }else{
+              } else {
                 this.$router.push({ path: "/case-list" });
               }
               this.loading = false;
             })
             .catch((error) => {
-              console.log('error',error)
-              this.$message.error(error.message || '密码错误，请确认账号密码')
+              console.log("error", error);
+              this.$message.error(error.message || "密码错误，请确认账号密码");
               this.loading = false;
             });
         } else {
@@ -191,13 +189,6 @@ $cursor: #fff;
       }
     }
   }
-
-  .el-form-item {
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
-    color: #454545;
-  }
 }
 </style>
 
@@ -205,7 +196,12 @@ $cursor: #fff;
 $bg: #2d3a4b;
 $dark_gray: #889aa4;
 $light_gray: #eee;
-
+::v-deep .el-form-item {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  color: #454545;
+}
 .login-container {
   min-height: 100%;
   width: 100%;

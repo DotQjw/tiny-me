@@ -13,6 +13,7 @@
       <el-button type="primary" @click="handleCreate"> 创建案件 </el-button>
     </div>
     <el-table
+      header-cell-class-name="table_header"
       @sort-change="sortChange"
       v-loading="tableLoading"
       :data="tableData"
@@ -27,9 +28,9 @@
               content="点击进入撰写流程"
               placement="bottom-start"
             >
-              <div>
+              <span>
                 {{ scope.row.caseNo }}
-              </div>
+              </span>
             </el-tooltip>
           </div>
         </template>
@@ -392,6 +393,10 @@ export default {
   .page-title {
     flex: 1;
   }
+}
+.table_header {
+  background: #f2f3f5 !important;
+  box-shadow: 1px 0px 0px #f2f3f5;
 }
 </style>
 <style lang="scss">

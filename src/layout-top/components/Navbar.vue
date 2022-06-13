@@ -3,7 +3,7 @@
     <!-- <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" /> -->
 
     <!-- <breadcrumb class="breadcrumb-container" /> -->
-    <div class="title">
+    <div class="title" @click="gotoIndex">
       专利设计辅助系统 <span class="sub-title">v1.0</span>
     </div>
     <div class="right-menu">
@@ -31,7 +31,9 @@
         </el-dropdown-menu>
       </el-dropdown>
     </div>
-    <span v-if="userInfo.isAdmin" class="account" @click="gotoAccount">账号管理</span>
+    <span v-if="userInfo.isAdmin" class="account" @click="gotoAccount"
+      >账号管理</span
+    >
   </div>
 </template>
 
@@ -46,12 +48,19 @@ export default {
     Hamburger,
   },
   computed: {
-    ...mapGetters(["sidebar", "avatar", "name",'userInfo']),
+    ...mapGetters(["sidebar", "avatar", "name", , "userInfo"]),
   },
-  created(){
-  console.log('userInfo',this.userInfo)
+  created() {
+    console.log("userInfo", this.userInfo);
   },
   methods: {
+    gotoIndex() {
+      if (this.userInfo.role === 2) {
+        this.$router.push(`/case-list`);
+      } else if (this.userInfo.role === 1) {
+        this.$router.push(`/data-list`);
+      }
+    },
     gotoAccount() {
       window.open("/#/account-manage");
     },
@@ -87,6 +96,7 @@ export default {
   display: inline-block;
   font-size: 20px;
   font-weight: bold;
+  cursor: pointer;
 }
 .sub-title {
   display: inline;

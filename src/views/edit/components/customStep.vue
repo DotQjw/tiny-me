@@ -9,10 +9,10 @@
         >
           <span
             class="step-circle"
-            :class="{ 'el-icon-check': content1 && active != 1 }"
+            :class="{ 'el-icon-check': content1 && active != 1,'active-bg':active==1 }"
             >{{ active == 1 || !content1 ? 1 : "" }}</span
           >
-          <div>技术领域</div>
+          <div :class="{'active-text':active==1}">技术领域</div>
         </div>
         <div
           @click="handleClick('2')"
@@ -20,10 +20,10 @@
         >
           <span
             class="step-circle"
-            :class="{ 'el-icon-check': content2 && active != 2 }"
+            :class="{ 'el-icon-check': content2 && active != 2,'active-bg':active==2 }"
             >{{ active == 2 || !content2 ? 2 : "" }}</span
           >
-          <div>背景技术</div>
+          <div :class="{'active-text':active==2}">背景技术</div>
         </div>
         <div
           @click="handleClick('3')"
@@ -31,10 +31,10 @@
         >
           <span
             class="step-circle"
-            :class="{ 'el-icon-check': content3 && active != 3 }"
+            :class="{ 'el-icon-check': content3 && active != 3,'active-bg':active==3 }"
             >{{ active == 3 || !content3 ? 3 : "" }}</span
           >
-          <div>方案描述</div>
+          <div :class="{'active-text':active==3}">方案描述</div>
         </div>
         <div
           @click="handleClick('4')"
@@ -42,10 +42,10 @@
         >
           <span
             class="step-circle"
-            :class="{ 'el-icon-check': content4 && active != 4 }"
+            :class="{ 'el-icon-check': content4 && active != 4,'active-bg':active==4 }"
             >{{ active == 4 || !content4 ? 4 : "" }}</span
           >
-          <div>实现方案</div>
+          <div :class="{'active-text':active==4}">实现方案</div>
         </div>
         <div
           @click="handleClick('5')"
@@ -53,10 +53,10 @@
         >
           <span
             class="step-circle"
-            :class="{ 'el-icon-check': content5 && active != 5 }"
+            :class="{ 'el-icon-check': content5 && active != 5,'active-bg':active==5 }"
             >{{ active == 5 || !content5 ? 5 : "" }}</span
           >
-          <div>权利要求</div>
+          <div :class="{'active-text':active==5}">权利要求</div>
         </div>
       </div>
     </div>
@@ -119,7 +119,7 @@ export default {
   width: 80%;
   margin-left: 10%;
   height: 1;
-  border: 1px solid;
+  border: 1px solid #165DFF;
 }
 .step-main {
   position: relative;
@@ -141,22 +141,30 @@ export default {
     display: inline-block;
     width: 24px;
     height: 24px;
-    border: 2px solid;
+    // border: 2px solid;
     border-radius: 50%;
     text-align: center;
-    line-height: 20px;
-    background: #fff;
+    line-height: 24px;
+    background: #E8F3FF;
     margin-bottom: 10px;
     font-size: 14px;
     font-weight: bold;
     box-sizing: border-box;
   }
   .is-active {
-    color: #303133 !important;
+    color: #FFFFFF !important;
     font-weight: bold;
   }
   .custom2 {
-    color: #67c23a;
+    color: #165DFF;
+  }
+  .active-bg{
+    background: #165DFF;
+  }
+  .active-text{
+    color: #1D2129;
+    font-size: 16px;
+    font-weight: bold;
   }
 }
 </style>

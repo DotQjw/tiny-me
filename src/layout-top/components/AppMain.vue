@@ -8,13 +8,13 @@
 
 <script>
 export default {
-  name: 'AppMain',
+  name: "AppMain",
   computed: {
     key() {
-      return this.$route.path
-    }
-  }
-}
+      return this.$route.path;
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -27,12 +27,27 @@ export default {
   position: relative;
   overflow: hidden;
 }
-.fixed-header+.app-main {
+.fixed-header + .app-main {
   padding-top: 50px;
 }
 </style>
 
 <style lang="scss">
+.table_header {
+  background: #f2f3f5 !important;
+  box-shadow: 1px 0px 0px #f2f3f5;
+}
+.el-button--text {
+  color: #165dff ;
+}
+.el-button--primary {
+  color: #fff;
+  background-color: #165dff !important;
+  border-color: #165dff !important;
+}
+.el-button.is-disabled.el-button--text {
+  background-color: transparent !important;
+}
 // fix css style bug in open el-dialog
 .el-popup-parent--hidden {
   .fixed-header {

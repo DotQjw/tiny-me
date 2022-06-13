@@ -16,7 +16,7 @@
       </div>
       <div class="dialog-btn">
         <el-button
-          type="success"
+          type="primary"
           v-if="recordType === 'ready'"
           @click="startRecord"
           >准备好了，开始录制</el-button

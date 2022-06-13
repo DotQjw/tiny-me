@@ -12,6 +12,7 @@
       </el-input>
     </div>
     <el-table
+      header-cell-class-name="table_header"
       @sort-change="sortChange"
       v-loading="tableLoading"
       :data="tableData"

@@ -45,6 +45,9 @@
               v-else
               v-model="inputValue"
             ></el-input>
+            <i class="el-icon-delete delete-icon"  @click="handleDelete(item,index)">
+              
+            </i>
           </div>
         </div>
       </div>
@@ -184,6 +187,12 @@ export default {
       this.selectedUrl = item.url;
       this.$set(this.fileList[index], "showSpan", false);
     },
+    handleDelete(item,index){
+      if(item.url ===  this.selectedUrl ){
+         this.selectedUrl  = ""
+      }
+      this.fileList.splice(index,1);
+    }
   },
 };
 </script>
@@ -246,5 +255,12 @@ export default {
   font-size: 12px;
   bottom: 10px;
   text-align: center;
+}
+.delete-icon{
+  margin-top:22px;
+  cursor: pointer;
+  &:hover{
+    color:red;
+  }
 }
 </style>

@@ -3,7 +3,7 @@
     title="文件上传"
     center=""
     :visible.sync="show"
-    width="30%"
+    width="500px"
     
     :close-on-click-modal="false"
     :before-close="handleClose"

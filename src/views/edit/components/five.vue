@@ -8,8 +8,17 @@
     </div>
     <div class="page-main no-border-input">
       <div class="box">
-        <el-table :data="claims" style="width: 100%; margin-top: 20px">
+        <el-table
+          header-cell-class-name="table_header"
+          :data="claims"
+          style="width: 100%; margin-top: 20px"
+        >
           <el-table-column prop="realIndex" label="序号" width="100">
+            <template slot-scope="scope">
+              <div class="sort-index">
+                {{ scope.$index + 1 }}
+              </div>
+            </template>
           </el-table-column>
           <el-table-column prop="name" label="权利名称" width="280">
             <template slot-scope="scope">
@@ -25,7 +34,7 @@
                   v-model="scope.row.name"
                 ></el-input>
                 <div v-else>
-                  <span>根据<span style="color:#409EFF;">权利要求</span></span>
+                  <span>根据<span style="color: #165dff">权利要求</span></span>
                   <el-input
                     @input="nameInputChange($event, scope.row)"
                     v-model.number="scope.row.name"
@@ -98,9 +107,9 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="" label="有益效果">
+          <el-table-column prop="" label="有益效果" class="ccccc">
             <template slot-scope="scope">
-              <span>
+              <span class="main-upload">
                 <el-upload
                   :headers="{
                     Authorization: `Bearer ${token}`,
@@ -110,13 +119,15 @@
                   :on-success="handleSuccess"
                   :before-upload="(file) => beforeUpload(file, scope.row)"
                 >
-                  <el-button size="small" class="el-icon-plus">点击上传</el-button>
+                  <el-button size="small" class="el-icon-plus"
+                    >点击上传</el-button
+                  >
                 </el-upload>
 
                 <el-input
                   type="textarea"
                   rows="1"
-                   @input="inputChange"
+                  @input="inputChange"
                   v-model="scope.row.goodEffect"
                 ></el-input>
                 <div v-if="scope.row.attachments" style="margin-top: 10px">
@@ -303,7 +314,7 @@ export default {
       });
     },
     handleArrayData(data) {
-      data.map((item,index) => {
+      data.map((item, index) => {
         this.realIndex += 1;
         if (item.no === item.parentNo && item.no === item.ancestorNo) {
           this.ancestorName = this.realIndex;
@@ -320,7 +331,7 @@ export default {
             children: [],
           };
           if (!item.name || item.isAdd) {
-            console.log('我是新增的走这里',data[index-1])
+            console.log("我是新增的走这里", data[index - 1]);
             // obj.name = this.ancestorName + "";
           }
           this.claims.push(Object.assign({}, item, obj));
@@ -342,7 +353,7 @@ export default {
       var template = cloneDeep(this.template);
       data.forEach((child, index) => {
         if (child.no === item.no) {
-          console.log("找到啦", child,item.realIndex);
+          console.log("找到啦", child, item.realIndex);
           child.children = child.children ? child.children : [];
           child.children.push(
             Object.assign({}, template, {
@@ -350,7 +361,7 @@ export default {
               parentNo: item.no,
               ancestorNo: item.ancestorNo,
               name: String(item.realIndex),
-              isAdd:true
+              isAdd: true,
             })
           );
         } else if (child.children) {
@@ -459,7 +470,7 @@ export default {
   .el-textarea__inner {
     // border: 1px solid #fff !important;
     margin: 10px 0;
-    padding:5px 2px;
+    padding: 5px 2px;
   }
   .el-textarea__inner:focus {
     border: 1px solid #67c23a !important;
@@ -476,7 +487,7 @@ export default {
     .el-input__inner {
       padding: 0 3px;
       border: 1px solid #fff !important;
-      color:#409EFF;
+      color: #165dff;
     }
   }
 }
@@ -485,6 +496,10 @@ export default {
 .page {
   // text-align: center;
   //   padding: 30px 50px;
+}
+.main-upload {
+  position: relative;
+  top: -2px;
 }
 .page-main {
   background: #fff;
@@ -531,4 +546,12 @@ export default {
 .check-row-box {
   padding-bottom: 41px;
 }
+.check-row-box {
+  position: relative;
+  top: -18px;
+}
+// .sort-index{
+//   position: relative;
+//   top:-5px;
+// }
 </style>
