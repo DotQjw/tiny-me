@@ -66,11 +66,8 @@
               >更多</el-button
             > -->
             <el-popover placement="bottom" width="50" trigger="click">
-              <div
-                class="delete-suer"
-                v-if="scope.row.showDelete"
-                @click="handleDelete(scope.row)"
-              >
+              <div class="undelete-suer" v-if="!scope.row.showDelete">删除</div>
+              <div class="delete-suer" v-else @click="handleDelete(scope.row)">
                 删除
               </div>
               <div class="edit-psw" @click="handleEditPsw(scope.row)">
@@ -78,7 +75,7 @@
               </div>
               <span
                 slot="reference"
-                style="cursor: pointer; color: #409eff; font-size: 12px"
+                style="cursor: pointer; color: #165dff; font-size: 12px"
               >
                 更多</span
               >
@@ -313,6 +310,12 @@ export default {
   color: red;
   margin-bottom: 6px;
   cursor: pointer;
+}
+.undelete-suer {
+  color: #909939;
+  padding-left: 10px;
+  margin-bottom: 6px;
+  cursor: not-allowed;
 }
 .edit-psw {
   padding-left: 10px;

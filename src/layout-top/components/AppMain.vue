@@ -33,6 +33,11 @@ export default {
 </style>
 
 <style lang="scss">
+.el-radio-button__orig-radio:checked+.el-radio-button__inner {
+    color: #FFF;
+    background-color: #165dff;
+    border-color: #165dff;
+}
 .table_header {
   background: #f2f3f5 !important;
   box-shadow: 1px 0px 0px #f2f3f5;
