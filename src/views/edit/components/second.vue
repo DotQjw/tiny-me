@@ -3,7 +3,7 @@
     <div class="page-main">
       <div class="box">
         <div class="custom-label">
-          <span> 本专利应用在哪个领域 </span>
+          <span> 本专利应用在哪个领域？ </span>
           <span class="right-tool">
             <span class="tool-item" @click="openFileList('domain')">
               <i class="el-icon-paperclip"></i>
@@ -30,7 +30,7 @@
       </div>
       <div class="box">
         <div class="custom-label">
-          <span>该领域存在什么痛点</span>
+          <span>该领域存在什么痛点？</span>
           <span class="right-tool">
             <span class="tool-item" @click="openFileList('painPoint')">
               <i class="el-icon-paperclip"></i>
@@ -57,7 +57,7 @@
       </div>
       <div class="box">
         <div class="custom-label">
-          <span>当前是如何解决这些痛点的</span>
+          <span>当前是如何解决这些痛点的？</span>
           <span class="right-tool">
             <span class="tool-item" @click="openFileList('currentSolution')">
               <i class="el-icon-paperclip"></i>

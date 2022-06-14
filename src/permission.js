@@ -11,7 +11,8 @@ NProgress.configure({ showSpinner: false }); // NProgress Configuration
 const whiteList = ["/login"]; // no redirect whitelist
 
 router.beforeEach(async (to, from, next) => {
-  // start progress bar
+  // start progress bar、
+  console.log({to, from})
   NProgress.start();
 
   // set page title
@@ -27,6 +28,8 @@ router.beforeEach(async (to, from, next) => {
       next({ path: "/" });
       NProgress.done();
     } else {
+      console.log('store.getters.asyncRoutes',store.getters.asyncRoutes)
+      // router.addRoutes(store.getters.asyncRoutes) 
       const hasGetUserInfo = store.getters.name;
       if (hasGetUserInfo) {
         next();
@@ -46,6 +49,10 @@ router.beforeEach(async (to, from, next) => {
       }
     }
   } else {
+    if(to.path === '/data-list'){
+      next(`/login?redirect=${to.path}`);
+      return
+    }
     if (whiteList.indexOf(to.path) !== -1) {
       // in the free login whitelist, go directly
       next()

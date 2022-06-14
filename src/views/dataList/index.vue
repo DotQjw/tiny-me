@@ -15,43 +15,38 @@
     <el-table
       header-cell-class-name="table_header"
       @sort-change="sortChange"
+      @cell-mouse-enter="mouseEnter"
+      @cell-mouse-leave="mouseLeave"
       v-loading="tableLoading"
       :data="tableData"
       style="width: 100%; cursor: pointer"
+      @row-click="rowClick"
     >
       <el-table-column prop="caseNo" label="客户案号" width="180">
         <template slot-scope="scope">
-          <div @click="handleEdit(scope.row)">
-            <el-tooltip
-              class="item"
-              effect="dark"
-              content="点击进入撰写流程"
-              placement="bottom-start"
-            >
-              <span>
-                {{ scope.row.caseNo }}
-              </span>
-            </el-tooltip>
-          </div>
+            <span>
+              {{ scope.row.caseNo }}
+            </span>
+        <div v-if="scope.row.showTip" style="margin-top:5px;color:#86909C;font-size:14px;">点击进入撰写流程</div>
         </template>
       </el-table-column>
       <el-table-column prop="tianyuan" label="天元案号" width="180">
         <template slot-scope="scope">
-          <div @click="handleEdit(scope.row)">
+          <div>
             {{ scope.row.tianyuan }}
           </div>
         </template>
       </el-table-column>
       <el-table-column prop="proposalName" label="提案名称">
         <template slot-scope="scope">
-          <div @click="handleEdit(scope.row)">
+          <div>
             {{ scope.row.proposalName }}
           </div>
         </template>
       </el-table-column>
       <el-table-column prop="patentName" label="专利名称">
         <template slot-scope="scope">
-          <div @click="handleEdit(scope.row)">
+          <div>
             {{ scope.row.patentName || "-" }}
           </div>
         </template>
@@ -103,27 +98,24 @@
         sortable="custom"
       >
         <template slot-scope="scope">
-          <div @click="handleEdit(scope.row)">
+          <div>
             <div style="margin-bottom: 10px">
-              创建:{{ formatTime(scope.row.createdAt) }}
+              创建：{{ formatTime(scope.row.createdAt) }}
             </div>
-            <div>完成:{{ formatTime(scope.row.finishedAt) || "-" }}</div>
+            <div>完成：{{ formatTime(scope.row.finishedAt) || "-" }}</div>
           </div>
         </template>
       </el-table-column>
       <el-table-column
-        prop="finishedAt"
+        prop=""
         width="140px;"
         label="联系人"
-        sortable="custom"
       >
         <template slot-scope="scope">
-          <div @click="handleEdit(scope.row)">
-            <div style="margin-bottom: 10px">
-              P1:{{ scope.row.createUserName }}
-            </div>
-            <div>P2:{{ scope.row.assistUserName || "-" }}</div>
+          <div style="margin-bottom: 10px">
+            P1：{{ scope.row.createUserName }}
           </div>
+          <div>P2：{{ scope.row.assistUserName || "-" }}</div>
         </template>
       </el-table-column>
 
@@ -215,6 +207,11 @@ export default {
     this.fetchData();
   },
   methods: {
+    rowClick(row, column, event) {
+      if (column.label === "状态" ||  column.label === "操作") return;
+      console.log({ row, column, event });
+      this.handleEdit(row);
+    },
     formatTime(time) {
       if (!time) return "-";
       return time.slice(0, 16);
@@ -247,6 +244,12 @@ export default {
         .catch((err) => {
           this.$message.error(res.message);
         });
+    },
+    mouseEnter(row, column, cell, event){
+      this.$set(row,'showTip',true)
+    },
+    mouseLeave(row, column, cell, event){
+      this.$set(row,'showTip',false)
     },
     updateStatus(row, status) {
       row.status = null;

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="custom-navbar"><span @click="gotoList">首页</span> / 编辑</div>
+    <div class="custom-navbar"><span @click="gotoList">首页</span> / {{formData.proposalName || '-'}}</div>
     <div class="steps-box">
       <!-- <el-steps :active.sync="active" finish-status="success" align-center>
         <el-step title="技术领域" @click.native="changeSteps(0)"></el-step>
@@ -11,6 +11,7 @@
       </el-steps> -->
     </div>
     <custom-step
+    style="margin-bottom:40px;"
       :active="active"
       @changeSteps="changeSteps"
       :steps.sync="steps"

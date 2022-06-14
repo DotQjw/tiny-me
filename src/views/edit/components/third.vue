@@ -3,7 +3,7 @@
     <div class="page-main">
       <div class="box">
         <div class="custom-label">
-          <span> 本专利的解决思路 </span>
+          <span> 本专利的解决思路？ </span>
           <span class="right-tool">
             <span class="tool-item" @click="openFileList('idea')">
               <i class="el-icon-paperclip"></i>

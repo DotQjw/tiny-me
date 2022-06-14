@@ -1,9 +1,11 @@
 <template>
   <div class="page">
     <el-breadcrumb separator="/">
-      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/case-list' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item><a>说明书编辑</a></el-breadcrumb-item>
-      <el-breadcrumb-item>项目名称</el-breadcrumb-item>
+      <el-breadcrumb-item>{{
+        detailData.proposalName || "-"
+      }}</el-breadcrumb-item>
     </el-breadcrumb>
 
     <div class="left-tool">
@@ -127,11 +129,19 @@
       >
         <span class="custom-tree-node" slot-scope="{ node, data }">
           <div class="custom-tree-row">
-            <span
+            <!-- <span
               v-if="data.nameEdit != 1"
               @click="treeEdit(node, data, 'name')"
               >{{ data.name }}</span
-            >
+            > -->
+            <el-input
+              v-if="data.nameEdit != 1"
+              ref="input"
+              size="mini"
+            
+              v-model="data.name"
+              style="max-width: 100px"
+            ></el-input>
             <el-input
               v-if="data.nameEdit == 1"
               ref="input"
@@ -292,6 +302,7 @@ export default {
   },
   data() {
     return {
+      drawingsEdit:false,
       timer: null,
       abstractUrl: "",
       showFileList: false,
@@ -394,6 +405,9 @@ export default {
         this.detailData = res.data;
         this.claim = res.data.claim;
         this.drawings = res.data.drawings;
+        if(this.drawings.length){
+          this.drawingsEdit = true;
+        }
         this.typeLabel = res.data.type === "1" ? "发明" : "实用类型";
         this.abstractUrl = res.data.abstractUrl;
         if (res.data.abstract) {
@@ -625,19 +639,24 @@ export default {
       if (this.claim[0]) {
         firstSingleName = this.claim[0].name;
       }
-      let textStr = "";
+      let textStr = `<p><span style="text-decoration: underline;">附图说明</span></p>`;
       let imgStr = "";
       this.drawings.forEach((item) => {
-        textStr += `<p><span style="text-decoration: underline;">附图说明</span></p><p>${item.name}是本${this.typeLabel}实施例（或者现有技术）提供的${firstSingleName}的（流程）示意图</p>`;
+        textStr += `<p>${item.name}是本${this.typeLabel}实施例（或者现有技术）提供的${firstSingleName}的（流程）示意图</p>`;
         const imgUrl = baseUrl() + item.url;
         imgStr += `<p ><img src="${imgUrl}" /><div style="text-align:center;">${item.name}</div></p>`;
       });
       console.log({ textStr, imgStr });
       let content = this.allContent;
       let futushuomingList = this.futushuomingList;
+
       let futushuomingListExp = new RegExp(futushuomingList);
+
       content = content.replace(futushuomingListExp, `${textStr}`);
-      this.allContent = content;
+      if(!this.drawingsEdit){
+        this.allContent = content;
+      }
+
       const shuomingshuImg = `
               <hr style="border: 1px solid #000; background: #000;" size="1px" width="100%">
               <h1 class="custom" style="text-align: center;">说 明 书 附 图</h1>
@@ -712,7 +731,7 @@ export default {
     handleImgMark() {
       const id = this.imgMarkList.length + 1;
       this.imgMarkList.push({
-        name: "新建",
+        name: "",
         id: id,
         nameEdit: 0,
         number: "",
@@ -727,7 +746,7 @@ export default {
       let parentId = data.id;
       let id = +(parentId + "" + (data.children.length + 1));
       data.children.push({
-        name: "子集",
+        name: "",
         id: id,
         number: "",
         parentId: parentId,
@@ -826,7 +845,9 @@ export default {
       this.loading.close();
     },
     treeEdit(node, data, type) {
-      this.labelValue = "";
+      // setTimeout(() => {
+      //   this.labelValue = "";
+      // }, 400);
       if (type === "name") {
         this.$set(data, "nameEdit", 1);
         this.labelValue = data.name;
@@ -843,13 +864,15 @@ export default {
       }
     },
     submitEdit(node, data, type) {
+      console.log("2222");
       if (type === "name") {
-        console.log("name点击了保存按钮");
+        console.log("name点击了保存按钮", this.labelValue);
         if (data.name == this.labelValue) {
           console.log("没有修改");
           this.labelValue = "";
           this.$set(data, "nameEdit", 0);
         } else {
+          console.log("1", data, this.labelValue);
           this.$set(data, "name", this.labelValue);
           this.$set(data, "nameEdit", 0);
           console.log("data", data);
@@ -867,6 +890,7 @@ export default {
           this.$set(data, "numberEdit", 0);
         }
       }
+      console.log("this.imgMarkList", this.imgMarkList);
     },
     addImgTextToRich(type) {
       this.treeDataStr = "";
@@ -909,10 +933,10 @@ export default {
       }
 
       this.treeDataStrDefalut = str;
-      console.log("content", content);
+      // console.log("content", content);
       this.$nextTick(() => {
         this.allContent = content;
-        this.handleSave("saveTreeData");
+        // this.handleSave("saveTreeData");
       });
     },
     handleUpload() {

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="custom-navbar"><span @click="gotoList">首页</span> / 编辑</div>
+    <div class="custom-navbar"><span @click="gotoList">首页</span> / 审核</div>
     <div v-if="!fetchDataLoading">
       <div style="float: right;margin-bottom:20px;" v-if="type === 'review'">
         <el-button type="plain" @click="handleWord()">下载文档</el-button>

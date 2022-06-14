@@ -41,9 +41,9 @@
         <template slot-scope="scope">
           <div>
             <div style="margin-bottom: 10px">
-              创建:{{ scope.row.createdAt }}
+              创建：{{ scope.row.createdAt }}
             </div>
-            <div>完成:{{ scope.row.finishedAt || "-" }}</div>
+            <div>完成：{{ scope.row.finishedAt || "-" }}</div>
           </div>
         </template>
       </el-table-column>

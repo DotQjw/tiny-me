@@ -103,7 +103,7 @@ export default {
         .then((res) => {
           if (res.code === 0) {
             this.$message.success("编辑成功");
-            this.$$parent.fetchData();
+            this.$parent.fetchData();
             this.$emit("update:show", false);
           } else {
             this.$message.error("服务器有点忙，请重试");
@@ -121,7 +121,7 @@ export default {
         .then((res) => {
           if (res.code === 0) {
             this.$message.success("新建成功");
-            this.$$parent.fetchData();
+            this.$parent.fetchData();
             this.$emit("update:show", false);
           } else {
             this.$message.error("服务器有点忙，请重试");

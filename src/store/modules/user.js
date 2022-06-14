@@ -1,17 +1,20 @@
 import { login, logout, getInfo } from "@/api/user";
 import { getToken, setToken, removeToken } from "@/utils/auth";
 import { resetRouter } from "@/router";
-
+import role1Route from "@/router/role1-router"
+import role2Route from "@/router/role2-router"
 const getDefaultState = () => {
   return {
     token: "",
     name: "",
     avatar: "",
     roles: "",
+    asyncRoutes:[]
   };
 };
 
 const state = {
+  asyncRoutes:[],
   userInfo: JSON.parse(localStorage.getItem("USER_INFO")) || {},
 };
 
@@ -40,6 +43,16 @@ const mutations = {
     state.userInfo = data;
     localStorage.setItem("USER_INFO", JSON.stringify(data));
   },
+  SET_ROUTERS(state,role){
+
+      console.log('SET_ROUTERS',role,state)
+      console.log({role1Route,role2Route})
+      if(role===1){
+        state.asyncRoutes = role1Route
+      }else if(role ===2){
+        state.asyncRoutes = role2Route
+      }
+  }
 };
 
 const actions = {
@@ -53,6 +66,7 @@ const actions = {
           // commit("SET_TOKEN", data.token);
           // commit("SET_NAME", data.username);
           // commit("SET_ROLES", data.role);
+          commit("SET_ROUTERS",data.role)
           commit("SET_USER_INFO", {
             token: data.token,
             username: data.username,

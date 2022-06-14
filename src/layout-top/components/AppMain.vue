@@ -33,6 +33,15 @@ export default {
 </style>
 
 <style lang="scss">
+.el-checkbox__input.is-checked+.el-checkbox__label,
+.el-radio__input.is-checked+.el-radio__label{
+  color: #165dff !important;
+}
+.el-checkbox__input.is-checked .el-checkbox__inner, .el-checkbox__input.is-indeterminate .el-checkbox__inner,
+.el-radio__input.is-checked .el-radio__inner{
+    background-color: #165dff !important;
+    border-color: #165dff !important;
+}
 .el-radio-button__orig-radio:checked+.el-radio-button__inner {
     color: #FFF;
     background-color: #165dff;

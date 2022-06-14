@@ -2,7 +2,7 @@
   <div class="page">
     <div class="page-main">
       <div class="box">
-        <div class="custom-label">本专利属于哪个技术领域</div>
+        <div class="custom-label">本专利属于哪个技术领域？</div>
         <el-input
           class="custom-input"
           v-model="form.techArea"

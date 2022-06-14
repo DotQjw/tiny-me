@@ -11,7 +11,7 @@
         <el-table
           header-cell-class-name="table_header"
           :data="claims"
-          style="width: 100%; margin-top: 20px"
+          style="width: 100%; margin-top: 15px"
         >
           <el-table-column prop="realIndex" label="序号" width="100">
             <template slot-scope="scope">
@@ -115,7 +115,7 @@
                     Authorization: `Bearer ${token}`,
                   }"
                   :show-file-list="false"
-                  action="http://8.129.8.125:8080/api/v1/file/upload_file"
+                  :action="uploadUrl"
                   :on-success="handleSuccess"
                   :before-upload="(file) => beforeUpload(file, scope.row)"
                 >
@@ -157,6 +157,8 @@
 import { cloneDeep } from "lodash";
 import { getToken } from "@/utils/auth";
 import { uploadFile } from "@/api/upload";
+import { uploadFileUrl, baseUrl } from "@/utils/baseUrl";
+
 
 export default {
   props: {
@@ -175,6 +177,7 @@ export default {
   },
   data() {
     return {
+      uploadUrl:uploadFileUrl(),
       token: this.$store.getters.toke || getToken(),
       realIndex: 1,
       ancestorName: null,
@@ -466,14 +469,14 @@ export default {
 .el-table th {
   vertical-align: text-top;
 }
+.el-textarea__inner:focus {
+  border: 1px solid #165dff !important;
+}
 .no-border-input {
   .el-textarea__inner {
     // border: 1px solid #fff !important;
     margin: 10px 0;
     padding: 5px 2px;
-  }
-  .el-textarea__inner:focus {
-    border: 1px solid #67c23a !important;
   }
   .el-table tbody tr:hover > td {
     background-color: #fff !important;
@@ -499,7 +502,7 @@ export default {
 }
 .main-upload {
   position: relative;
-  top: -2px;
+  // top: -2px;
 }
 .page-main {
   background: #fff;
@@ -533,7 +536,7 @@ export default {
 .page-top {
   padding: 15px 50px;
   background: #fff;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;

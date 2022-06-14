@@ -92,8 +92,14 @@ export default {
         proposalName: [
           { required: true, message: "请输入提案名称", change: "blur" },
         ],
-        type1: [
-          { required: true, message: "请选择专利类型", change: "change" },
+        type: [
+          { required: true,validator(f,v,c){
+            if(v){
+              c()
+            }else{
+              c(new Error("请选择专利类型"))
+            }
+          }, change: "change" },
         ],
       },
       // form: {
