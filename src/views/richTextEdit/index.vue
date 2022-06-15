@@ -936,7 +936,7 @@ export default {
       // console.log("content", content);
       this.$nextTick(() => {
         this.allContent = content;
-        // this.handleSave("saveTreeData");
+        this.handleSave("saveTreeData");
       });
     },
     handleUpload() {

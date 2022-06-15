@@ -38,8 +38,8 @@ module.exports = {
     proxy:{
       "/":{
         ws:true,
-        target:"http://8.129.8.125:8080",
-        // target:"http://120.76.247.78:8781",
+        // target:"http://8.129.8.125:8080",
+        target:"http://120.76.247.78:8781",
         changeOrigin:true,
   
       }

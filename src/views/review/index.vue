@@ -69,7 +69,7 @@ export default {
       download_description(param)
         .then((res) => {
           // this.closeLoading()
-          wordUrl = baseUrl() + res.data.url;
+          let wordUrl = baseUrl() + res.data.url;
           window.open(wordUrl);
         })
         .catch((err) => {
