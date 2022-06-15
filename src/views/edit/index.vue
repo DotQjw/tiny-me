@@ -11,7 +11,7 @@
       </el-steps> -->
     </div>
     <custom-step
-    style="margin-bottom:40px;"
+    style="margin-bottom:40px;padding-top:20px;"
       :active="active"
       @changeSteps="changeSteps"
       :steps.sync="steps"

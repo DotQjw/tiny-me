@@ -5,7 +5,6 @@
       :model="loginForm"
       :rules="loginRules"
       class="login-form"
-      auto-complete="on"
       label-position="left"
     >
       <div class="title-container">
@@ -19,7 +18,7 @@
           <svg-icon icon-class="user" />
         </span>
         <el-input
-        
+          auto-complete="off"
           ref="username"
           v-model="loginForm.username"
           placeholder="Username"
@@ -34,6 +33,7 @@
           <svg-icon icon-class="password" />
         </span>
         <el-input
+          auto-complete="off"
           :key="passwordType"
           ref="password"
           v-model="loginForm.password"

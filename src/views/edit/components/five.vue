@@ -12,11 +12,21 @@
           header-cell-class-name="table_header"
           :data="claims"
           style="width: 100%; margin-top: 15px"
+          @cell-mouse-enter="mouseEnter"
+          @cell-mouse-leave="mouseLeave"
         >
           <el-table-column prop="realIndex" label="序号" width="100">
             <template slot-scope="scope">
               <div class="sort-index">
                 {{ scope.$index + 1 }}
+              </div>
+
+              <div
+                v-if="scope.row.showTip"
+                @click="handleDelete(scope.row)"
+                class="row-click"
+              >
+                删除
               </div>
             </template>
           </el-table-column>
@@ -159,7 +169,6 @@ import { getToken } from "@/utils/auth";
 import { uploadFile } from "@/api/upload";
 import { uploadFileUrl, baseUrl } from "@/utils/baseUrl";
 
-
 export default {
   props: {
     claimData: {
@@ -177,7 +186,8 @@ export default {
   },
   data() {
     return {
-      uploadUrl:uploadFileUrl(),
+      parentChildren:[],
+      uploadUrl: uploadFileUrl(),
       token: this.$store.getters.toke || getToken(),
       realIndex: 1,
       ancestorName: null,
@@ -188,7 +198,7 @@ export default {
         no: 1,
         parentNo: 1,
         ancestorNo: 1,
-        name: "独权1",
+        name: "",
         goodEffect: "",
         claimContent: [
           {
@@ -222,6 +232,46 @@ export default {
     }
   },
   methods: {
+    handleDelete(row) {
+      console.log("row", row, this.treeData);
+      //第一级，。
+      this.parentChildren = this.treeData;
+      this.findTreeData(row.no, this.treeData);
+      this.$nextTick(() => {
+        console.log("parentChildren", this.parentChildren);
+        // return
+        let index = this.parentChildren.findIndex((v) => v.no === row.no);
+        console.log("index", index);
+        this.parentChildren.splice(index, 1);
+        console.log("this.treeData", this.treeData);
+        this.claims = [];
+        this.realIndex = 0;
+        this.handleArrayData(this.treeData);
+        this.inputChange();
+      });
+      // console.log(this.treeData);
+    },
+    findTreeData(no, data) {
+      data.forEach((el, index) => {
+        if (el.no === no) {
+          this.parentChildren = data;
+          console.log("找到了", el, index, this.parentChildren);
+        } else {
+          if (el.children && el.children[0]) {
+            console.log("进阿里了？")
+            this.findTreeData(no, el.children);
+          }
+        }
+      });
+    },
+    mouseEnter(row, column, cell, event) {
+      if (row.no === 1) return;
+      this.$set(row, "showTip", true);
+    },
+    mouseLeave(row, column, cell, event) {
+      if (row.no === 1) return;
+      this.$set(row, "showTip", false);
+    },
     saveData(type) {
       console.log("before", this.claims);
       this.$emit("saveData", {
@@ -385,7 +435,7 @@ export default {
           no: this.claims.length + 1,
           parentNo: this.claims.length + 1,
           ancestorNo: this.claims.length + 1,
-          name: "新独权" + (this.claims.length + 1),
+          name: "",
         })
       );
       this.claims = [];
@@ -553,8 +603,14 @@ export default {
   position: relative;
   top: -18px;
 }
-// .sort-index{
-//   position: relative;
-//   top:-5px;
-// }
+.sort-index {
+  position: relative;
+}
+.row-click {
+  position: absolute;
+  bottom: 5px;
+  left: 10px;
+  color: red;
+  cursor: pointer;
+}
 </style>
