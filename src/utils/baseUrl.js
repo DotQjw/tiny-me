@@ -1,6 +1,6 @@
 export function baseUrl() {
-  return "https://patent1.oss-cn-shenzhen.aliyuncs.com/"
-  // return "https://x-patent.oss-cn-shenzhen.aliyuncs.com/"
+  // return "https://patent1.oss-cn-shenzhen.aliyuncs.com/"
+  return "https://x-patent.oss-cn-shenzhen.aliyuncs.com/"
 }
 
 export function uploadFileUrl(){

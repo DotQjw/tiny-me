@@ -132,6 +132,7 @@ export default {
               if (res.role === 1) {
                 this.$router.push({ path: "/guide" });
               } else {
+                console.log('走i这里')
                 this.$router.push({ path: "/case-list" });
               }
               this.loading = false;

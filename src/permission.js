@@ -12,7 +12,6 @@ const whiteList = ["/login"]; // no redirect whitelist
 
 router.beforeEach(async (to, from, next) => {
   // start progress bar、
-  console.log({to, from})
   NProgress.start();
 
   // set page title
@@ -20,16 +19,19 @@ router.beforeEach(async (to, from, next) => {
   document.title = "专利辅助系统v1.0";
 
   // determine whether the user has logged in
-  const hasToken = getToken()
+  const hasToken = getToken();
   // const hasToken = localStorage.getItem("token");
   if (hasToken) {
     if (to.path === "/login") {
       // if is logged in, redirect to the home page
-      next({ path: "/" });
+      if (store.getters.roles === 1) {
+        next({ path: "/data-list" });
+      } else {
+        next({ path: "/case-list" });
+      }
       NProgress.done();
     } else {
-      console.log('store.getters.asyncRoutes',store.getters.asyncRoutes)
-      // router.addRoutes(store.getters.asyncRoutes) 
+      // router.addRoutes(store.getters.asyncRoutes);
       const hasGetUserInfo = store.getters.name;
       if (hasGetUserInfo) {
         next();
@@ -49,13 +51,13 @@ router.beforeEach(async (to, from, next) => {
       }
     }
   } else {
-    if(to.path === '/data-list'){
+    if (to.path === "/data-list") {
       next(`/login?redirect=${to.path}`);
-      return
+      return;
     }
     if (whiteList.indexOf(to.path) !== -1) {
       // in the free login whitelist, go directly
-      next()
+      next();
     } else {
       MessageBox.confirm("登录过期,请重新登录", "提示", {
         confirmButtonText: "重新登录",
@@ -63,7 +65,7 @@ router.beforeEach(async (to, from, next) => {
         type: "warning",
       }).then(() => {
         store.dispatch("user/resetToken").then(() => {
-          console.log('0000')
+          console.log("0000");
           next(`/login?redirect=${to.path}`);
           NProgress.done();
         });

@@ -5,7 +5,7 @@
         <!-- <img v-if="logo" :src="logo" class="sidebar-logo"> -->
         <!-- <h1 class="sidebar-title">管理系统 </h1> -->
       </router-link>
-      <router-link v-else key="expand" class="sidebar-logo-link" to="/">
+      <router-link v-else key="expand" class="sidebar-logo-link" to="/account-manage">
         <!-- <img v-if="logo" :src="logo" class="sidebar-logo"> -->
         <h1 class="sidebar-title">管理系统 </h1>
       </router-link>

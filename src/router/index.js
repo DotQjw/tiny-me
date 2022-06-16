@@ -39,20 +39,20 @@ export const constantRoutes = [
     component: () => import('@/views/login/index'),
     hidden: true
   },
-  // {
-  //   path: "/",
-  //   redirect: "/login",
-  //   // component: () => import('@/views/login/index'),
-  //   hidden: true.valueOf,
-  //   children: [
-  //     {
-  //       path: "/login",
-  //       // redirect:'/login',
-  //       component: () => import("@/views/login/index"),
-  //       hidden: true,
-  //     },
-  //   ],
-  // },
+  {
+    path: "/",
+    redirect: "/login",
+    // component: () => import('@/views/login/index'),
+    hidden: true.valueOf,
+    children: [
+      {
+        path: "/login",
+        // redirect:'/login',
+        component: () => import("@/views/login/index"),
+        hidden: true,
+      },
+    ],
+  },
   {
     path: "/guide",
     component: () => import("@/views/fuceng/index"),
@@ -72,7 +72,7 @@ export const constantRoutes = [
     ],
   },
   {
-    path: "/",
+    path: "/data-list",
     redirect: "/data-list",
     component: LayoutTop,
     children: [
@@ -82,23 +82,17 @@ export const constantRoutes = [
         component: () => import("@/views/dataList/index"),
         meta: { title: "案件列表", icon: "dataList" },
       },
-      {
-        path: "/case-list",
-        name: "案件列表",
-        component: () => import("@/views/editorTable/index"),
-        meta: { title: "案件列表", icon: "dataList" },
-      },
+      // {
+      //   path: "/case-list",
+      //   name: "案件列表",
+      //   component: () => import("@/views/editorTable/index"),
+      //   meta: { title: "案件列表", icon: "dataList" },
+      // },
       {
         path: "/data-edit",
         name: "编辑页面",
         component: () => import("@/views/edit/index"),
         meta: { title: "编辑页面", icon: "edit" },
-      },
-      {
-        path: "/rich-text-edit",
-        name: "说明书编辑",
-        component: () => import("@/views/richTextEdit/index"),
-        meta: { title: "说明书编辑", icon: "edit" },
       },
       {
         path: "/data-review",
@@ -107,6 +101,25 @@ export const constantRoutes = [
         meta: { title: "审核", icon: "edit" },
       },
     ],
+  },
+  {
+    path: "/case-list",
+    redirect: "/case-list",
+    component: LayoutTop,
+    children:[
+      {
+        path: "/case-list",
+        name: "案件列表",
+        component: () => import("@/views/editorTable/index"),
+        meta: { title: "案件列表", icon: "dataList" },
+      },
+      {
+        path: "/rich-text-edit",
+        name: "说明书编辑",
+        component: () => import("@/views/richTextEdit/index"),
+        meta: { title: "说明书编辑", icon: "edit" },
+      }
+    ]
   },
   {
     path: "/404",

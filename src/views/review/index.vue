@@ -2,7 +2,7 @@
   <div>
     <div class="custom-navbar"><span @click="gotoList">首页</span> / 审核</div>
     <div v-if="!fetchDataLoading">
-      <div style="float: right;margin-bottom:20px;" v-if="type === 'review'">
+      <div style="float: right; margin-bottom: 20px" v-if="type === 'review'">
         <el-button type="plain" @click="handleWord()">下载文档</el-button>
         <el-button type="danger" @click="handleReview('nopass')"
           >打回修改</el-button
@@ -45,7 +45,7 @@ export default {
       id: "",
       pdfUrl: "",
       type: "check",
-      fetchDataLoading:true,
+      fetchDataLoading: true,
     };
   },
   created() {
@@ -109,21 +109,22 @@ export default {
         type: 1,
         id: this.id,
       };
-      // this.startLoading("生成预览文件中，请耐心等候")
       download_description(param)
         .then((res) => {
-          // this.closeLoading()
           this.fetchDataLoading = false;
           this.pdfUrl = baseUrl() + res.data.url;
         })
         .catch((err) => {
-          // this.closeLoading()
           this.fetchDataLoading = false;
           this.$message.error(err.message);
         });
     },
     gotoList() {
-      this.$router.push({ path: "/data-list" });
+      if (this.$store.getters.roles === 1) {
+        this.$router.push({ path: "/data-list" });
+      } else {
+        this.$router.push({ path: "/case-list" });
+      }
     },
   },
 };
@@ -145,7 +146,7 @@ export default {
 }
 .gujiapin {
   background: gray;
-  margin-top:80px;
+  margin-top: 80px;
   .content {
     width: 50%;
     height: 100%;
@@ -157,7 +158,7 @@ export default {
 .custom-div {
   display: inline-block;
   margin-left: 10px;
-  margin-top:20px;
+  margin-top: 20px;
   width: 98px;
   height: 40px;
   background: gainsboro;

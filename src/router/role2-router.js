@@ -4,7 +4,7 @@ import LayoutTop from '@/layout-top'
 
 const role2Router = [
   {
-    path: "/",
+    path: "/case-list",
     redirect: "/case-list",
     component: LayoutTop,
     children: [
