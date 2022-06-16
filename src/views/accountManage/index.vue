@@ -48,8 +48,11 @@
       <el-table-column sortable="custom" prop="role" label="账号类型">
         <template slot-scope="scope">
           <div>
-            <span :class="`role${scope.row.role}`">
-              {{ formatRole(scope.row.role) }}
+            <span v-if="scope.row.isAdmin" class="role-admin">
+              {{ formatRole(scope.row) }}
+            </span>
+            <span v-else :class="`role${scope.row.role}`">
+              {{ formatRole(scope.row) }}
             </span>
           </div>
         </template>
@@ -160,8 +163,9 @@ export default {
     formatLabel() {
       return this.showId ? "隐藏" : "显示";
     },
-    formatRole(role) {
-      return role === 1 ? "主办人" : "协办人";
+    formatRole(row) {
+      if (row.isAdmin) return "超级管理员";
+      return row.role === 1 ? "主办人" : "协办人";
     },
     handleDelete(row) {
       this.$confirm("确定要删除当前账号数据吗", "提示", {
@@ -291,11 +295,19 @@ export default {
   padding: 3px 8px;
   color: #00b42a;
   background: #e8ffea;
+  border-radius: 2px;
 }
 .role1 {
   padding: 3px 8px;
   color: #ff7d00;
   background: #fff7e8;
+  border-radius: 2px;
+}
+.role-admin {
+  padding: 3px 8px;
+  color: #f53f3f;
+  background: #ffece8;
+  border-radius: 2px;
 }
 .title-box {
   display: flex;

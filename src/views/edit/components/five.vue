@@ -17,7 +17,7 @@
         >
           <el-table-column prop="realIndex" label="序号" width="100">
             <template slot-scope="scope">
-              <div class="sort-index">
+              <div :class="{'sort-index':scope.row.no === scope.row.parentNo}">
                 {{ scope.$index + 1 }}
               </div>
 
@@ -43,7 +43,7 @@
                   rows="1"
                   v-model="scope.row.name"
                 ></el-input>
-                <div v-else>
+                <div v-else >
                   <span>根据<span style="color: #165dff">权利要求</span></span>
                   <el-input
                     @input="nameInputChange($event, scope.row)"
@@ -551,8 +551,8 @@ export default {
   //   padding: 30px 50px;
 }
 .main-upload {
-  position: relative;
-  // top: -2px;
+  position: absolute;
+  top: 24px;
 }
 .page-main {
   background: #fff;
@@ -600,11 +600,12 @@ export default {
   padding-bottom: 41px;
 }
 .check-row-box {
-  position: relative;
-  top: -18px;
+  position: absolute;
+  top: 12px;
 }
 .sort-index {
-  position: relative;
+  position: absolute;
+  top:24px;
 }
 .row-click {
   position: absolute;
@@ -612,5 +613,9 @@ export default {
   left: 10px;
   color: red;
   cursor: pointer;
+}
+.row-top{
+  position: absolute;
+  top:10px;
 }
 </style>

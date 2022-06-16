@@ -49,7 +49,7 @@
           </el-form-item>
         </template>
         <template v-if="form.role == '2'">
-          <div class="custom-label">协办办人姓名</div>
+          <div class="custom-label">协办人姓名</div>
           <el-form-item label="" prop="username">
             <el-input
               v-model="form.username"
