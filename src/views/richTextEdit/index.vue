@@ -138,7 +138,6 @@
               v-if="data.nameEdit != 1"
               ref="input"
               size="mini"
-            
               v-model="data.name"
               style="max-width: 100px"
             ></el-input>
@@ -299,10 +298,21 @@ export default {
         el.name = `图${index + 1}`;
       });
     },
+    // allContent(n, o) {
+    //   if (this.richTextUpdata === 2) {
+    //     this.richTextUpdata = 0
+    //     if (this.timer) {
+    //       clearTimeout(this.timer);
+    //     }
+    //     this.timer = setTimeout(() => {
+    //       this.handleSave("autosave");
+    //     }, 1000);
+    //   }
+    // },
   },
   data() {
     return {
-      drawingsEdit:false,
+      richTextUpdata: 0,
       timer: null,
       abstractUrl: "",
       showFileList: false,
@@ -312,8 +322,6 @@ export default {
       showUpload: false,
       mainTextOverLimit: false,
       treeDataStr: "",
-      futushuomingList:
-        '<p><span style="text-decoration: underline;">附图说明</span></p>',
       // 默认标识符
       treeDataStrDefalut: "<p><span>&#x3000;&#x3000;附图说明</span></p>",
       labelValue: "",
@@ -328,38 +336,32 @@ export default {
       typeLabel: "", //类型。1.发明 2。实用类型
       showTechList: false,
       detailData: {},
-      toolList: ["攥写", "摘要", "附图", "预览"],
+      toolList: ["撰写", "摘要", "附图", "预览"],
       currentTool: 0,
       showMainEdit: false,
       allContent: "",
-      allContentTemp: `<h1 class="custom" style="text-align: center;">权  利  要  求  书</h1>
-      <hr style="border: 1px solid #000; background: #000;" size="0" width="100%">
-        <p>&nbsp;</p>
-        <p >single</p>
-         <hr style="border: 1px solid #000; background: #000;" size="1px" width="100%">
+      allContentTemp: `<h1 class="custom" style="text-align: center;">权  利  要  求  书</h1><hr style="border: 1px solid #000; background: #000;" size="1px" width="100%">
+        <p>single</p>
         <h1 class="custom" style="text-align: center;">说 明 书</h1>
         <hr style="border: 1px solid #000; background: #000;" size="1px" width="100%">
-        <h3 style="text-align: center;"><strong>patentName1</strong></h3>
-        <p><span style="text-decoration: underline;">技术领域</span></p>
-        <p>本typeLabel1属于techArea1技术领域，尤其涉及patentName2</p>
-        <p><span style="text-decoration: underline;">背景技术</span></p>
+        <h2 style="text-align: center;"><strong>patentName1</strong></h2>
+        <h3 style="text-decoration: underline;">技术领域</h3>
+        <p>&#x3000;&#x3000;本typeLabel1属于techArea1技术领域，尤其涉及patentName2</p>
+        <h3 style="text-decoration: underline;">背景技术</h3>
         domainText
         painPointText
         currentSolutionText
         pendingDefectText
         patentContent
-        <p><span style="text-decoration: underline;">附图说明</span></p>
-        <p>&#x3000;&#x3000;主要元件符号说明：</p>
-        <p><span>&#x3000;&#x3000;附图说明</span></p>
-        <p><span style="text-decoration: underline;">具体实施方式</span></p>
-        methodDescp
+        <h3 style="text-decoration: underline;">附图说明</h3>
+        <p>&#x3000;&#x3000;主要元件符号说明：</p><p>&#x3000;&#x3000;附图说明</p><h3 style="text-decoration: underline;">具体实施方式</h3>
+        methodDesc
         ideaText
         methodWay
         endText
         `,
       mainContentTemplete: `<h1 class="custom" style="text-align: center;">说 明 书 摘 要</h1>
                     <hr style="border: 1px solid #000; background: #000;" size="1px" width="100%">
-                    <p></p>
         `,
       mainContent: ``,
     };
@@ -374,9 +376,7 @@ export default {
   },
   methods: {
     updateRichText(data) {
-      // console.log("我更新啦", data);
       this.allContent = data.content;
-
       if (this.timer) {
         clearTimeout(this.timer);
       }
@@ -405,19 +405,14 @@ export default {
         this.detailData = res.data;
         this.claim = res.data.claim;
         this.drawings = res.data.drawings;
-        if(this.drawings.length){
-          this.drawingsEdit = true;
-        }
         this.typeLabel = res.data.type === "1" ? "发明" : "实用类型";
         this.abstractUrl = res.data.abstractUrl;
         if (res.data.abstract) {
           this.mainContent = res.data.abstract;
-          // console.log("mainContent", this.mainContent);
           this.showMainEdit = true;
         }
         if (res.data.drawingReferences[0]) {
           this.imgMarkList = res.data.drawingReferences;
-          this.addImgTextToRich("edit");
         }
         if (res.data.patentName) {
           this.patentName = res.data.patentName;
@@ -429,7 +424,7 @@ export default {
           this.allContent = res.data.description;
           return;
         }
-        console.log("还会进来吗？");
+        console.log("新增才会走下面");
         // 处理独权从权
         if (res.data.claim[0]) {
           this.handleClaim(res.data);
@@ -481,19 +476,19 @@ export default {
             let singleIndexToHan = this.changeNumToHan(singleIndex);
             let nameStr = `实施例${indexToHan}`;
             methodStr += `<p>${nameStr}</p>`;
-            methodStr += `<p>本${nameStr},提供${name},${kernel}</p>`;
-            methodStr += `<p>${item.goodEffect}</p>`;
-            methodStr += `<p>${note}</p>`;
-            methodStr += `<p>${detail.fixDefectMethod.text}</p>`;
+            methodStr += `<p>&#x3000;&#x3000;本${nameStr},提供${name}${kernel}</p>`;
+            methodStr += `<p>&#x3000;&#x3000;${item.goodEffect}</p>`;
+            methodStr += `<p>&#x3000;&#x3000;${note}</p>`;
+            methodStr += `<p>&#x3000;&#x3000;${detail.fixDefectMethod.text}</p>`;
 
             if (patentContentBox) {
               //在下一个独权之前，数据拼接走， 把str清空
               patentContent += patentContentBox;
               patentContentBox = "";
             }
-            patentContentBox += `<p>第${singleIndexToHan}方面，本${typeLabel}提供的是${name},${kernel}</p>`;
+            patentContentBox += `<p>&#x3000;&#x3000;第${singleIndexToHan}方面，本${typeLabel}提供的是${name},${kernel}</p>`;
 
-            str += `<p>${index}. ${name}其特征在于${kernel}</p>`;
+            str += `<p>&#x3000;&#x3000;${index}. ${name}其特征在于${kernel}</p>`;
             kernel = "";
             note = "";
           }
@@ -510,15 +505,15 @@ export default {
             });
             let noStr = `实施例` + this.changeNumToHan(dataIndex + 1);
             methodStr += `<p>${noStr}</p>`;
-            methodStr += `<p>在实施例${childName}的基础上,本${noStr}的${childKernel}</p>`;
-            methodStr += `<p>${item.goodEffect}</p>`;
-            methodStr += `<p>${note}</p>`;
-            methodStr += `<p>${detail.fixDefectMethod.text}</p>`;
+            methodStr += `<p>&#x3000;&#x3000;在实施例${childName}的基础上,本${noStr}的${childKernel}</p>`;
+            methodStr += `<p>&#x3000;&#x3000;${item.goodEffect}</p>`;
+            methodStr += `<p>&#x3000;&#x3000;${note}</p>`;
+            methodStr += `<p>&#x3000;&#x3000;${detail.fixDefectMethod.text}</p>`;
 
-            patentContentBox += `<p>可选地，${childKernel}</p>`;
+            patentContentBox += `<p>&#x3000;&#x3000;可选地，${childKernel}</p>`;
 
             index += 1;
-            str += `<p>${index}. 根据权利要求${childName}所述的${name},其特征在于${childKernel}</p>`;
+            str += `<p>&#x3000;&#x3000;${index}. 根据权利要求${+item.name}所述的${name}，其特征在于，${childKernel}</p>`;
             childKernel = "";
             note = "";
           }
@@ -537,7 +532,7 @@ export default {
       // console.log("str", str, this.allContentTemp);
       let content;
       //把有益效果插入在patentContent的最后面
-      patentContent += `<p>${goodEffect}</p>`;
+      patentContent += `<p>&#x3000;&#x3000;${goodEffect}</p>`;
       // console.log('patentContent',patentContent)
       content = this.allContentTemp.replace(/single/, str);
       content = content.replace(/patentContent/, patentContent);
@@ -557,8 +552,24 @@ export default {
     },
     handleMainEdit() {
       this.mainContent = "";
+      let patentName = this.patentName;
+      let typeLabel = this.typeLabel;
+      let techArea = this.detailData.techArea || "";
+      let str = `<p>&#x3000;&#x3000;本${typeLabel}属于${techArea}技术领域，尤其涉及${patentName}`;
+      this.detailData.claim.forEach((el) => {
+        console.log("claim", el);
+        // 独权
+        if (el.no === el.parentNo && el.no === el.ancestorNo) {
+          str += el.name;
+          el.claimContent.forEach((childItem) => {
+            str += childItem.kernel;
+          });
+          str += el.goodEffect;
+        }
+      });
+      let content = this.mainContentTemplete + str + "</p>";
       this.$nextTick(() => {
-        this.mainContent = this.mainContentTemplete;
+        this.mainContent = content;
         this.showMainEdit = true;
       });
     },
@@ -574,11 +585,11 @@ export default {
         currentSolutionText = this.detailData?.currentSolution.text,
         pendingDefectText = this.detailData?.pendingDefect.text,
         ideaText = this.detailData?.idea.text,
-        endText = `以上仅为本${typeLabel}的较佳实施例而已，并不用以限制本${typeLabel}，凡在本${typeLabel}的精神和原则之内所作的任何修改、等同替换和改进等，均应包含在本${typeLabel}的保护范围之内。`,
-        methodDesc = `为了使本${typeLabel}的目的、
+        endText = `<p>&#x3000;&#x3000;以上仅为本${typeLabel}的较佳实施例而已，并不用以限制本${typeLabel}，凡在本${typeLabel}的精神和原则之内所作的任何修改、等同替换和改进等，均应包含在本${typeLabel}的保护范围之内。 </p>`,
+        methodDesc = `<p>&#x3000;&#x3000;为了使本${typeLabel}的目的、
             技术方案及优点更加清楚明白，以下结合附图及实施例，对本
             ${typeLabel}进行进一步详细说明。应当理解，此处所描述的具体实施例仅仅用以解释本${typeLabel}，并不用于限定本${typeLabel}。
-            `;
+            </p>`;
       let typeLabel1 = type === "edit" ? "typeLabel1" : typeLabel;
       let typeLabel1Exp = new RegExp(typeLabel1);
       content = content.replace(typeLabel1Exp, `${typeLabel}`);
@@ -587,25 +598,28 @@ export default {
       content = content.replace(techArea1Exp, `${techAreaText}`);
       content = content.replace(
         /domainText/,
-        `<p style="padding-left:40px">${domainText}</p>`
+        `<p>&#x3000;&#x3000;${domainText}</p>`
       );
       content = content.replace(
         /painPointText/,
-        `<p style="padding-left:40px">${painPointText}</p>`
+        `<p>&#x3000;&#x3000;${painPointText}</p>`
       );
       content = content.replace(
         /currentSolutionText/,
-        `<p style="padding-left:40px">${currentSolutionText}</p>`
+        `<p>&#x3000;&#x3000;${currentSolutionText}</p>`
       );
       content = content.replace(
         /pendingDefectText/,
-        `<p style="padding-left:40px">${pendingDefectText}</p>`
+        `<p>&#x3000;&#x3000;${pendingDefectText}</p>`
       );
       // 实现方案
-      content = content.replace(/methodDesc/, `<p>${methodDesc}</p>`);
+      content = content.replace(/methodDesc/, `${methodDesc}`);
       // 方案概述
-      content = content.replace(/ideaText/, `<p>${ideaText}</p>`);
-      content = content.replace(/endText/, `<p>${endText}</p>`);
+      content = content.replace(
+        /ideaText/,
+        `<p>&#x3000;&#x3000;${ideaText}</p>`
+      );
+      content = content.replace(/endText/, `${endText}`);
       this.$nextTick(() => {
         this.allContent = content;
         // console.log("this.allContent", this.allContent);
@@ -615,20 +629,32 @@ export default {
       const patentName = this.patentName;
       let content = this.allContent;
       this.allContent = "";
-      let patentName1 = this.oldPatentName1;
-      let patentName2 = `尤其涉及${this.oldPatentName2}`;
-      let patentName1Exp = new RegExp(patentName1);
-      let patentName2Exp = new RegExp(patentName2);
-      console.log({ patentName, patentName1, patentName2 });
-      content = content.replace(patentName1Exp, patentName);
-      content = content.replace(patentName2Exp, `尤其涉及${patentName}`);
+      content = content.replace(
+        /<hr style="border: 1px solid #000; background: #000;" size="1px" width="100%">\r?\n|(?<!\n)\r/g,
+        '<hr style="border: 1px solid #000; background: #000;" size="1px" width="100%">'
+      );
+      content = content.replace(/<\/h2>\r?\n|(?<!\n)\r/g, "</h2>");
+      content = content.replace(/<\/p>\r?\n|(?<!\n)\r/g, "</p>");
+
+      let textReg =
+        /<hr style="border: 1px solid #000; background: #000;" size="1px" width="100%">.*?<h3 style="text-decoration: underline;">技术领域<\/h3>/g;
+      let text2Reg =
+        /尤其涉及.*?<h3 style="text-decoration: underline;">背景技术<\/h3>/g;
+      content = content.replace(textReg, (Pstr) => {
+        console.log("中间匹配到的字符", Pstr, "||||||", patentName);
+        return `<hr style="border: 1px solid #000; background: #000;" size="1px" width="100%"><h2 style="text-align: center;">${patentName}</h2><h3 style="text-decoration: underline;">技术领域</h3>`;
+      });
+      content = content.replace(text2Reg, (Pstr) => {
+        console.log("匹配到的专利名字", Pstr, "||||||", patentName);
+        return `尤其涉及${patentName}</p><h3 style="text-decoration: underline;">背景技术<\/h3>`;
+      });
       this.$nextTick(() => {
         this.allContent = content;
         this.handleSave("updatePatentName");
       });
     },
     handleRichText() {
-      let zhaiyaoImg = `<h1 class="custom" style="text-align: center;">附 图 摘 要</h1>
+      let zhaiyaoImg = `<h1 class="custom" style="text-align: center;">摘 要 附 图</h1>
                     <hr style="border: 1px solid #000; background: #000;" size="1px" width="100%">
         `;
       if (this.abstractUrl) {
@@ -639,26 +665,28 @@ export default {
       if (this.claim[0]) {
         firstSingleName = this.claim[0].name;
       }
-      let textStr = `<p><span style="text-decoration: underline;">附图说明</span></p>`;
+      let textStr = ``;
       let imgStr = "";
       this.drawings.forEach((item) => {
-        textStr += `<p>${item.name}是本${this.typeLabel}实施例（或者现有技术）提供的${firstSingleName}的（流程）示意图</p>`;
+        textStr += `<p>&#x3000;&#x3000;${item.name}是本${this.typeLabel}实施例（或者现有技术）提供的${firstSingleName}的（流程）示意图</p>`;
         const imgUrl = baseUrl() + item.url;
         imgStr += `<p ><img src="${imgUrl}" /><div style="text-align:center;">${item.name}</div></p>`;
       });
-      console.log({ textStr, imgStr });
+
+      console.log({ textStr, imgStr, allContent: this.allContent });
       let content = this.allContent;
-      let futushuomingList = this.futushuomingList;
-
-      let futushuomingListExp = new RegExp(futushuomingList);
-
-      content = content.replace(futushuomingListExp, `${textStr}`);
-      if(!this.drawingsEdit){
-        this.allContent = content;
-      }
-
+      // 清理标签之间的空格。不然正则匹配不到
+      content = content.replace(/<\/p>\r?\n|(?<!\n)\r/g, "</p>");
+      content = content.replace(/<\/h3>\r?\n|(?<!\n)\r/g, "</h3>");
+      console.log("content", content);
+      let textReg =
+        /<h3 style="text-decoration: underline;">附图说明<\/h3>.*?主要元件符号说明：<\/p>/g;
+      content = content.replace(textReg, (str) => {
+        console.log("中间匹配到的字符", str, "||||||", textStr);
+        return `<h3 style="text-decoration: underline;">附图说明</h3>${textStr}<p>&#x3000;&#x3000;主要元件符号说明：</p>`;
+      });
+      this.allContent = content;
       const shuomingshuImg = `
-              <hr style="border: 1px solid #000; background: #000;" size="1px" width="100%">
               <h1 class="custom" style="text-align: center;">说 明 书 附 图</h1>
               <hr style="border: 1px solid #000; background: #000;" size="1px" width="100%">
               ${imgStr}
@@ -679,6 +707,7 @@ export default {
         this.$message.error("说明书摘要内容不能超过300个字");
       }
       const richText = this.handleRichText();
+      // return
       const params = {
         id: this.detailData.id,
         patentName: this.patentName,
@@ -689,11 +718,13 @@ export default {
         abstractUrl: this.abstractUrl,
         richText: richText,
       };
+      this.allContent = "";
       editDescription(params)
         .then((res) => {
           if (type === "save") {
             this.$message.success("保存成功");
           } else if (type === "preview") {
+            this.allContent = params.description;
             this.handlePreview();
             return;
           } else if (type === "submit") {
@@ -895,14 +926,8 @@ export default {
     addImgTextToRich(type) {
       this.treeDataStr = "";
       this.handleImgMarkList(this.imgMarkList);
-      console.log("treeDataStr", this.treeDataStr);
-      if (type === "add") {
-        console.log("添加到富文本");
-        this.handleChangeImgStr(this.treeDataStr);
-      } else {
-        this.treeDataStrDefalut = `${this.treeDataStr}`;
-        console.log("编辑设置默认标识符", this.treeDataStrDefalut);
-      }
+      console.log("添加到富文本");
+      this.handleChangeImgStr(this.treeDataStr);
     },
     handleImgMarkList(data) {
       data.forEach((el) => {
@@ -915,25 +940,17 @@ export default {
       });
     },
     handleChangeImgStr(str) {
-      // <p data-str="imgStr"></p>
       let content = this.allContent;
-      this.allContent = "";
-      const richStr = this.treeDataStrDefalut;
-      let aExp = new RegExp("a");
-      let stg1Exp = new RegExp(richStr);
-      //新增以附图标识为标识符，加回去
-      if (richStr === "<p><span>&#x3000;&#x3000;附图说明</span></p>") {
-        content = content.replace(
-          stg1Exp,
-          `<p><span>&#x3000;&#x3000;附图说明</span></p><p>&#x3000;&#x3000;${str}</p>`
-        );
-      } else {
-        // 编辑就覆盖文本
-        content = content.replace(stg1Exp, `<p>${str}</p>`);
-      }
-
-      this.treeDataStrDefalut = str;
-      // console.log("content", content);
+      content = content.replace(/<\/p>\r?\n|(?<!\n)\r/g, "</p>");
+      content = content.replace(/<\/h3>\r?\n|(?<!\n)\r/g, "</h3>");
+      console.log("content", content);
+      let textReg =
+        /<p>&#x3000;&#x3000;附图说明<\/p>.*?具体实施方式<\/h3>/g;
+      content = content.replace(textReg, (Pstr) => {
+        console.log("中间匹配到的字符", Pstr, "||||||", str);
+        return `<p>&#x3000;&#x3000;附图说明<\/p><p>&#x3000;&#x3000;${str}</p><h3 style="text-decoration: underline;">具体实施方式</h3>`;
+      });
+      // return
       this.$nextTick(() => {
         this.allContent = content;
         this.handleSave("saveTreeData");

@@ -3,7 +3,7 @@
     <div class="custom-navbar"><span @click="gotoList">首页</span> / 审核</div>
     <div v-if="!fetchDataLoading">
       <div style="float: right; margin-bottom: 20px" v-if="type === 'review'">
-        <el-button type="plain" @click="handleWord()">下载文档</el-button>
+        <el-button type="plain" @click="handleWord()" :loading="downloading">下载文档</el-button>
         <el-button type="danger" @click="handleReview('nopass')"
           >打回修改</el-button
         >
@@ -42,6 +42,7 @@ import { baseUrl } from "@/utils/baseUrl";
 export default {
   data() {
     return {
+      downloading:false,
       id: "",
       pdfUrl: "",
       type: "check",
@@ -66,13 +67,16 @@ export default {
         id: this.id,
       };
       // this.startLoading("下载word文档中，请耐心等候")
+      this.downloading = true;
       download_description(param)
         .then((res) => {
           // this.closeLoading()
+          this.downloading = false;
           let wordUrl = baseUrl() + res.data.url;
           window.open(wordUrl);
         })
         .catch((err) => {
+          this.downloading = false;
           // this.closeLoading()
           this.$message.error(err.message);
         });

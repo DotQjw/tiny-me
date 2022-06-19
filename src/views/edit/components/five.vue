@@ -17,7 +17,9 @@
         >
           <el-table-column prop="realIndex" label="序号" width="100">
             <template slot-scope="scope">
-              <div :class="{'sort-index':scope.row.no === scope.row.parentNo}">
+              <div
+                :class="{ 'sort-index': scope.row.no === scope.row.parentNo }"
+              >
                 {{ scope.$index + 1 }}
               </div>
 
@@ -34,19 +36,21 @@
             <template slot-scope="scope">
               <div>
                 <el-input
+                  :ref="`input${scope.row.realIndex}`"
                   v-if="
                     scope.row.no === scope.row.parentNo &&
                     scope.row.no === scope.row.ancestorNo
                   "
-                  @input="nameInputChange($event, scope.row)"
+                  @input="nameInputChange($event, scope.row, 'name')"
                   type="textarea"
                   rows="1"
                   v-model="scope.row.name"
                 ></el-input>
-                <div v-else >
+                <div v-else>
                   <span>根据<span style="color: #165dff">权利要求</span></span>
                   <el-input
-                    @input="nameInputChange($event, scope.row)"
+                    :ref="`input${scope.row.realIndex}`"
+                    @input="nameInputChange($event, scope.row, 'name')"
                     v-model.number="scope.row.name"
                     class="child-input"
                   ></el-input>
@@ -137,7 +141,7 @@
                 <el-input
                   type="textarea"
                   rows="1"
-                  @input="inputChange"
+                  @input="nameInputChange($event, scope.row, 'goodEffect')"
                   v-model="scope.row.goodEffect"
                 ></el-input>
                 <div v-if="scope.row.attachments" style="margin-top: 10px">
@@ -186,7 +190,7 @@ export default {
   },
   data() {
     return {
-      parentChildren:[],
+      parentChildren: [],
       uploadUrl: uploadFileUrl(),
       token: this.$store.getters.toke || getToken(),
       realIndex: 1,
@@ -258,7 +262,7 @@ export default {
           console.log("找到了", el, index, this.parentChildren);
         } else {
           if (el.children && el.children[0]) {
-            console.log("进阿里了？")
+            console.log("进阿里了？");
             this.findTreeData(no, el.children);
           }
         }
@@ -349,20 +353,20 @@ export default {
       }, 1000);
       console.log("this.claims", this.claims);
     },
-    nameInputChange(value, row) {
+    nameInputChange(value, row, type) {
       console.log("回填数据", value, row);
       // this.treeData
-      this.fillTreeData(value, row, this.treeData);
+      this.fillTreeData(value, row, this.treeData, type);
       this.inputChange();
     },
-    fillTreeData(value, row, originData) {
+    fillTreeData(value, row, originData, type) {
       originData.forEach((item) => {
         if (item.no === row.no) {
           console.log("我找到了");
-          item.name = value;
+          item[type] = value;
         } else if (item.children && item.children.length) {
           console.log("还没有找到，不过继续");
-          this.fillTreeData(value, row, item.children);
+          this.fillTreeData(value, row, item.children, type);
         }
       });
     },
@@ -384,7 +388,7 @@ export default {
             children: [],
           };
           if (!item.name || item.isAdd) {
-            console.log("我是新增的走这里", data[index - 1]);
+            // console.log("我是新增的走这里", data[index - 1]);
             // obj.name = this.ancestorName + "";
           }
           this.claims.push(Object.assign({}, item, obj));
@@ -399,6 +403,13 @@ export default {
       console.log("obj", obj);
       var template = cloneDeep(this.template);
       this.handlePushChildData(item, itemIndex, this.treeData);
+
+      this.$nextTick(() => {
+        this.claims = [];
+        this.realIndex = 0;
+        this.handleArrayData(this.treeData);
+        console.log("claims", this.claims);
+      });
     },
     handlePushChildData(item, itemIndex, data) {
       //找到这个东西
@@ -421,11 +432,6 @@ export default {
           this.handlePushChildData(item, itemIndex, child.children);
         }
       });
-      console.log("tree", this.treeData);
-      this.claims = [];
-      this.realIndex = 0;
-      this.handleArrayData(this.treeData);
-      console.log("claims", this.claims);
     },
     handleSingle() {
       var template = cloneDeep(this.template);
@@ -441,6 +447,10 @@ export default {
       this.claims = [];
       this.realIndex = 0;
       this.handleArrayData(this.treeData);
+      let name = `input${this.treeData.length}`
+      this.$nextTick(()=>{
+         this.$refs[name].focus();
+      })
     },
     dealTableData() {
       let currentNo = 1;
@@ -527,6 +537,7 @@ export default {
     // border: 1px solid #fff !important;
     margin: 10px 0;
     padding: 5px 2px;
+    max-height: 124px !important;
   }
   .el-table tbody tr:hover > td {
     background-color: #fff !important;
@@ -605,7 +616,7 @@ export default {
 }
 .sort-index {
   position: absolute;
-  top:24px;
+  top: 24px;
 }
 .row-click {
   position: absolute;
@@ -614,8 +625,8 @@ export default {
   color: red;
   cursor: pointer;
 }
-.row-top{
+.row-top {
   position: absolute;
-  top:10px;
+  top: 10px;
 }
 </style>

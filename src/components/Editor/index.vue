@@ -128,9 +128,15 @@ export default {
           that.editorVm = editor;
           editor.setContent(that.myValue);
           this.hasInit = true;
+          editor.on("input", (e) => {
+            that.$emit("updateRichText", {
+              content: editor.getContent(),
+              length: editor.plugins.wordcount.getCount(),
+            });
+          });
           editor.on("NodeChange Change KeyUp SetContent", () => {
             this.hasChange = true;
-            that.$emit("updateRichText", {content:editor.getContent(),length:editor.plugins.wordcount.getCount()});
+            // that.$emit("updateRichText", {content:editor.getContent(),length:editor.plugins.wordcount.getCount()});
           });
           // 将回车键改为 shift+回车
           editor.on("keydown", function (event) {

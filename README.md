@@ -113,10 +113,10 @@ Copyright (c) 2017-present PanJiaChen
 9. step5-独权名称- name
 10. step5-独权内核 - kernel
 11. step5-独权备注 -note
-12. step5-独权有益效果- ?
+12. step5-独权有益效果- goodeffect
 13. step5-从权内核
 14. step5-从权备注
-15. step5-从权有益效果
+15. step5-从权有益效果 -goodeffect
 16. step5-独权序号 - no
 17. step5-从权序号 -no
 18. step5-从权名称 -no

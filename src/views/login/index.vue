@@ -18,13 +18,11 @@
           <svg-icon icon-class="user" />
         </span>
         <el-input
-          auto-complete="off"
-          ref="username"
+          auto-complete="new-password"
           v-model="loginForm.username"
           placeholder="Username"
-          name="username"
           type="text"
-          tabindex="1"
+          tabindex="1" 
         />
       </el-form-item>
 
@@ -33,13 +31,11 @@
           <svg-icon icon-class="password" />
         </span>
         <el-input
-          auto-complete="off"
-          :key="passwordType"
+          auto-complete="new-password"
           ref="password"
           v-model="loginForm.password"
           :type="passwordType"
           placeholder="Password"
-          name="password"
           tabindex="2"
           @keyup.enter.native="handleLogin"
         />
@@ -67,20 +63,6 @@ import { validUsername } from "@/utils/validate";
 export default {
   name: "Login",
   data() {
-    const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error("Please enter the correct user name"));
-      } else {
-        callback();
-      }
-    };
-    const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error("The password can not be less than 6 digits"));
-      } else {
-        callback();
-      }
-    };
     return {
       loginForm: {
         username: "",
@@ -100,7 +82,6 @@ export default {
   watch: {
     $route: {
       handler: function (route) {
-        console.log("route", route);
         this.redirect = route.query && route.query.redirect;
       },
       immediate: true,
