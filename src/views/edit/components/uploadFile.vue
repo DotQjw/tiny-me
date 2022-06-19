@@ -47,7 +47,7 @@
 <script>
 import store from "@/store";
 import { getToken } from "@/utils/auth";
-import { uploadFileUrl,baseUrl } from '@/utils/baseUrl';
+import { uploadFileUrl } from '@/utils/baseUrl';
 
 export default {
   props: {

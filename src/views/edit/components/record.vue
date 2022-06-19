@@ -14,6 +14,15 @@
       <div v-if="recordType === 'recording'" class="recording">
         已录制：{{ recordTime }}秒
       </div>
+      <div style="color: grey" v-if="showTip">{{ overTimeTip }}</div>
+      <div v-if="percentage != 0">
+        <div style="text-align: center; margin-top: 10px">录音转文字中</div>
+        <el-progress
+          :text-inside="true"
+          :stroke-width="16"
+          :percentage="percentage"
+        ></el-progress>
+      </div>
       <div class="dialog-btn">
         <el-button
           type="primary"
@@ -34,7 +43,7 @@
           >重新上传</el-button
         >
         <el-button
-          type="success"
+          type="primary"
           :loading="btnLoading"
           v-if="recordType === 'uploadRecord'"
           >录音上传中</el-button
@@ -45,6 +54,19 @@
           @click="handleCancel"
           >取消</el-button
         >
+        <el-button
+          type="primary"
+          :loading="btnLoading"
+          v-if="recordType === 'uploadSuccess'"
+          @click="startRecord"
+          >录制新音频</el-button
+        >
+        <el-button
+          type="text"
+          v-if="recordType === 'uploadSuccess'"
+          @click="changeText"
+          >转文字</el-button
+        >
       </div>
       <!-- <audio  :src="src" controls></audio> -->
     </div>
@@ -54,6 +76,7 @@
 import Recorder from "js-audio-recorder";
 import lamejs from "lamejs";
 import { uploadAudio } from "@/api/upload";
+import { audioToText } from "@/api/table";
 import { baseUrl } from "@/utils/baseUrl";
 export default {
   props: {
@@ -72,7 +95,12 @@ export default {
   },
   data() {
     return {
-      maxLenght:this.maxIndex,
+      isChange: false,
+      audioUrl: "",
+      percentage: 0,
+      overTimeTip: "即将超过10分钟",
+      showTip: false,
+      maxLenght: this.maxIndex,
       fisrtTips: true,
       title: "准备录制",
       src: "",
@@ -82,6 +110,7 @@ export default {
       recordType: "ready",
       recordTime: null,
       timer: null,
+      changeTimer:null,
       btnLoading: false,
       src: "",
     };
@@ -112,14 +141,53 @@ export default {
     clearInterval(this.timer);
   },
   methods: {
-    beforeRemove(file) {},
-    handlePreview(file) {},
-    handleRemove(file) {},
-    handleSuccess(response, file, fileList) {
-      console.log("handleSuccess", { response, file, fileList });
+    async changeText() {
+      console.log('转文字')
+      if (this.isChange) {
+        return;
+      }
+      this.isChange = true;
+      this.percentage = 0;
+      this.changeTimer = setInterval(() => {
+        this.percentage += 1;
+        if (this.percentage === 95) {
+          clearInterval(this.changeTimer);
+        }
+      }, 100);
+      const res = await audioToText({ url: this.audioUrl });
+      this.isChange = false;
+      if (res.data && res.data.text) {
+        // this.$message.success("录音转文字成功");
+        this.copyText = res.data.text;
+        clearInterval(this.changeTimer);
+        this.percentage = 0;
+        this.$nextTick(() => {
+          this.copyData();
+        });
+      }
     },
-    handleExceed(file) {
-      console.log("handleExceed", file);
+    copyData(type) {
+      this.$copyText(this.copyText).then(
+        (e) => {
+          this.$nextTick(()=>{
+            this.copyDataAgain();
+          })
+          // this.$message.success("现在点附件里的转文字已经有了，直接复用");
+        },
+        (e) => {
+          this.$message.success("复制失败,请重试");
+        }
+      );
+    },
+    copyDataAgain() {
+      this.$copyText(this.copyText).then(
+        (e) => {
+          this.$message.success("现在点附件里的转文字已经有了，直接复用");
+        },
+        (e) => {
+          this.$message.success("复制失败,请重试");
+        }
+      );
     },
     handleClose() {
       this.$emit("update:show", false);
@@ -133,14 +201,10 @@ export default {
           this.recordTime = 0;
           this.timer = setInterval(() => {
             this.recordTime++;
-            if (this.recordTime == 600 && this.fisrtTips) {
+            if (this.recordTime == 540 && this.fisrtTips) {
               this.fisrtTips = false;
-              this.$notify({
-                title: "提示",
-                message: "您已录制时间超过10分钟",
-                type: "warning",
-                duration: 0,
-              });
+              this.showTip = true;
+              this.overTimeTip = "即将超过10分钟";
             }
           }, 1000);
         },
@@ -165,21 +229,22 @@ export default {
       data.append("file", file);
       console.log("fileSize", this.recorder.fileSize);
       this.btnLoading = true;
-      console.log('this.recorder.duration',this.recorder.duration)
+      console.log("this.recorder.duration", this.recorder.duration);
       uploadAudio(data)
         .then((res) => {
           console.log("res", res);
           this.src = baseUrl() + res.data.url;
+          this.audioUrl = res.data.url;
           this.$message.success("录音上传成功");
           this.btnLoading = false;
-          this.recordType = "ready";
+          this.recordType = "uploadSuccess";
           this.$emit("uploadRecord", {
             name: `录音${this.maxLenght}`,
             url: res.data.url,
             size: this.recorder.fileSize,
             duration: parseInt(this.recorder.duration),
           });
-          this.maxLenght +=1;
+          this.maxLenght += 1;
         })
         .catch((err) => {
           console.log("err", err);
@@ -264,6 +329,7 @@ export default {
   color: gray;
 }
 .recording {
-  color: #67c23a;
+  color: #165dff;
+  font-weight: bold;
 }
 </style>

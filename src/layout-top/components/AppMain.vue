@@ -33,6 +33,9 @@ export default {
 </style>
 
 <style lang="scss">
+.el-progress-bar__inner{
+  background-color: #165dff !important;
+}
 .el-checkbox__input.is-checked+.el-checkbox__label,
 .el-radio__input.is-checked+.el-radio__label{
   color: #165dff !important;

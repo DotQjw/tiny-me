@@ -27,10 +27,12 @@
           >
             <div class="item-box">
               <i class="el-icon-service" style="margin: 0 13px"></i>
-              <span @click="handlePlay(item)" style="cursor:pointer;">{{ item.name }} </span>
+              <span @click="handlePlay(item)" style="cursor: pointer"
+                >{{ item.name }}
+              </span>
               <span
                 @click="changeText(item)"
-                style="float: right; margin-top: 7px;"
+                style="float: right; margin-top: 7px"
                 class="el-icon-refresh tool-icon"
                 >&#x3000;转文字</span
               >
@@ -55,7 +57,7 @@
             <div class="item-box">
               <span> {{ item.name }}</span>
               <span
-               style="float: right; margin-top: 7px"
+                style="float: right; margin-top: 7px"
                 @click="handleDownLoad(item)"
                 class="el-icon-download tool-icon"
               ></span>
@@ -108,7 +110,6 @@ export default {
     };
   },
   created() {
-    console.log("this.type", this.type, this.recordAry, this.fileAry);
   },
   methods: {
     handleClick() {},
@@ -128,14 +129,25 @@ export default {
       });
       const res = await audioToText({ url: item.url });
       if (res.data && res.data.text) {
-        // this.$message.success("录音转文字成功");
         this.copyText = res.data.text;
-        setTimeout(() => {
+        this.$nextTick(() => {
           this.copyData();
-        }, 10);
+        });
       }
     },
     copyData() {
+      this.$copyText(this.copyText).then(
+        (e) => {
+           this.$nextTick(()=>{
+            this.copyDataAgain();
+          })
+        },
+        (e) => {
+          this.$message.success("复制失败,请重试");
+        }
+      );
+    },
+    copyDataAgain() {
       this.$copyText(this.copyText).then(
         (e) => {
           this.$message.success("已将录音转文字复制到您的粘贴板了,去粘贴吧");
@@ -156,8 +168,8 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-::v-deep .el-tabs__item.is-active{
-  color:#165DFF;
+::v-deep .el-tabs__item.is-active {
+  color: #165dff;
 }
 .tool-box {
   // float:right;
@@ -183,7 +195,7 @@ export default {
   margin-top: -8px;
 }
 .tool-icon:hover {
-  color: #165DFF;
+  color: #165dff;
 }
 .dialog-main {
   line-height: 30px;
