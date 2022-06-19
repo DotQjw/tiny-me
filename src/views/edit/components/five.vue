@@ -18,7 +18,7 @@
           <el-table-column prop="realIndex" label="序号" width="100">
             <template slot-scope="scope">
               <div
-                :class="{ 'sort-index': scope.row.no === scope.row.parentNo }"
+                :class="[ scope.row.no === scope.row.parentNo ? 'sort-index' : 'child-index' ]"
               >
                 {{ scope.$index + 1 }}
               </div>
@@ -35,32 +35,45 @@
           <el-table-column prop="name" label="权利名称" width="280">
             <template slot-scope="scope">
               <div>
-                <el-input
-                  :ref="`input${scope.row.realIndex}`"
+                <div
                   v-if="
                     scope.row.no === scope.row.parentNo &&
                     scope.row.no === scope.row.ancestorNo
                   "
-                  @input="nameInputChange($event, scope.row, 'name')"
-                  type="textarea"
-                  rows="1"
-                  v-model="scope.row.name"
-                ></el-input>
-                <div v-else>
-                  <span>根据<span style="color: #165dff">权利要求</span></span>
+                >
                   <el-input
                     :ref="`input${scope.row.realIndex}`"
                     @input="nameInputChange($event, scope.row, 'name')"
-                    v-model.number="scope.row.name"
-                    class="child-input"
+                    type="textarea"
+                    rows="1"
+                    v-model="scope.row.name"
                   ></el-input>
+                  <el-button
+                    icon="el-icon-plus"
+                    style="margin-top: 10px"
+                    @click="handleChild(scope.row, scope.$index)"
+                    >添加从权</el-button
+                  >
                 </div>
-                <el-button
-                  icon="el-icon-plus"
-                  style="margin-top: 10px"
-                  @click="handleChild(scope.row, scope.$index)"
-                  >添加从权</el-button
-                >
+                <div v-else class="child-name">
+                  <div>
+                    <span
+                      >根据<span style="color: #165dff">权利要求</span></span
+                    >
+                    <el-input
+                      :ref="`input${scope.row.realIndex}`"
+                      @input="nameInputChange($event, scope.row, 'name')"
+                      v-model.number="scope.row.name"
+                      class="child-input"
+                    ></el-input>
+                  </div>
+                  <el-button
+                    icon="el-icon-plus"
+                    style="margin-top: 10px"
+                    @click="handleChild(scope.row, scope.$index)"
+                    >添加从权</el-button
+                  >
+                </div>
               </div>
             </template>
           </el-table-column>
@@ -447,10 +460,10 @@ export default {
       this.claims = [];
       this.realIndex = 0;
       this.handleArrayData(this.treeData);
-      let name = `input${this.treeData.length}`
-      this.$nextTick(()=>{
-         this.$refs[name].focus();
-      })
+      let name = `input${this.claims.length}`;
+      this.$nextTick(() => {
+        this.$refs[name].focus();
+      });
     },
     dealTableData() {
       let currentNo = 1;
@@ -629,4 +642,13 @@ export default {
   position: absolute;
   top: 10px;
 }
+.child-name {
+  position: absolute;
+  top: 18px;
+}
+.child-index{
+    position: absolute;
+  top: 26px;
+}
+
 </style>
