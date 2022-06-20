@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <div class="page-main">
+    <div class="page-main step2 ">
       <div class="box">
         <div class="custom-label">
           <span> 本专利应用在哪个领域？ </span>
@@ -215,6 +215,15 @@ export default {
   },
 };
 </script>
+<style lang="scss">
+.step2 {
+  .custom-input {
+    textarea {
+      height: 210px !important;
+    }
+  }
+}
+</style>
 <style lang="scss" scoped>
 .page {
   // text-align: center;
@@ -232,9 +241,6 @@ export default {
 .custom-label {
   // text-align: center;
   margin: 20px 0;
-}
-.custom-input {
-  //   width: 300px;
 }
 .right-tool {
   float: right;

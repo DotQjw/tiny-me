@@ -15,14 +15,6 @@
         已录制：{{ recordTime }}秒
       </div>
       <div style="color: grey" v-if="showTip">{{ overTimeTip }}</div>
-      <div v-if="percentage != 0">
-        <div style="text-align: center; margin-top: 10px">录音转文字中</div>
-        <el-progress
-          :text-inside="true"
-          :stroke-width="16"
-          :percentage="percentage"
-        ></el-progress>
-      </div>
       <div class="dialog-btn">
         <el-button
           type="primary"
@@ -57,18 +49,28 @@
         <el-button
           type="primary"
           :loading="btnLoading"
+          :disabled="changeTextLoading"
           v-if="recordType === 'uploadSuccess'"
           @click="startRecord"
           >录制新音频</el-button
         >
         <el-button
           type="text"
+          :disabled="changeTextLoading"
           v-if="recordType === 'uploadSuccess'"
           @click="changeText"
           >转文字</el-button
         >
       </div>
       <!-- <audio  :src="src" controls></audio> -->
+    </div>
+    <div v-if="percentage != 0" class="progress-bottom">
+      <div style="text-align: center; margin-top: 10px">录音转文字中...</div>
+      <el-progress
+        :text-inside="true"
+        :stroke-width="16"
+        :percentage="percentage"
+      ></el-progress>
     </div>
   </el-dialog>
 </template>
@@ -95,6 +97,7 @@ export default {
   },
   data() {
     return {
+      changeTextLoading: false,
       isChange: false,
       audioUrl: "",
       percentage: 0,
@@ -110,7 +113,7 @@ export default {
       recordType: "ready",
       recordTime: null,
       timer: null,
-      changeTimer:null,
+      changeTimer: null,
       btnLoading: false,
       src: "",
     };
@@ -142,7 +145,7 @@ export default {
   },
   methods: {
     async changeText() {
-      console.log('转文字')
+      console.log("转文字");
       if (this.isChange) {
         return;
       }
@@ -154,7 +157,9 @@ export default {
           clearInterval(this.changeTimer);
         }
       }, 100);
+      this.changeTextLoading = true;
       const res = await audioToText({ url: this.audioUrl });
+      this.changeTextLoading = false;
       this.isChange = false;
       if (res.data && res.data.text) {
         // this.$message.success("录音转文字成功");
@@ -169,9 +174,9 @@ export default {
     copyData(type) {
       this.$copyText(this.copyText).then(
         (e) => {
-          this.$nextTick(()=>{
+          this.$nextTick(() => {
             this.copyDataAgain();
-          })
+          });
           // this.$message.success("现在点附件里的转文字已经有了，直接复用");
         },
         (e) => {
@@ -220,7 +225,7 @@ export default {
     stopRecord() {
       console.log("token", this.$store.getters.token);
       this.recorder.stop();
-      this.title = "录制结束";
+      this.title = "录制完成";
       this.recordType = "uploadRecord";
       clearInterval(this.timer);
       const wavData = this.recorder.getWAVBlob();
@@ -263,7 +268,7 @@ export default {
         .catch((_) => {
           clearInterval(this.timer);
           this.recorder.stop();
-          this.title = "录制结束";
+          this.title = "录制完成";
           this.recordType = "ready";
         });
     },
@@ -317,8 +322,13 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+::v-deep .el-dialog--center .el-dialog__body {
+  // padding: 25px 25px 0 25px;
+  padding: 0;
+}
 .dialog-main {
   line-height: 30px;
+  padding:20px 30px; 
 }
 .dialog-btn {
   margin-top: 20px;
@@ -331,5 +341,9 @@ export default {
 .recording {
   color: #165dff;
   font-weight: bold;
+}
+.progress-bottom {
+  background: #ebedf0;
+  padding: 10px 20px 30px 20px;
 }
 </style>

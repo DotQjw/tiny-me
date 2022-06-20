@@ -18,7 +18,11 @@
           <el-table-column prop="realIndex" label="序号" width="100">
             <template slot-scope="scope">
               <div
-                :class="[ scope.row.no === scope.row.parentNo ? 'sort-index' : 'child-index' ]"
+                :class="[
+                  scope.row.no === scope.row.parentNo
+                    ? 'sort-index'
+                    : 'child-index',
+                ]"
               >
                 {{ scope.$index + 1 }}
               </div>
@@ -36,6 +40,7 @@
             <template slot-scope="scope">
               <div>
                 <div
+                  class="name-input"
                   v-if="
                     scope.row.no === scope.row.parentNo &&
                     scope.row.no === scope.row.ancestorNo
@@ -86,6 +91,7 @@
                 >
                   <el-input
                     @input="inputChange"
+                    class="kernel"
                     type="textarea"
                     rows="1"
                     v-model="item.kernel"
@@ -152,6 +158,7 @@
                 </el-upload>
 
                 <el-input
+                  class="good-input"
                   type="textarea"
                   rows="1"
                   @input="nameInputChange($event, scope.row, 'goodEffect')"
@@ -538,26 +545,34 @@ export default {
 };
 </script>
 <style lang="scss">
+.el-table {
+  position: relative;
+}
 .el-table td,
 .el-table th {
   vertical-align: text-top;
+  // position: absolute;
+  // top:5px;
 }
 .el-textarea__inner:focus {
   border: 1px solid #165dff !important;
 }
 .no-border-input {
   .el-textarea__inner {
-    // border: 1px solid #fff !important;
     margin: 10px 0;
     padding: 5px 2px;
-    max-height: 124px !important;
+    height: 124px !important;
   }
   .el-table tbody tr:hover > td {
     background-color: #fff !important;
   }
-  .el-table td,
-  .el-table th.is-leaf {
-    // border-bottom:20px solid gray;
+  .good-input {
+    .el-textarea__inner {
+      margin: 10px 0;
+      padding: 5px 2px;
+      height:30px !important;
+      max-height: 124px !important;
+    }
   }
   .child-input {
     max-width: 50px;
@@ -570,6 +585,10 @@ export default {
 }
 </style>
 <style lang="scss" scoped>
+// .name-input{
+//   position: absolute;
+//   top:10px;
+// }
 .page {
   // text-align: center;
   //   padding: 30px 50px;
@@ -646,9 +665,8 @@ export default {
   position: absolute;
   top: 18px;
 }
-.child-index{
-    position: absolute;
+.child-index {
+  position: absolute;
   top: 26px;
 }
-
 </style>

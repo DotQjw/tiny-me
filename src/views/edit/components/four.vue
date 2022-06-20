@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <div class="page-main">
-      <div class="box">
+      <div class="box step4">
         <div class="custom-label">
           <span>本专利如何解决上述缺陷的？</span>
           <span class="right-tool">
@@ -107,7 +107,7 @@ export default {
         clearTimeout(this.timer);
       }
       this.timer = setTimeout(() => {
-        this.saveData('autoSave');
+        this.saveData("autoSave");
       }, 1000);
     },
     uploadRecord(data) {
@@ -138,6 +138,13 @@ export default {
   },
 };
 </script>
+<style lang="scss">
+.step4 {
+  .el-textarea__inner {
+    height: 300px !important;
+  }
+}
+</style>
 <style lang="scss" scoped>
 .page-main {
   background: #fff;

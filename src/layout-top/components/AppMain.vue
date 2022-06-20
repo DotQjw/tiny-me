@@ -33,6 +33,9 @@ export default {
 </style>
 
 <style lang="scss">
+.el-progress-bar__outer{
+  background-color: #C9CDD4 !important;
+}
 .el-progress-bar__inner{
   background-color: #165dff !important;
 }

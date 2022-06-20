@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <div class="page-main">
-      <div class="box">
+      <div class="box step3">
         <div class="custom-label">
           <span> 本专利的解决思路？ </span>
           <span class="right-tool">
@@ -142,6 +142,13 @@ export default {
   },
 };
 </script>
+<style lang="scss">
+.step3 {
+  .el-textarea__inner {
+    height: 300px !important;
+  }
+}
+</style>
 <style lang="scss" scoped>
 .page-main {
   background: #fff;
