@@ -111,6 +111,7 @@
               <div class="check-row-box">
                 <div
                   v-for="(item, index) in scope.row.claimContent"
+                  :class="{'fisrt-check-row':index===0}"
                   class="check-row"
                   :key="index"
                 >
@@ -570,7 +571,7 @@ export default {
     .el-textarea__inner {
       margin: 10px 0;
       padding: 5px 2px;
-      height:30px !important;
+      height: 30px !important;
       max-height: 124px !important;
     }
   }
@@ -636,7 +637,8 @@ export default {
 }
 .check-row {
   // margin: 30px 0;
-  line-height: 53px;
+  // line-height: 124px;
+  height: 124px;
 }
 .note-row,
 .check-row-box {
@@ -644,7 +646,12 @@ export default {
 }
 .check-row-box {
   position: absolute;
-  top: 12px;
+  top:40px;
+}
+
+.fisrt-check-row{
+  position: relative;
+  top:-20px;
 }
 .sort-index {
   position: absolute;
