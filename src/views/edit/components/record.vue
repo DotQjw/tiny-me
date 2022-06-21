@@ -225,6 +225,7 @@ export default {
     stopRecord() {
       console.log("token", this.$store.getters.token);
       this.recorder.stop();
+      this.showTip = false;
       this.title = "录制完成";
       this.recordType = "uploadRecord";
       clearInterval(this.timer);
