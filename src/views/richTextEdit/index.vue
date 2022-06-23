@@ -54,8 +54,8 @@
             </div>
             <div class="content-item">
               <div class="content-item-title">2.本专利应用在哪个领域</div>
-              <div class="content-item-text">{{ detailData.domain.text }}</div>
-              <div class="tool-item" @click="openFileList('domain')">
+              <div class="content-item-text">{{ detailData.domain && detailData.domain.text || "" }}</div>
+              <div class="tool-item tool-item1" @click="openFileList('domain')">
                 <i class="el-icon-paperclip"></i>
                 <span class="tool-label">附件列表</span>
               </div>
@@ -63,7 +63,7 @@
             <div class="content-item">
               <div class="content-item-title">3.该领域存在什么痛点</div>
               <div class="content-item-text">
-                {{ detailData.painPoint.text }}
+                {{ detailData.painPoint&&detailData.painPoint.text ||'' }}
                 <div class="tool-item" @click="openFileList('painPoint')">
                   <i class="el-icon-paperclip"></i>
                   <span class="tool-label">附件列表</span>
@@ -73,7 +73,7 @@
             <div class="content-item">
               <div class="content-item-title">4.当前是如何解决这些痛点的的</div>
               <div class="content-item-text">
-                {{ detailData.currentSolution.text }}
+                {{ detailData.currentSolution && detailData.currentSolution.text ||"" }}
                 <div class="tool-item" @click="openFileList('currentSolution')">
                   <i class="el-icon-paperclip"></i>
                   <span class="tool-label">附件列表</span>
@@ -85,7 +85,7 @@
                 5.解决这些痛点的方案所存在的且本专利要解决的问题有哪些
               </div>
               <div class="content-item-text">
-                {{ detailData.pendingDefect.text }}
+                {{ detailData.pendingDefect&&detailData.pendingDefect.text || "" }}
 
                 <div class="tool-item" @click="openFileList('pendingDefect')">
                   <i class="el-icon-paperclip"></i>
@@ -334,7 +334,7 @@ export default {
         label: "label",
       },
       typeLabel: "", //类型。1.发明 2。实用类型
-      showTechList: false,
+      showTechList: true,
       detailData: {},
       toolList: ["撰写", "摘要", "附图", "预览"],
       currentTool: 0,
@@ -579,7 +579,7 @@ export default {
       this.allContent = "";
       const typeLabel = this.typeLabel;
       console.log("patentName", this.patentName);
-      const domainText = this.detailData?.domain.text,
+      const domainText = this.detailData?.domain.text || "",
         techAreaText = this.detailData.techArea,
         painPointText = this.detailData?.painPoint.text,
         currentSolutionText = this.detailData?.currentSolution.text,
@@ -1165,9 +1165,12 @@ export default {
   width: 150px;
   padding: 5px 20px;
   background: #f2f3f5;
-  margin-left: 15px;
+  // margin-left: 15px;
   cursor: pointer;
   margin-top: 20px;
+}
+.tool-item1{
+  margin-left: 15px;
 }
 .tool-label {
   margin-left: 10px;
