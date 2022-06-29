@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <el-breadcrumb separator="/">
-      <el-breadcrumb-item :to="{ path: '/case-list' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item><a @click="gotoIndex">首页</a></el-breadcrumb-item>
       <el-breadcrumb-item><a>说明书编辑</a></el-breadcrumb-item>
       <el-breadcrumb-item>{{
         detailData.proposalName || "-"
@@ -54,7 +54,9 @@
             </div>
             <div class="content-item">
               <div class="content-item-title">2.本专利应用在哪个领域</div>
-              <div class="content-item-text">{{ detailData.domain && detailData.domain.text || "" }}</div>
+              <div class="content-item-text">
+                {{ (detailData.domain && detailData.domain.text) || "" }}
+              </div>
               <div class="tool-item tool-item1" @click="openFileList('domain')">
                 <i class="el-icon-paperclip"></i>
                 <span class="tool-label">附件列表</span>
@@ -63,7 +65,7 @@
             <div class="content-item">
               <div class="content-item-title">3.该领域存在什么痛点</div>
               <div class="content-item-text">
-                {{ detailData.painPoint&&detailData.painPoint.text ||'' }}
+                {{ (detailData.painPoint && detailData.painPoint.text) || "" }}
                 <div class="tool-item" @click="openFileList('painPoint')">
                   <i class="el-icon-paperclip"></i>
                   <span class="tool-label">附件列表</span>
@@ -73,7 +75,11 @@
             <div class="content-item">
               <div class="content-item-title">4.当前是如何解决这些痛点的的</div>
               <div class="content-item-text">
-                {{ detailData.currentSolution && detailData.currentSolution.text ||"" }}
+                {{
+                  (detailData.currentSolution &&
+                    detailData.currentSolution.text) ||
+                  ""
+                }}
                 <div class="tool-item" @click="openFileList('currentSolution')">
                   <i class="el-icon-paperclip"></i>
                   <span class="tool-label">附件列表</span>
@@ -85,7 +91,10 @@
                 5.解决这些痛点的方案所存在的且本专利要解决的问题有哪些
               </div>
               <div class="content-item-text">
-                {{ detailData.pendingDefect&&detailData.pendingDefect.text || "" }}
+                {{
+                  (detailData.pendingDefect && detailData.pendingDefect.text) ||
+                  ""
+                }}
 
                 <div class="tool-item" @click="openFileList('pendingDefect')">
                   <i class="el-icon-paperclip"></i>
@@ -327,13 +336,11 @@ export default {
       labelValue: "",
       imgMarkList: [],
       patentName: "", //专利名称
-      oldPatentName1: "patentName1", //标识符
-      oldPatentName2: "patentName2", //标识符
       defaultProps: {
         children: "children",
         label: "label",
       },
-      typeLabel: "", //类型。1.发明 2。实用类型
+      typeLabel: "", //类型。1.发明 2。实用新型
       showTechList: true,
       detailData: {},
       toolList: ["撰写", "摘要", "附图", "预览"],
@@ -346,7 +353,7 @@ export default {
         <hr style="border: 1px solid #000; background: #000;" size="1px" width="100%">
         <h2 style="text-align: center;"><strong>patentName1</strong></h2>
         <h3 style="text-decoration: underline;">技术领域</h3>
-        <p>&#x3000;&#x3000;本typeLabel1属于techArea1技术领域，尤其涉及patentName2</p>
+        <p>&#x3000;&#x3000;本typeLabel1属于techArea1技术领域，尤其涉及patentName2。</p>
         <h3 style="text-decoration: underline;">背景技术</h3>
         domainText
         painPointText
@@ -375,6 +382,18 @@ export default {
     }
   },
   methods: {
+    gotoIndex() {
+      // :to="{ path: '/case-list' }"
+      this.$confirm("退出将不保存本次录入内容，是否确认退出？", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "退出",
+        type: "warning",
+      })
+        .then((_) => {
+          this.$router.push({ path: "/case-list" });
+        })
+        .catch((_) => {});
+    },
     updateRichText(data) {
       this.allContent = data.content;
       if (this.timer) {
@@ -405,7 +424,8 @@ export default {
         this.detailData = res.data;
         this.claim = res.data.claim;
         this.drawings = res.data.drawings;
-        this.typeLabel = res.data.type === "1" ? "发明" : "实用类型";
+        this.typeLabel = res.data.type == "1" ? "发明" : "实用新型";
+        console.log("typeLabel", this.typeLabel);
         this.abstractUrl = res.data.abstractUrl;
         if (res.data.abstract) {
           this.mainContent = res.data.abstract;
@@ -416,8 +436,6 @@ export default {
         }
         if (res.data.patentName) {
           this.patentName = res.data.patentName;
-          this.oldPatentName1 = res.data.patentName;
-          this.oldPatentName2 = res.data.patentName;
         }
 
         if (res.data.description) {
@@ -450,11 +468,11 @@ export default {
         methodStr = "",
         patentContentBox = "",
         patentContent = `<p>${typeLabel}内容</p>
-        <p>&#x3000;&#x3000;本${typeLabel}提供${detail.claim[0].name},旨在解决${detail.pendingDefect?.text}的问题</p>`;
+        <p>&#x3000;&#x3000;本${typeLabel}提供${detail.claim[0].name}，旨在解决${detail.pendingDefect?.text}的问题。</p>`;
       detail.claim.forEach((item, dataIndex) => {
         if (item.goodEffect) {
           goodEffect = goodEffect
-            ? goodEffect + "," + item.goodEffect
+            ? goodEffect + "，" + item.goodEffect
             : item.goodEffect;
         }
         console.log("patentContentBox 1", patentContentBox);
@@ -466,9 +484,9 @@ export default {
           if (item.claimContent) {
             item.claimContent.forEach((childItem) => {
               kernel = kernel
-                ? kernel + "," + childItem.kernel
+                ? kernel + "，" + childItem.kernel
                 : childItem.kernel;
-              note = note ? note + "," + childItem.note : childItem.note;
+              note = note ? note + "，" + childItem.note : childItem.note;
             });
             index += 1;
             singleIndex += 1;
@@ -476,7 +494,7 @@ export default {
             let singleIndexToHan = this.changeNumToHan(singleIndex);
             let nameStr = `实施例${indexToHan}`;
             methodStr += `<p>${nameStr}</p>`;
-            methodStr += `<p>&#x3000;&#x3000;本${nameStr},提供${name}${kernel}</p>`;
+            methodStr += `<p>&#x3000;&#x3000;本${nameStr}提供${name}，${kernel}</p>`;
             methodStr += `<p>&#x3000;&#x3000;${item.goodEffect}</p>`;
             methodStr += `<p>&#x3000;&#x3000;${note}</p>`;
             methodStr += `<p>&#x3000;&#x3000;${detail.fixDefectMethod.text}</p>`;
@@ -486,9 +504,9 @@ export default {
               patentContent += patentContentBox;
               patentContentBox = "";
             }
-            patentContentBox += `<p>&#x3000;&#x3000;第${singleIndexToHan}方面，本${typeLabel}提供的是${name},${kernel}</p>`;
+            patentContentBox += `<p>&#x3000;&#x3000;第${singleIndexToHan}方面，本${typeLabel}提供的是${name}，${kernel}</p>`;
 
-            str += `<p>&#x3000;&#x3000;${index}. ${name}其特征在于${kernel}</p>`;
+            str += `<p>&#x3000;&#x3000;${index}. ${name}，其特征在于${kernel}</p>`;
             kernel = "";
             note = "";
           }
@@ -499,13 +517,13 @@ export default {
           if (item.claimContent) {
             item.claimContent.forEach((childItem) => {
               childKernel = childKernel
-                ? childKernel + "," + childItem.kernel
+                ? childKernel + "，" + childItem.kernel
                 : childItem.kernel;
-              note = note ? note + "," + childItem.note : childItem.note;
+              note = note ? note + "，" + childItem.note : childItem.note;
             });
             let noStr = `实施例` + this.changeNumToHan(dataIndex + 1);
             methodStr += `<p>${noStr}</p>`;
-            methodStr += `<p>&#x3000;&#x3000;在实施例${childName}的基础上,本${noStr}的${childKernel}</p>`;
+            methodStr += `<p>&#x3000;&#x3000;在实施例${childName}的基础上，本${noStr}的${childKernel}</p>`;
             methodStr += `<p>&#x3000;&#x3000;${item.goodEffect}</p>`;
             methodStr += `<p>&#x3000;&#x3000;${note}</p>`;
             methodStr += `<p>&#x3000;&#x3000;${detail.fixDefectMethod.text}</p>`;
@@ -586,9 +604,7 @@ export default {
         pendingDefectText = this.detailData?.pendingDefect.text,
         ideaText = this.detailData?.idea.text,
         endText = `<p>&#x3000;&#x3000;以上仅为本${typeLabel}的较佳实施例而已，并不用以限制本${typeLabel}，凡在本${typeLabel}的精神和原则之内所作的任何修改、等同替换和改进等，均应包含在本${typeLabel}的保护范围之内。 </p>`,
-        methodDesc = `<p>&#x3000;&#x3000;为了使本${typeLabel}的目的、
-            技术方案及优点更加清楚明白，以下结合附图及实施例，对本
-            ${typeLabel}进行进一步详细说明。应当理解，此处所描述的具体实施例仅仅用以解释本${typeLabel}，并不用于限定本${typeLabel}。
+        methodDesc = `<p>&#x3000;&#x3000;为了使本${typeLabel}的目的、技术方案及优点更加清楚明白，以下结合附图及实施例，对本${typeLabel}进行进一步详细说明。应当理解，此处所描述的具体实施例仅仅用以解释本${typeLabel}，并不用于限定本${typeLabel}。
             </p>`;
       let typeLabel1 = type === "edit" ? "typeLabel1" : typeLabel;
       let typeLabel1Exp = new RegExp(typeLabel1);
@@ -718,7 +734,9 @@ export default {
         abstractUrl: this.abstractUrl,
         richText: richText,
       };
-      this.allContent = "";
+      if (type != "autosave") {
+        this.allContent = "";
+      }
       editDescription(params)
         .then((res) => {
           if (type === "save") {
@@ -734,6 +752,9 @@ export default {
             }
             this.handleSubmitData();
           } else if (type === "updatePatentName") {
+          } else if (type === "autosave") {
+            this.allContent = params.description;
+            return;
           }
           this.fetchData(this.detailData.id);
         })
@@ -944,11 +965,10 @@ export default {
       content = content.replace(/<\/p>\r?\n|(?<!\n)\r/g, "</p>");
       content = content.replace(/<\/h3>\r?\n|(?<!\n)\r/g, "</h3>");
       console.log("content", content);
-      let textReg =
-        /<p>&#x3000;&#x3000;附图说明<\/p>.*?具体实施方式<\/h3>/g;
+      let textReg = /<p>&#x3000;&#x3000;附图说明<\/p>.*?具体实施方式<\/h3>/g;
       content = content.replace(textReg, (Pstr) => {
         console.log("中间匹配到的字符", Pstr, "||||||", str);
-        return `<p>&#x3000;&#x3000;附图说明<\/p><p>&#x3000;&#x3000;${str}</p><h3 style="text-decoration: underline;">具体实施方式</h3>`;
+        return `<p>&#x3000;&#x3000;附图说明<\/p><p>&#x3000;&#x3000;${str}。</p><h3 style="text-decoration: underline;">具体实施方式</h3>`;
       });
       // return
       this.$nextTick(() => {
@@ -982,7 +1002,7 @@ export default {
   height: 40px;
 }
 .page {
-  margin: 0 10px;
+  margin: 0 10px 100px 0;
   .custom-title {
     font-weight: bold;
     margin-bottom: 20px;
@@ -1112,8 +1132,15 @@ export default {
   }
 }
 .bottom-btn {
+  width: 100vw;
   text-align: center;
-  margin: 30px 0;
+  padding: 30px 0;
+  background: #fff;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  box-shadow: -2px 2px 100px gainsboro;
+  // height: 80px;
 }
 .main-edit {
   width: 100%;
@@ -1169,7 +1196,7 @@ export default {
   cursor: pointer;
   margin-top: 20px;
 }
-.tool-item1{
+.tool-item1 {
   margin-left: 15px;
 }
 .tool-label {
