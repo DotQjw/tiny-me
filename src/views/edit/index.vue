@@ -331,7 +331,10 @@ export default {
         console.log("第五步保存成功");
         if (type === "save") {
           this.$message.success("保存成功");
-        } else if (type === "next") {
+          this.getDetail();
+        } else if (type === 'autoSave'){
+          this.getDetail();
+        }else if (type === "next") {
           this.active += 1;
         } else if (type === "last") {
           this.active -= 1;

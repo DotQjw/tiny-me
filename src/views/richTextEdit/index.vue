@@ -321,6 +321,7 @@ export default {
   },
   data() {
     return {
+      haveNewContent: false,
       richTextUpdata: 0,
       timer: null,
       abstractUrl: "",
@@ -361,7 +362,7 @@ export default {
         pendingDefectText
         patentContent
         <h3 style="text-decoration: underline;">附图说明</h3>
-        <p>&#x3000;&#x3000;主要元件符号说明：</p><p>&#x3000;&#x3000;附图说明</p><h3 style="text-decoration: underline;">具体实施方式</h3>
+        <p>&#x3000;&#x3000;主要元件符号说明：</p><h3 style="text-decoration: underline;">具体实施方式</h3>
         methodDesc
         ideaText
         methodWay
@@ -383,19 +384,29 @@ export default {
   },
   methods: {
     gotoIndex() {
-      // :to="{ path: '/case-list' }"
-      this.$confirm("退出将不保存本次录入内容，是否确认退出？", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "退出",
-        type: "warning",
-      })
-        .then((_) => {
-          this.$router.push({ path: "/case-list" });
+      if (this.haveNewContent) {
+        this.$confirm("你可能有尚未保存的更改内容，是否退出", "提示", {
+          confirmButtonText: "保存并且退出",
+          cancelButtonText: "直接退出",
+          type: "warning",
         })
-        .catch((_) => {});
+          .then((_) => {
+            this.handleSave("quitSave");
+          })
+          .catch((_) => {
+            this.handleQuit();
+          });
+      } else {
+        console.log("here");
+        this.handleQuit();
+      }
+    },
+    handleQuit() {
+      this.$router.push({ path: "/case-list" });
     },
     updateRichText(data) {
       this.allContent = data.content;
+      this.haveNewContent = true;
       if (this.timer) {
         clearTimeout(this.timer);
       }
@@ -404,6 +415,7 @@ export default {
       }, 1000);
     },
     updateMainRichText(data) {
+      this.haveNewContent = true;
       this.mainContent = data.content;
       this.mainTextOverLimit = false;
 
@@ -497,7 +509,7 @@ export default {
             methodStr += `<p>&#x3000;&#x3000;本${nameStr}提供${name}，${kernel}</p>`;
             methodStr += `<p>&#x3000;&#x3000;${item.goodEffect}</p>`;
             methodStr += `<p>&#x3000;&#x3000;${note}</p>`;
-            methodStr += `<p>&#x3000;&#x3000;${detail.fixDefectMethod.text}</p>`;
+            // methodStr += `<p>&#x3000;&#x3000;${detail.fixDefectMethod.text}</p>`;
 
             if (patentContentBox) {
               //在下一个独权之前，数据拼接走， 把str清空
@@ -526,7 +538,7 @@ export default {
             methodStr += `<p>&#x3000;&#x3000;在实施例${childName}的基础上，本${noStr}的${childKernel}</p>`;
             methodStr += `<p>&#x3000;&#x3000;${item.goodEffect}</p>`;
             methodStr += `<p>&#x3000;&#x3000;${note}</p>`;
-            methodStr += `<p>&#x3000;&#x3000;${detail.fixDefectMethod.text}</p>`;
+            // methodStr += `<p>&#x3000;&#x3000;${detail.fixDefectMethod.text}</p>`;
 
             patentContentBox += `<p>&#x3000;&#x3000;可选地，${childKernel}</p>`;
 
@@ -694,7 +706,6 @@ export default {
       // 清理标签之间的空格。不然正则匹配不到
       content = content.replace(/<\/p>\r?\n|(?<!\n)\r/g, "</p>");
       content = content.replace(/<\/h3>\r?\n|(?<!\n)\r/g, "</h3>");
-      console.log("content", content);
       let textReg =
         /<h3 style="text-decoration: underline;">附图说明<\/h3>.*?主要元件符号说明：<\/p>/g;
       content = content.replace(textReg, (str) => {
@@ -739,8 +750,12 @@ export default {
       }
       editDescription(params)
         .then((res) => {
+          this.haveNewContent = false;
           if (type === "save") {
             this.$message.success("保存成功");
+          } else if (type === "quitSave") {
+            this.handleQuit();
+            return;
           } else if (type === "preview") {
             this.allContent = params.description;
             this.handlePreview();
@@ -759,6 +774,7 @@ export default {
           this.fetchData(this.detailData.id);
         })
         .catch((err) => {
+          this.haveNewContent = true;
           this.$message.error(err.message || "服务器繁忙，请稍后重试");
         });
     },
@@ -948,29 +964,31 @@ export default {
       this.treeDataStr = "";
       this.handleImgMarkList(this.imgMarkList);
       console.log("添加到富文本");
-      this.handleChangeImgStr(this.treeDataStr);
+      this.$nextTick(() => {
+        this.handleChangeImgStr(this.treeDataStr);
+      });
     },
     handleImgMarkList(data) {
       data.forEach((el) => {
         this.treeDataStr = this.treeDataStr
-          ? this.treeDataStr + "，" + el.name + el.number
-          : this.treeDataStr + el.name + el.number;
+          ? this.treeDataStr + "，" + el.name + "、" + el.number
+          : this.treeDataStr + el.name + "、" + el.number;
         if (el.children) {
           this.handleImgMarkList(el.children);
         }
       });
     },
     handleChangeImgStr(str) {
+      console.log("str", str);
       let content = this.allContent;
       content = content.replace(/<\/p>\r?\n|(?<!\n)\r/g, "</p>");
       content = content.replace(/<\/h3>\r?\n|(?<!\n)\r/g, "</h3>");
-      console.log("content", content);
-      let textReg = /<p>&#x3000;&#x3000;附图说明<\/p>.*?具体实施方式<\/h3>/g;
+      let textReg =
+        /<p>&#x3000;&#x3000;主要元件符号说明：<\/p>.*?具体实施方式<\/h3>/g;
       content = content.replace(textReg, (Pstr) => {
-        console.log("中间匹配到的字符", Pstr, "||||||", str);
-        return `<p>&#x3000;&#x3000;附图说明<\/p><p>&#x3000;&#x3000;${str}。</p><h3 style="text-decoration: underline;">具体实施方式</h3>`;
+        console.log("中间匹配到的字符", Pstr, "||", str);
+        return `<p>&#x3000;&#x3000;主要元件符号说明：</p><p>&#x3000;&#x3000;${str}。</p><h3 style="text-decoration: underline;">具体实施方式</h3>`;
       });
-      // return
       this.$nextTick(() => {
         this.allContent = content;
         this.handleSave("saveTreeData");
@@ -1134,9 +1152,10 @@ export default {
 .bottom-btn {
   width: 100vw;
   text-align: center;
-  padding: 30px 0;
+  padding: 15px 0;
   background: #fff;
   position: fixed;
+  z-index: 99999;
   left: 0;
   bottom: 0;
   box-shadow: -2px 2px 100px gainsboro;
