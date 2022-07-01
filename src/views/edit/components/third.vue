@@ -72,7 +72,7 @@ export default {
     idea: {
       type: Object,
       default: () => {},
-    }
+    },
   },
   data() {
     return {
@@ -96,25 +96,29 @@ export default {
   },
   methods: {
     saveData(type) {
-      this.$emit('saveData',{
+      this.$emit("saveData", {
         type,
-        step:3
-      })
+        step: 3,
+      });
     },
     inputChange() {
       if (this.timer) {
         clearTimeout(this.timer);
       }
       this.timer = setTimeout(() => {
-        this.saveData('autoSave');
+        this.saveData("autoSave");
       }, 1000);
     },
     uploadRecord(data) {
       this.formData[this.recordType]["recordFiles"].push(data);
+      this.saveData("autoFile");
+
       console.log("formData", this.formData[this.recordType]["recordFiles"]);
     },
     uploadFile(data) {
       this.formData[this.uploadFileType]["attachments"].push(data);
+      this.saveData("autoFile");
+
       console.log(
         "formData",
         this.formData[this.uploadFileType]["attachments"]

@@ -102,6 +102,32 @@
                 </div>
               </div>
             </div>
+            <div class="content-item">
+              <div class="content-item-title">6.本专利如何解决上述缺陷的？</div>
+              <div class="content-item-text">
+                {{
+                  (detailData.fixDefectMethod &&
+                    detailData.fixDefectMethod.text) ||
+                  ""
+                }}
+
+                <div class="tool-item" @click="openFileList('fixDefectMethod')">
+                  <i class="el-icon-paperclip"></i>
+                  <span class="tool-label">附件列表</span>
+                </div>
+              </div>
+            </div>
+            <div class="content-item">
+              <div class="content-item-title">7.权利要求书</div>
+              <div class="content-item-text" v-if="claimStr" v-html="claimStr">
+                <!-- {{ claimStr || "" }} -->
+
+                <!-- <div class="tool-item" @click="openFileList('fixDefectMethod')">
+                  <i class="el-icon-paperclip"></i>
+                  <span class="tool-label">附件列表</span>
+                </div> -->
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -122,6 +148,9 @@
     <div id="imgmark">
       <div class="patent-name-box">
         <div class="patent-name-title">附图标记</div>
+        <el-button :loading="replaceLoading" @click="replaceText('add')"
+          >替换内容</el-button
+        >
         <el-button @click="addImgTextToRich('add')">添加标记至文档</el-button>
       </div>
       <!-- <div class="custom-title">附图标记</div> -->
@@ -321,6 +350,8 @@ export default {
   },
   data() {
     return {
+      claimStr: "",
+      replaceLoading: false,
       haveNewContent: false,
       richTextUpdata: 0,
       timer: null,
@@ -435,6 +466,7 @@ export default {
         console.log("res", res);
         this.detailData = res.data;
         this.claim = res.data.claim;
+        this.handleClaimToRightText(this.claim);
         this.drawings = res.data.drawings;
         this.typeLabel = res.data.type == "1" ? "发明" : "实用新型";
         console.log("typeLabel", this.typeLabel);
@@ -464,6 +496,59 @@ export default {
         }
       });
     },
+    handleClaimToRightText(data) {
+      let name = "",
+        methodStr = "",
+        kernel = "",
+        childKernel = "",
+        childName = "",
+        note = "",
+        index = 0;
+      data.forEach((item, dataIndex) => {
+        if (item.no === item.parentNo && item.no === item.ancestorNo) {
+          // 独权
+          name = item.name;
+          if (item.claimContent) {
+            item.claimContent.forEach((childItem) => {
+              kernel = kernel
+                ? kernel + "，" + childItem.kernel
+                : childItem.kernel;
+              note = note ? note + "，" + childItem.note : childItem.note;
+            });
+            index += 1;
+            let indexToHan = this.changeNumToHan(dataIndex + 1);
+            let nameStr = `实施例${indexToHan}`;
+            methodStr += `${nameStr}<br/>`;
+            methodStr += `本${nameStr}提供${name}，${kernel}<br/>`;
+            methodStr += `${item.goodEffect}<br/>`;
+            methodStr += `${note}`;
+            kernel = "";
+            note = "";
+          }
+        } else {
+          //从权
+          childName = this.changeNumToHan(+item.name);
+          if (item.claimContent) {
+            item.claimContent.forEach((childItem) => {
+              childKernel = childKernel
+                ? childKernel + "，" + childItem.kernel
+                : childItem.kernel;
+              note = note ? note + "，" + childItem.note : childItem.note;
+            });
+            let noStr = `实施例` + this.changeNumToHan(dataIndex + 1);
+            methodStr += `${noStr}<br/>`;
+            methodStr += `在实施例${childName}的基础上，本${noStr}的${childKernel}<br/>`;
+            methodStr += `${item.goodEffect}<br/>`;
+            methodStr += `${note}<br/>`;
+            index += 1;
+            childKernel = "";
+            note = "";
+          }
+        }
+      });
+      console.log("methodStr", methodStr);
+      this.claimStr = methodStr;
+    },
     handleClaim(detail) {
       console.log("detail", detail);
       let name,
@@ -479,6 +564,7 @@ export default {
         singleIndex = 0,
         methodStr = "",
         patentContentBox = "",
+        ideaText = detail.idea ? detail.idea.text : "",
         patentContent = `<p>${typeLabel}内容</p>
         <p>&#x3000;&#x3000;本${typeLabel}提供${detail.claim[0].name}，旨在解决${detail.pendingDefect?.text}的问题。</p>`;
       detail.claim.forEach((item, dataIndex) => {
@@ -563,6 +649,7 @@ export default {
       let content;
       //把有益效果插入在patentContent的最后面
       patentContent += `<p>&#x3000;&#x3000;${goodEffect}</p>`;
+      patentContent += `<p>&#x3000;&#x3000;${ideaText}</p>`;
       // console.log('patentContent',patentContent)
       content = this.allContentTemp.replace(/single/, str);
       content = content.replace(/patentContent/, patentContent);
@@ -608,7 +695,6 @@ export default {
       var content = this.allContent;
       this.allContent = "";
       const typeLabel = this.typeLabel;
-      console.log("patentName", this.patentName);
       const domainText = this.detailData?.domain.text || "",
         techAreaText = this.detailData.techArea,
         painPointText = this.detailData?.painPoint.text,
@@ -770,11 +856,14 @@ export default {
           } else if (type === "autosave") {
             this.allContent = params.description;
             return;
+          } else if (type === "replaceText") {
+            this.replaceLoading = false;
           }
           this.fetchData(this.detailData.id);
         })
         .catch((err) => {
           this.haveNewContent = true;
+          this.replaceLoading = false;
           this.$message.error(err.message || "服务器繁忙，请稍后重试");
         });
     },
@@ -967,6 +1056,44 @@ export default {
       this.$nextTick(() => {
         this.handleChangeImgStr(this.treeDataStr);
       });
+    },
+    replaceText() {
+      this.replaceLoading = true;
+      let content = this.allContent;
+      this.tempContent = content;
+      const ccc = this.handleReplaceText(this.imgMarkList);
+      console.log("cccc", ccc);
+      this.$nextTick(() => {
+        // setTimeout(() => {
+        this.allContent = ccc;
+        this.handleSave("replaceText");
+        // }, 1000);
+      });
+    },
+    handleReplaceText(data) {
+      this.tempContent = this.tempContent.replace(
+        /<\/p>\r?\n|(?<!\n)\r/g,
+        "</p>"
+      );
+      this.tempContent = this.tempContent.replace(
+        /<\/h3>\r?\n|(?<!\n)\r/g,
+        "</h3>"
+      );
+      let textReg = /<p>实施例一<\/p>.*?<p>&#x3000;&#x3000;以上仅为本/g;
+      data.forEach((item) => {
+        console.log("item", item);
+        this.tempContent = this.tempContent.replace(textReg, (Pstr) => {
+          // console.log("中间匹配到的字符", Pstr);
+          let str = new RegExp(item.name, "g");
+          return Pstr.replace(str, item.name + item.number);
+          // return `<p>&#x3000;&#x3000;主要元件符号说明：</p><p>&#x3000;&#x3000;${str}。</p><h3 style="text-decoration: underline;">具体实施方式</h3>`;
+        });
+        if (item.children) {
+          console.log("content", this.tempContent);
+          this.handleReplaceText(item.children);
+        }
+      });
+      return this.tempContent;
     },
     handleImgMarkList(data) {
       data.forEach((el) => {

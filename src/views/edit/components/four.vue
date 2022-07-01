@@ -112,9 +112,11 @@ export default {
     },
     uploadRecord(data) {
       this.formData[this.recordType]["recordFiles"].push(data);
+      this.saveData("autoFile");
     },
     uploadFile(data) {
       this.formData[this.uploadFileType]["attachments"].push(data);
+      this.saveData("autoFile");
     },
     openUploadFile(type) {
       this.uploadFileType = type;

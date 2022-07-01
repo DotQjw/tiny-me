@@ -86,6 +86,8 @@
             <template slot-scope="scope">
               <span>
                 <div
+                 @mouseenter ="kernelMouseEnter(item,index,scope.row.claimContent)"
+                    @mouseleave="kernelMouseLeave(item,index,scope.row.claimContent)"
                   v-for="(item, index) in scope.row.claimContent"
                   :key="index"
                 >
@@ -257,6 +259,11 @@ export default {
     }
   },
   methods: {
+    kernelMouseEnter(item,index,data){
+      console.log('kernelMouseMove',item)
+    },
+    kernelMouseLeave(item,index,data){
+    },
     handleDelete(row) {
       console.log("row", row, this.treeData);
       //第一级，。

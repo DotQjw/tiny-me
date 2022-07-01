@@ -57,6 +57,7 @@
         :headers="{
           Authorization: `Bearer ${token}`,
         }"
+        accept=".png,.jeg,.jpeg,.gif"
         :on-preview="handlePreview"
         :on-remove="handleRemove"
         :on-success="handleSuccess"
@@ -141,6 +142,12 @@ export default {
     },
     beforeUpload(file) {
       console.log("file", file);
+      const isJpg = /image\/(png|jpe?g|gif)$/.test(file.type)
+      if(!isJpg){
+        this.$message.warning('只能上传png,jpg,jpeg,gif格式的图片,上传的文件格式有误，请重试')
+        return false;
+      }
+      
     },
     handleExceed(file) {
       console.log("handleExceed", file);
