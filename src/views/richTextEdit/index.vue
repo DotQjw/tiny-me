@@ -658,7 +658,7 @@ export default {
       // console.log("content", content);
       this.allContent = content;
       // console.log("all", this.allContent);
-    },
+    }, 
     handleTool(index) {
       this.currentTool = index;
       if (index === 3) {

@@ -63,12 +63,13 @@
                 <div v-else class="child-name">
                   <div>
                     <span
-                      >根据<span style="color: #165dff">权利要求</span></span
-                    >
+                      >根据
+                      <!-- <span style="color: #165dff">权利要求</span> -->
+                    </span>
                     <el-input
                       :ref="`input${scope.row.realIndex}`"
                       @input="nameInputChange($event, scope.row, 'name')"
-                      v-model.number="scope.row.name"
+                      v-model="scope.row.name"
                       class="child-input"
                     ></el-input>
                   </div>
@@ -86,8 +87,12 @@
             <template slot-scope="scope">
               <span>
                 <div
-                 @mouseenter ="kernelMouseEnter(item,index,scope.row.claimContent)"
-                    @mouseleave="kernelMouseLeave(item,index,scope.row.claimContent)"
+                  @mouseenter="
+                    kernelMouseEnter(item, index, scope.row.claimContent)
+                  "
+                  @mouseleave="
+                    kernelMouseLeave(item, index, scope.row.claimContent)
+                  "
                   v-for="(item, index) in scope.row.claimContent"
                   :key="index"
                 >
@@ -98,6 +103,15 @@
                     rows="1"
                     v-model="item.kernel"
                   ></el-input>
+                  <div
+                    v-if="item.isShowDelete && index != 0"
+                    @click="
+                      handleKernelDelete(item, index, scope.row.claimContent)
+                    "
+                    class="kernel-delete"
+                  >
+                    删除
+                  </div>
                 </div>
                 <el-button
                   icon="el-icon-plus"
@@ -113,7 +127,6 @@
               <div class="check-row-box">
                 <div
                   v-for="(item, index) in scope.row.claimContent"
-                  :class="{'fisrt-check-row':index===0}"
                   class="check-row"
                   :key="index"
                 >
@@ -259,10 +272,17 @@ export default {
     }
   },
   methods: {
-    kernelMouseEnter(item,index,data){
-      console.log('kernelMouseMove',item)
+    kernelMouseEnter(item, index, data) {
+      console.log("kernelMouseMove", item);
+      this.$set(item, "isShowDelete", true);
     },
-    kernelMouseLeave(item,index,data){
+    kernelMouseLeave(item, index, data) {
+      this.$set(item, "isShowDelete", false);
+    },
+    handleKernelDelete(item, index, data){
+      console.log({item, index, data})
+      data.splice(index,1)
+      this.saveData("autoSave");
     },
     handleDelete(row) {
       console.log("row", row, this.treeData);
@@ -452,7 +472,7 @@ export default {
               no: this.claims.length + 1,
               parentNo: item.no,
               ancestorNo: item.ancestorNo,
-              name: String(item.realIndex),
+              name: `权利要求${item.realIndex}`,
               isAdd: true,
             })
           );
@@ -583,7 +603,7 @@ export default {
     }
   }
   .child-input {
-    max-width: 50px;
+    max-width: 120px;
     .el-input__inner {
       padding: 0 3px;
       border: 1px solid #fff !important;
@@ -645,7 +665,9 @@ export default {
 .check-row {
   // margin: 30px 0;
   // line-height: 124px;
-  height: 124px;
+  height: 144px;
+  position: relative;
+  top: -20px;
 }
 .note-row,
 .check-row-box {
@@ -653,13 +675,13 @@ export default {
 }
 .check-row-box {
   position: absolute;
-  top:40px;
+  top: 40px;
 }
 
-.fisrt-check-row{
-  position: relative;
-  top:-20px;
-}
+// .fisrt-check-row{
+//   position: relative;
+//   top:-20px;
+// }
 .sort-index {
   position: absolute;
   top: 24px;
@@ -682,5 +704,9 @@ export default {
 .child-index {
   position: absolute;
   top: 26px;
+}
+.kernel-delete {
+  color: red;
+  cursor: pointer;
 }
 </style>

@@ -38,7 +38,7 @@
       </el-form-item>
       <el-form-item label="专利类型：" prop="type">
         <el-radio v-model="form.type" :label="1">发明</el-radio>
-        <el-radio v-model="form.type" :label="2">实用类型</el-radio>
+        <el-radio v-model="form.type" :label="2">实用新型</el-radio>
       </el-form-item>
       <div class="more" v-if="!showMore" @click="handleMore">更多信息</div>
       <el-form-item v-if="showMore" label="协办人：">

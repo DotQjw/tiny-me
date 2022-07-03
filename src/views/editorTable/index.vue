@@ -37,7 +37,7 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="createdAt" label="时间" sortable="custom">
+      <el-table-column prop="createdAt" width="200px" label="时间" sortable="custom">
         <template slot-scope="scope">
           <div>
             <div style="margin-bottom: 10px">
