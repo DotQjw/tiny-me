@@ -5,7 +5,14 @@
         <div class="custom-label">
           <span>本专利如何解决上述缺陷的？</span>
           <span class="right-tool">
-            <span class="tool-item" @click="openFileList('fixDefectMethod')">
+            <span
+              class="tool-item"
+              v-if="
+                formData.fixDefectMethod.recordFiles.length ||
+                formData.fixDefectMethod.attachments.length
+              "
+              @click="openFileList('fixDefectMethod')"
+            >
               <i class="el-icon-paperclip"></i>
               <span class="tool-label">附件列表</span>
             </span>
@@ -61,7 +68,6 @@
 import uploadFile from "./uploadFile";
 import record from "./record";
 import fileList from "./fileList";
-import { implementPlan } from "@/api/table";
 
 export default {
   components: { uploadFile, record, fileList },

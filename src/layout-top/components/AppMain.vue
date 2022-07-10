@@ -33,6 +33,9 @@ export default {
 </style>
 
 <style lang="scss">
+.el-dialog {
+  border-radius: 4px;
+} 
 .el-table td,
 .el-table th {
   vertical-align: text-top;

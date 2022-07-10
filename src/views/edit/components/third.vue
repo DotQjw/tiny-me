@@ -5,7 +5,14 @@
         <div class="custom-label">
           <span> 本专利的解决思路？ </span>
           <span class="right-tool">
-            <span class="tool-item" @click="openFileList('idea')">
+            <span
+              class="tool-item"
+              v-if="
+                formData.idea.recordFiles.length ||
+                formData.idea.attachments.length
+              "
+              @click="openFileList('idea')"
+            >
               <i class="el-icon-paperclip"></i>
               <span class="tool-label">附件列表</span>
             </span>
