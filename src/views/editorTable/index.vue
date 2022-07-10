@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <div class="title-box">
-      <div class="page-title">项目管理</div>
+      <div class="page-title">案件管理</div>
       <el-input
         style="max-width: 200px; display: inline-block; margin-right: 10px"
         suffix-icon="el-icon-search"

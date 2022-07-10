@@ -1,6 +1,10 @@
 <template>
   <div class="page">
     <div class="page-main">
+      <div class="title">
+          <img src="@/assets/work_images/star.svg" alt="">
+          <span>背景技术</span>
+      </div>
       <div class="box step4">
         <div class="custom-label">
           <span>本专利如何解决上述缺陷的？</span>
@@ -29,11 +33,11 @@
         ></el-input>
       </div>
     </div>
-    <div class="bottom">
+    <!-- <div class="bottom">
       <el-button type="primary" @click="saveData('next')">下一步</el-button>
       <el-button @click="saveData('last')">上一步</el-button>
       <el-button @click="saveData('save')">保 存</el-button>
-    </div>
+    </div> -->
     <upload-file
       :type="uploadFileType"
       v-if="showUpload"
@@ -148,15 +152,35 @@ export default {
 }
 </style>
 <style lang="scss" scoped>
+.page {
+  margin-bottom: 18px;
+}
 .page-main {
   background: #fff;
-  padding: 30px 50px;
+  padding: 0 50px 30px 50px;
 }
 .box {
   margin: 0 auto;
 }
 .custom-label {
-  margin: 20px 0;
+  margin: 32px 0 16px 0;
+}
+.title {
+  // text-align: center;
+  height: 68px;
+  margin-bottom: 23px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #E5E6EB;
+  img {
+    margin-right: 10px;
+  }
+  span {
+    color: #1D2129;
+    font-weight: 500;
+    font-size: 20px;
+    font-family: 'PingFang SC';
+  }
 }
 .right-tool {
   float: right;
@@ -170,9 +194,5 @@ export default {
   .tool-label {
     margin-left: 10px;
   }
-}
-.bottom {
-  margin-top: 20px;
-  text-align: center;
 }
 </style>

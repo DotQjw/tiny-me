@@ -166,6 +166,7 @@ export default {
           if (res.code === 0) {
             // this.$message.success("编辑成功");
             this.$emit("update:show", false);
+            this.$emit('getData')
             // this.$router.push({ path: "/data-edit", query: { id: this.form.id }});
           } else {
             this.$message.error("服务器有点忙，请重试");

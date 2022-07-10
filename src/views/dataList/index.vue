@@ -1,16 +1,33 @@
 <template>
   <div class="page">
     <div class="title-box">
-      <div class="page-title">项目管理</div>
-      <el-input
-        style="max-width: 200px; display: inline-block; margin-right: 10px"
-        suffix-icon="el-icon-search"
-        placeholder="输入关键词搜索"
-        v-model="keyword"
-        @keyup.enter.native="fetchData"
-      >
-      </el-input>
-      <el-button type="primary" @click="handleCreate"> 创建案件 </el-button>
+      <div class="page-title">
+        <div class="title-text">案件管理</div>
+        <el-tabs v-model="status" class="filter" type="card" @tab-click="handleStatusClick">
+          <el-tab-pane label="全部" name="0"></el-tab-pane>
+          <el-tab-pane label="进行中" name="1"></el-tab-pane>
+          <el-tab-pane label="暂停中" name="2"></el-tab-pane>
+          <el-tab-pane label="已完成" name="3"></el-tab-pane>
+          <el-tab-pane label="已撤案" name="4"></el-tab-pane>
+        </el-tabs>
+      </div>
+      <div class="search">
+        <div class="full">
+          <el-checkbox v-model="isFull">显示完整表格</el-checkbox>
+        </div>
+        <el-input
+          style="max-width: 200px; display: inline-block; margin-right: 10px"
+          placeholder="输入关键词搜索"
+          class="search_input"
+          v-model="keyword"
+          @keyup.enter.native="fetchData"
+        >
+          <template slot="suffix">
+            <i class="el-icon-search" @click="fetchData"></i>
+          </template>
+        </el-input>
+        <el-button type="primary" @click="handleCreate"> 创建案件 </el-button>
+      </div>
     </div>
     <el-table
       header-cell-class-name="table_header"
@@ -19,10 +36,12 @@
       @cell-mouse-leave="mouseLeave"
       v-loading="tableLoading"
       :data="tableData"
-      style="width: 100%; cursor: pointer"
+      :height="pgaeHeight"
+      fit
+      style="wdith: 100%;cursor: pointer;padding: 0 35px;background: #f8f8f8;"
       @row-click="rowClick"
     >
-      <el-table-column prop="caseNo" label="客户案号" width="180">
+      <el-table-column prop="caseNo" label="客户案号">
         <template slot-scope="scope">
             <span>
               {{ scope.row.caseNo }}
@@ -30,7 +49,7 @@
         <div v-if="scope.row.showTip" style="margin-top:5px;color:#86909C;font-size:14px;">点击进入撰写流程</div>
         </template>
       </el-table-column>
-      <el-table-column prop="tianyuan" label="天元案号" width="180">
+      <el-table-column prop="tianyuan" label="天元案号">
         <template slot-scope="scope">
           <div>
             {{ scope.row.tianyuan }}
@@ -39,7 +58,7 @@
       </el-table-column>
       <el-table-column prop="proposalName" label="提案名称">
         <template slot-scope="scope">
-          <div>
+          <div class="tian_name" :title="scope.row.proposalName">
             {{ scope.row.proposalName }}
           </div>
         </template>
@@ -51,7 +70,7 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column sortable="custom" prop="status" label="状态">
+      <el-table-column prop="status" label="状态" width="101px">
         <template slot-scope="scope">
           <div>
             <span>
@@ -94,7 +113,7 @@
       <el-table-column
         prop="createdAt"
         label="时间"
-        width="180px"
+        width="205px"
         sortable="custom"
       >
         <template slot-scope="scope">
@@ -108,40 +127,44 @@
       </el-table-column>
       <el-table-column
         prop=""
-        width="140px;"
         label="联系人"
       >
         <template slot-scope="scope">
           <div style="margin-bottom: 10px">
             P1：{{ scope.row.createUserName }}
           </div>
-          <div>P2：{{ scope.row.assistUserName || "-" }}</div>
+          <div v-if="isFull">P2：{{ scope.row.assistUserName || "-" }}</div>
         </template>
       </el-table-column>
 
-      <el-table-column fixed="right" label="操作" width="200">
+      <el-table-column fixed="right" label="操作" width="134px">
         <template slot-scope="scope">
-          <span>
             <el-button
               @click="handleCheck(scope.row, 'review')"
               v-if="scope.row.reviewStatus === 1 && scope.row.status === 1"
               type="text"
               size="small"
+              class="operation-btn"
               >审核</el-button
             >
-            <el-button @click="handleCreate(scope.row)" type="text" size="small"
+            <el-button @click="handleCreate(scope.row)" type="text"
+              style="
+                font-size: 12px;
+              "
+              size="small"
+              class="operation-btn"
               >编辑</el-button
             >
-            <span
+            <el-button
               @click="handleRemove(scope.row)"
+              type="text"
               v-if="[2, 4].includes(scope.row.status)"
               style="
                 color: red;
-                margin-left: 10px;
                 font-size: 12px;
-                cursor: pointer;
               "
-              >删除</span
+              class="operation-btn"
+              >删除</el-button
             >
 
             <el-button
@@ -149,16 +172,15 @@
               @click="handleCheck(scope.row, 'check')"
               type="text"
               size="small"
-              style="margin-left: 5px"
+              class="operation-btn"
               >查看详情</el-button
             >
-          </span>
         </template>
       </el-table-column>
     </el-table>
 
     <el-pagination
-      style="margin-top: 20px"
+      style="margin-top: 20px;text-align: center"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="pages.currentPage"
@@ -170,6 +192,7 @@
     </el-pagination>
     <create-case
       v-if="showDialog"
+      @getData="fetchData"
       :createData="createData"
       :show.sync="showDialog"
     />
@@ -200,11 +223,20 @@ export default {
       ],
       tableData: [],
       role: this.$store.getters.roles,
+      isFull: false,
+      status: '0'
     };
   },
   created() {
     console.log("roles", this.$store.getters);
     this.fetchData();
+  },
+  computed: {
+    pgaeHeight() {
+      const page = document.documentElement.clientHeight
+      const height = page - 240
+      return height
+    }
   },
   methods: {
     rowClick(row, column, event) {
@@ -272,6 +304,7 @@ export default {
         sortType: this.sortType,
         sortField: this.sortField,
         keyword: this.keyword,
+        status: this.status
       };
       this.tableLoading = true;
       getList(param)
@@ -310,7 +343,7 @@ export default {
       this.showDialog = true;
     },
     handleEdit(row) {
-      this.$router.push({ path: "/data-edit", query: { id: row.id } });
+      this.$router.push({ path: "/data-edit", query: { id: row.id, proposalName: row.proposalName, active: 'case' } });
     },
     handleEditRichText(row) {
       console.log("type");
@@ -328,6 +361,11 @@ export default {
       this.pages.currentPage = val;
       this.fetchData();
     },
+    handleStatusClick() {
+      this.pages.currentPage = 1;
+      this.pages.perPage = 20;
+      this.fetchData();
+    }
   },
 };
 </script>
@@ -342,6 +380,29 @@ export default {
   &-title {
     font-weight: bold;
     font-size: 18px;
+  }
+  .el-table {
+    height: calc(100vh - 237px);
+    .el-table__fixed-right {
+      ::v-deep .el-table__fixed-right-patch {
+        width: 0;
+      }
+    }
+    ::v-deep .el-table__body-wrapper::-webkit-scrollbar {
+      width: 0px; /*滚动条宽度*/
+      height: 0px; /*滚动条高度*/
+    }
+    ::v-deep .el-table__body-wrapper::-webkit-scrollbar-track {
+      border-radius: 0px; /*滚动条的背景区域的圆角*/
+      background-color: rgba(2,29,87,1); /*滚动条的背景颜色*/
+    }
+    ::v-deep .el-table__body-wrapper::-webkit-scrollbar-corner {
+      background-color: rgba(2,29,87,1);
+    }
+    ::v-deep .el-table__body-wrapper::-webkit-scrollbar-thumb {
+      border-radius: 4px; /*滚动条的圆角*/
+      background-color: rgba(24,144,255,0.50); /*滚动条的背景颜色*/
+    }
   }
 }
 .status-item {
@@ -364,6 +425,15 @@ export default {
 .status-item4 {
   color: #165dff;
   background: #e8f3ff;
+}
+.tian_name {
+  height: 46px;
+  display: -webkit-box; /** 对象作为伸缩盒子模型显示 **/
+  overflow: hidden;  
+  word-break: break-all;   /* break-all(允许在单词内换行。)  对pc端可以不要*/ 
+  text-overflow: ellipsis;   /* 超出部分省略号 */
+  -webkit-box-orient: vertical;   /** 设置或检索伸缩盒对象的子元素的排列方式 **/
+  -webkit-line-clamp: 2;
 }
 .cancel-case {
   color: #1d2129;
@@ -390,16 +460,53 @@ export default {
 }
 .title-box {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  padding: 15px 40px 0 40px;
   .page-title {
-    flex: 1;
+    // flex: 1;
+    .title-text {
+      margin-bottom: 20px;
+      font-family: 'PingFang SC';
+      font-style: normal;
+      font-size: 24px;
+      color: #1D2129;
+    }
+    .filter {
+      background: #fff;
+      ::v-deep .el-tabs__header {
+        margin: 0;
+      }
+    }
+  }
+  .search {
+    .full {
+      text-align: right;
+      padding-bottom: 25px;
+    }
+    .search_input {
+      ::v-deep .el-input__suffix {
+        width: 25px;
+        height: 100%;
+        right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+    }
   }
 }
 .table_header {
   background: #f2f3f5 !important;
   box-shadow: 1px 0px 0px #f2f3f5;
+}
+.operation-btn {
+  margin-left: 24px;
+  &:first-child {
+    margin-left: 0;
+  }
 }
 </style>
 <style lang="scss">

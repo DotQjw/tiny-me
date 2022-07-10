@@ -54,9 +54,49 @@ export const constantRoutes = [
     ],
   },
   {
-    path: "/guide",
-    component: () => import("@/views/fuceng/index"),
+    path: "/interface",
+    component: () => import("@/views/operatorInterface/index"),
     hidden: false,
+    children: [
+      {
+        path: "/guide",
+        name: 'guide',
+        component: () => import("@/views/fuceng/index"),
+        hidden: false,
+      },
+      {
+        path: "/list",
+        redirect: "/data-list",
+        name: 'dataList',
+        component: LayoutTop,
+        children: [
+          {
+            path: "/data-list",
+            name: "案件列表",
+            component: () => import("@/views/dataList/index"),
+            meta: { title: "案件列表", icon: "dataList" },
+          },
+          // {
+          //   path: "/case-list",
+          //   name: "案件列表",
+          //   component: () => import("@/views/editorTable/index"),
+          //   meta: { title: "案件列表", icon: "dataList" },
+          // },
+          {
+            path: "/data-edit",
+            name: "编辑页面",
+            component: () => import("@/views/edit/index"),
+            meta: { title: "编辑页面", icon: "edit" },
+          },
+          {
+            path: "/data-review",
+            name: "审核",
+            component: () => import("@/views/review/index"),
+            meta: { title: "审核", icon: "edit" },
+          },
+        ],
+      },
+    ]
   },
   {
     path: "/account",
@@ -71,37 +111,37 @@ export const constantRoutes = [
       },
     ],
   },
-  {
-    path: "/data-list",
-    redirect: "/data-list",
-    component: LayoutTop,
-    children: [
-      {
-        path: "/data-list",
-        name: "案件列表",
-        component: () => import("@/views/dataList/index"),
-        meta: { title: "案件列表", icon: "dataList" },
-      },
-      // {
-      //   path: "/case-list",
-      //   name: "案件列表",
-      //   component: () => import("@/views/editorTable/index"),
-      //   meta: { title: "案件列表", icon: "dataList" },
-      // },
-      {
-        path: "/data-edit",
-        name: "编辑页面",
-        component: () => import("@/views/edit/index"),
-        meta: { title: "编辑页面", icon: "edit" },
-      },
-      {
-        path: "/data-review",
-        name: "审核",
-        component: () => import("@/views/review/index"),
-        meta: { title: "审核", icon: "edit" },
-      },
-    ],
-  },
+  // {
+  //   path: "/data-list",
+  //   redirect: "/data-list",
+  //   component: LayoutTop,
+  //   children: [
+  //     {
+  //       path: "/data-list",
+  //       name: "案件列表",
+  //       component: () => import("@/views/dataList/index"),
+  //       meta: { title: "案件列表", icon: "dataList" },
+  //     },
+  //     // {
+  //     //   path: "/case-list",
+  //     //   name: "案件列表",
+  //     //   component: () => import("@/views/editorTable/index"),
+  //     //   meta: { title: "案件列表", icon: "dataList" },
+  //     // },
+  //     {
+  //       path: "/data-edit",
+  //       name: "编辑页面",
+  //       component: () => import("@/views/edit/index"),
+  //       meta: { title: "编辑页面", icon: "edit" },
+  //     },
+  //     {
+  //       path: "/data-review",
+  //       name: "审核",
+  //       component: () => import("@/views/review/index"),
+  //       meta: { title: "审核", icon: "edit" },
+  //     },
+  //   ],
+  // },
   {
     path: "/case-list",
     redirect: "/case-list",

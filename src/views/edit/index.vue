@@ -1,7 +1,7 @@
 <template>
-  <div>
-    <div class="custom-navbar"><span @click="gotoList">首页</span> / {{formData.proposalName || '-'}}</div>
-    <div class="steps-box">
+  <div class="edit-page">
+    <!-- <div class="custom-navbar"><span @click="gotoList">首页</span> / {{formData.proposalName || '-'}}</div> -->
+    <!-- <div class="steps-box"> -->
       <!-- <el-steps :active.sync="active" finish-status="success" align-center>
         <el-step title="技术领域" @click.native="changeSteps(0)"></el-step>
         <el-step title="背景技术" @click.native="changeSteps(1)"></el-step>
@@ -9,43 +9,72 @@
         <el-step title="实现方案" @click.native="changeSteps(3)"></el-step>
         <el-step title="权利要求" @click.native="changeSteps(4)"></el-step>
       </el-steps> -->
-    </div>
-    <custom-step
+    <!-- </div> -->
+    <!-- <custom-step
     style="margin-bottom:40px;padding-top:20px;"
       :active="active"
       @changeSteps="changeSteps"
       :steps.sync="steps"
-    ></custom-step>
-    <first
-      v-if="active === 1"
-      @saveData="saveData"
-      :id="formData.id"
-      :techArea="formData.techArea"
-      :type="type"
-    />
-    <second
-      v-if="active === 2"
-      @saveData="saveData"
-      :secondStepsData="secondStepsData"
-      :id="formData.id"
-    />
-    <third
-      v-if="active === 3"
-      @saveData="saveData"
-      :idea="formData.idea"
-      :id="formData.id"
-    />
-    <four
-      v-if="active === 4"
-      @saveData="saveData"
-      :fixDefectMethod="formData.fixDefectMethod"
-      :id="formData.id"
-    />
-    <five
-      v-if="active === 5"
-      @saveData="saveData"
-      :claimData="formData.claim"
-    />
+    ></custom-step> -->
+    <el-row class="edit-header">
+      <el-col :span="3" class="header-title">
+        <div @click="gotoList" class="icon_back"><i class="el-icon-arrow-left"></i>返回</div>
+        <div class="title-name" :title="proposalName">{{proposalName}}</div>
+      </el-col>
+      <el-col :span="18">
+        <el-tabs class="custom-table" v-model="activeName">
+          <el-tab-pane label="技术方案" name="first">
+          </el-tab-pane>
+          <el-tab-pane label="权力要求" name="second">
+          </el-tab-pane>
+        </el-tabs>
+      </el-col>
+      <el-col :span="3" class="add-single" v-show="activeName === 'second'">
+        <el-button type="primary" icon="el-icon-plus" @click="handleSingle"
+        >添加独权</el-button
+      >
+      </el-col>
+    </el-row>
+    <div class="custom-content">
+      <div class="table-content" v-if="isShow">
+        <div v-show="activeName ==='first'">
+          <first
+            @saveData="saveData"
+            :id="formData.id"
+            :techArea="formData.techArea"
+            :type="type"
+          />
+          <second
+            @saveData="saveData"
+            :secondStepsData="secondStepsData"
+            :id="formData.id"
+          />
+          <third
+            @saveData="saveData"
+            :idea="formData.idea"
+            :id="formData.id"
+          />
+          <four
+            @saveData="saveData"
+            :fixDefectMethod="formData.fixDefectMethod"
+            :id="formData.id"
+          />
+        </div>
+        <div v-show="activeName === 'second'">
+          <five
+            @saveData="saveData"
+            :claimData="formData.claim"
+            ref="five"
+          />
+        </div>
+      </div>
+    </div>
+    <div class="bottom">
+      <el-button type="primary" @click="saveStep('submit')" v-show="activeName === 'second'">提交</el-button>
+      <el-button type="primary" @click="saveStep('next')" v-show="activeName === 'first'">下一步</el-button>
+      <el-button type="primary" @click="saveStep('last')" v-show="activeName === 'second'">上一步</el-button>
+      <el-button @click="saveStep('save')">保 存</el-button>
+    </div>
   </div>
 </template>
 <script>
@@ -55,6 +84,9 @@ import third from "./components/third.vue";
 import four from "./components/four.vue";
 import five from "./components/five.vue";
 import customStep from "./components/customStep.vue";
+import uploadFile from "./components/uploadFile";
+import record from "./components/record";
+import fileList from "./components/fileList";
 import {
   patentDetail,
   implementPlan,
@@ -64,7 +96,7 @@ import {
   saveClaim,
 } from "@/api/table";
 export default {
-  components: { first, second, third, four, five, customStep },
+  components: { first, second, third, four, five, customStep, uploadFile, record, fileList },
   watch: {
     formData: {
       handler(n, o) {
@@ -136,6 +168,7 @@ export default {
         content5: false,
       },
       active: 0,
+      activeName: 'first',
       type: "add",
       id: "",
       secondStepsData: {
@@ -209,11 +242,14 @@ export default {
           attachments: [],
         },
       },
+      isShow: false,
+      proposalName: ''
     };
   },
   created() {
     this.type = this.$route.query.type;
     this.formData.id = this.$route.query.id;
+    this.proposalName = this.$route.query.proposalName
     if (this.formData.id) {
       console.log("获取数据");
       this.getDetail();
@@ -235,6 +271,8 @@ export default {
         if (!this.active) {
           this.active = 1;
         }
+      }).finally(() => {
+        this.isShow = true
       });
     },
     saveData(data) {
@@ -344,6 +382,18 @@ export default {
         }
       });
     },
+    saveStep(type) {
+        if (type === "save") {
+          this.$message.success("保存成功");
+        } else if (type === "next") {
+          this.activeName = 'second'
+        } else if (type === "last") {
+          this.activeName = 'first'
+        } else if (type === "submit") {
+          this.$message.success("提交成功");
+          this.$router.push({ path: "/data-list" });
+        }
+    },
     changeSteps(index) {
       console.log("index", index);
       // if (index >= this.active) return;
@@ -356,18 +406,120 @@ export default {
     gotoList() {
       this.$router.push({ path: "/data-list" });
     },
+    // 新增
+    inputChange() {
+      if (this.timer) {
+        clearTimeout(this.timer);
+      }
+      this.timer = setTimeout(() => {
+        this.saveData("autoSave");
+      }, 1000);
+    },
+    handleSingle () {
+      this.$refs.five.handleSingle()
+    }
   },
 };
 </script>
-<style lang="scss" scoped>
-.steps-box {
-  text-align: center;
-  margin: 0 auto 20px;
-}
-.custom-navbar {
-  cursor: pointer;
-  font-size: 12px;
-  color: gray;
-  margin-bottom: 20px;
+<style lang="scss">
+.edit-page {
+  position: relative;
+  .steps-box {
+    text-align: center;
+    margin: 0 auto 20px;
+  }
+  .custom-navbar {
+    cursor: pointer;
+    font-size: 12px;
+    color: gray;
+    margin-bottom: 20px;
+  }
+  .step2 {
+    .custom-input {
+      textarea {
+        height: 210px !important;
+      }
+    }
+  }
+  .edit-header {
+    background: #fff;
+    margin-bottom: 15px;
+    height: 80px;
+    .header-title {
+      padding: 15px 0 20px 33px;
+      .icon_back {
+        cursor: pointer;
+        width: 60px;
+      }
+      .title-name {
+        padding: 8px;
+        font-family: 'PingFang SC';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 24px;
+        color: #1D2129;
+        width: 418px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+    }
+    .custom-table {
+      .el-tabs__header {
+        margin: 0;
+        .el-tabs__nav-wrap {
+          .el-tabs__nav-scroll {
+            display: flex;
+            justify-content: center;
+            box-sizing: border-box;
+            padding-top: 20px;
+            height: 80px;
+            .el-tabs__nav {
+              .el-tabs__item {
+                font-size: 16px;
+                color: #4E5969;
+                font-family: 'PingFang SC';
+                font-style: normal;
+                font-weight: 500;
+              }
+              .is-active {
+                color: #0E42D2;
+              }
+              .el-tabs__active-bar {
+                background-color: #0E42D2;
+              }
+            }
+          }
+          &:after{
+            background-color: #fff;
+          }
+        }
+      }
+    }
+    .add-single {
+      padding: 25px 30px;
+      text-align: right;
+    }
+  }
+  .custom-content {
+    height: calc(100vh - 227px);
+    overflow-y: scroll;
+    .table-content {
+      width: 70%;
+      min-width: 900px;
+      margin: 0 auto;
+    }
+  }
+  .bottom {
+    width: 100%;
+    height: 68px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    // position: absolute;
+    // bottom: 0;
+    // z-index: 2;
+    background: #fff;
+  }
 }
 </style>

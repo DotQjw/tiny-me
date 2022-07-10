@@ -1,6 +1,10 @@
 <template>
   <div class="page">
     <div class="page-main step2 ">
+      <div class="title">
+          <img src="@/assets/work_images/star.svg" alt="">
+          <span>背景技术</span>
+      </div>
       <div class="box">
         <div class="custom-label">
           <span> 本专利应用在哪个领域？ </span>
@@ -110,11 +114,11 @@
         ></el-input>
       </div>
     </div>
-    <div class="bottom">
+    <!-- <div class="bottom">
       <el-button type="primary" @click="saveData('next')">下一步</el-button>
       <el-button @click="saveData('last')">上一步</el-button>
       <el-button @click="saveData('save')">保 存</el-button>
-    </div>
+    </div> -->
     <upload-file
       :type="uploadFileType"
       v-if="showUpload"
@@ -228,10 +232,28 @@ export default {
 .page {
   // text-align: center;
   //   padding: 30px 50px;
+  margin-bottom: 18px;
 }
 .page-main {
   background: #fff;
-  padding: 30px 50px;
+  padding: 0 50px 30px 50px;
+}
+.title {
+  // text-align: center;
+  height: 60px;
+  margin-bottom: 23px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #E5E6EB;
+  img {
+    margin-right: 10px;
+  }
+  span {
+    color: #1D2129;
+    font-weight: 500;
+    font-size: 20px;
+    font-family: 'PingFang SC';
+  }
 }
 .box {
   // border:2px solid red;
@@ -240,7 +262,7 @@ export default {
 }
 .custom-label {
   // text-align: center;
-  margin: 20px 0;
+  margin: 32px 0 16px 0;
 }
 .right-tool {
   float: right;

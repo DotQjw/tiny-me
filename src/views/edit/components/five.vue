@@ -1,11 +1,11 @@
 <template>
   <div class="page">
-    <div class="page-top">
+    <!-- <div class="page-top">
       <div>权利要求书</div>
       <el-button type="primary" icon="el-icon-plus" @click="handleSingle"
         >添加独权</el-button
       >
-    </div>
+    </div> -->
     <div class="page-main no-border-input">
       <div class="box">
         <el-table
@@ -122,7 +122,7 @@
               </span>
             </template>
           </el-table-column>
-          <el-table-column prop="" label="校核" width="270px">
+          <!-- <el-table-column prop="" label="校核" width="270px">
             <template slot-scope="scope">
               <div class="check-row-box">
                 <div
@@ -130,11 +130,50 @@
                   class="check-row"
                   :key="index"
                 >
-                  <el-checkbox v-model="item.check.necessaryStep"
+                  <el-checkbox v-model="item.check.necessaryStep" @change="inputChange"
                     >必经</el-checkbox
                   >
-                  <el-checkbox v-model="item.check.visible">可视</el-checkbox>
-                  <el-checkbox v-model="item.check.logic">逻辑</el-checkbox>
+                  <el-checkbox v-model="item.check.visible" @change="inputChange">可视</el-checkbox>
+                  <el-checkbox v-model="item.check.logic" @change="inputChange">逻辑</el-checkbox>
+                </div>
+              </div>
+            </template>
+          </el-table-column> -->
+          <el-table-column prop="" label="必经" width="90px">
+            <template slot-scope="scope">
+              <div class="check-row-box">
+                <div
+                  v-for="(item, index) in scope.row.claimContent"
+                  class="check-row"
+                  :key="index"
+                >
+                  <el-checkbox v-model="item.check.necessaryStep" @change="inputChange"></el-checkbox>
+                </div>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="" label="可视" width="90px">
+            <template slot-scope="scope">
+              <div class="check-row-box">
+                <div
+                  v-for="(item, index) in scope.row.claimContent"
+                  class="check-row"
+                  :key="index"
+                >
+                  <el-checkbox v-model="item.check.visible" @change="inputChange"></el-checkbox>
+                </div>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="" label="逻辑" width="90px">
+            <template slot-scope="scope">
+              <div class="check-row-box">
+                <div
+                  v-for="(item, index) in scope.row.claimContent"
+                  class="check-row"
+                  :key="index"
+                >
+                  <el-checkbox v-model="item.check.logic" @change="inputChange"></el-checkbox>
                 </div>
               </div>
             </template>
@@ -146,17 +185,40 @@
                   v-for="(item, index) in scope.row.claimContent"
                   :key="index"
                 >
-                  <el-input
-                    @input="inputChange"
-                    v-model="item.note"
-                    type="textarea"
-                    rows="1"
-                  ></el-input>
+                  <!-- <div class="note_box">
+                    <img src="@/assets/work_images/flag.svg" alt="" class="note_icon" v-if="item.note === ''" @click="dialogNote = true">
+                    <img src="@/assets/work_images/flag_active.svg" class="note_icon" alt="" v-else @click="dialogNote = true">
+                  </div>
+                  <el-dialog
+                    :visible.sync="dialogNote"
+                    width="30%"
+                    custom-class="dialog-note"
+                  >
+                    <div slot="title" class="dialog-title">
+                      <span>添加备注</span>
+                    </div>
+                    <el-input
+                      @input="inputChange"
+                      v-model="item.note"
+                      type="textarea"
+                      rows="1"
+                    ></el-input>
+                    <span slot="footer" class="dialog-footer">
+                      <el-button @click="dialogNote = false">返回</el-button>
+                      <el-button type="primary" @click="dialogNote = false">提交</el-button>
+                    </span>
+                  </el-dialog> -->
+                    <el-input
+                      @input="inputChange"
+                      v-model="item.note"
+                      type="textarea"
+                      rows="1"
+                    ></el-input>
                 </div>
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="" label="有益效果" class="ccccc">
+          <el-table-column prop="" label="有益效果" width="270px">
             <template slot-scope="scope">
               <span class="main-upload">
                 <el-upload
@@ -196,11 +258,11 @@
         </el-table>
       </div>
     </div>
-    <div class="bottom">
+    <!-- <div class="bottom">
       <el-button type="primary" @click="saveData('submit')">提 交</el-button>
       <el-button @click="saveData('last')">上一步</el-button>
       <el-button @click="saveData('save')">保 存</el-button>
-    </div>
+    </div> -->
   </div>
 </template>
 <script>
@@ -254,6 +316,7 @@ export default {
         attachments: [],
         children: [],
       },
+      dialogNote: false
     };
   },
   created() {
@@ -399,7 +462,7 @@ export default {
       this.timer = setTimeout(() => {
         this.saveData("autoSave");
       }, 1000);
-      console.log("this.claims", this.claims);
+      console.log("this.claims666666666", this.claims);
     },
     nameInputChange(value, row, type) {
       console.log("回填数据", value, row);
@@ -538,7 +601,8 @@ export default {
           this.treeData
         );
         this.uploadFileRow.attachments.push(this.fileData);
-        console.log("claims", this.claims, this.uploadFileRow);
+        this.inputChange()
+        console.log("claims8888888", this.claims, this.uploadFileRow);
       } else if (response.code === 20103) {
         this.$confirm("登录过期,请重新登录", "提示", {
           confirmButtonText: "重新登录",
@@ -611,6 +675,36 @@ export default {
     }
   }
 }
+.dialog-note {
+  width: 520px !important;
+  height: 290px;
+  .el-dialog__header {
+    box-sizing: border-box;
+    border-bottom: 1px solid #E5E6E8;
+    padding: 12px 21px;
+    .dialog-title {
+      text-align: center;
+      font-family: 'Nunito Sans';
+      font-style: normal;
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 24px;
+      color: #1D2129;
+    }
+  }
+  .el-dialog__body {
+    padding: 26px 18px;
+    .el-textarea {
+      .el-textarea__inner {
+        margin: 0;
+      }
+    }
+  }
+  .el-dialog__footer {
+    box-sizing: border-box;
+    border-top: 1px solid #E5E6E8;
+  }
+}
 </style>
 <style lang="scss" scoped>
 // .name-input{
@@ -627,12 +721,22 @@ export default {
 }
 .page-main {
   background: #fff;
-  padding: 30px 50px;
+  // padding: 30px 50px;
 }
 .box {
   // border:2px solid red;
   //   width: 400px;
   margin: 0 auto;
+  .el-table {
+    width: 500px;
+    .el-table__body-wrapper {
+      .el-table__body {
+        .el-table__row {
+          margin-bottom: 15px;
+        }
+      }
+    }
+  }
 }
 .custom-label {
   // text-align: center;
@@ -677,6 +781,17 @@ export default {
   position: absolute;
   top: 40px;
 }
+// .note_box {
+//   height: 144px;
+//   position: relative;
+//   top: -20px;
+//   .note_icon {
+//     cursor: pointer;
+//     position: absolute;
+//     top: 30px;
+//   }
+// }
+
 
 // .fisrt-check-row{
 //   position: relative;
