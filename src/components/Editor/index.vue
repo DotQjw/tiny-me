@@ -120,6 +120,9 @@ export default {
         images_upload_handler: (blobInfo, success, failure) => {
           // console.log(blobInfo, success, failure);
         },
+        paste_preprocess(){
+          console.log('复制事件')
+        },
         setup: function (editor) {
           console.log("ID为: " + editor.id + " 的编辑器即将初始化.");
         },
@@ -138,21 +141,28 @@ export default {
             this.hasChange = true;
             // that.$emit("updateRichText", {content:editor.getContent(),length:editor.plugins.wordcount.getCount()});
           });
-          // 将回车键改为 shift+回车
-          editor.on("keydown", function (event) {
-            // if (event.keyCode === 13) {
-            //   console.log("editor.selection.getNode()", editor);
-            //   if (editor.dom.hasClass(editor.selection.getNode(), "custom")) {
-            //     editor.dom.removeClass(editor.selection.getNode(), "custom");
-            //     console.log("进来");
-            //     // editor.selection.setContent("<p>&nbsp;</p>");
-            //     return false;
-            //   } else {
-            //     console.log("DAOZHELI L");
-            //     return true;
-            //   }
-            // }
-          });
+          editor.on('change',(e)=>{
+            console.log("change")
+            that.$emit("updateRichText", {
+              content: editor.getContent(),
+              length: editor.plugins.wordcount.getCount(),
+            });
+          })
+          // // 将回车键改为 shift+回车
+          // editor.on("keydown", function (event) {
+          //   // if (event.keyCode === 13) {
+          //   //   console.log("editor.selection.getNode()", editor);
+          //   //   if (editor.dom.hasClass(editor.selection.getNode(), "custom")) {
+          //   //     editor.dom.removeClass(editor.selection.getNode(), "custom");
+          //   //     console.log("进来");
+          //   //     // editor.selection.setContent("<p>&nbsp;</p>");
+          //   //     return false;
+          //   //   } else {
+          //   //     console.log("DAOZHELI L");
+          //   //     return true;
+          //   //   }
+          //   // }
+          // });
         },
       },
     };

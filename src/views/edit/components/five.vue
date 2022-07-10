@@ -208,7 +208,8 @@ import { cloneDeep } from "lodash";
 import { getToken } from "@/utils/auth";
 import { uploadFile } from "@/api/upload";
 import { uploadFileUrl, baseUrl } from "@/utils/baseUrl";
-
+//  不支持import 语法，也就是module引入
+const jsDiff = require('diff');
 export default {
   props: {
     claimData: {
@@ -257,6 +258,8 @@ export default {
     };
   },
   created() {
+    const a= jsDiff.diffChars("我的钓鱼","钓的鱼")
+    console.log('jsDiff',a)
     console.log("init", this.claimData);
     if (this.claimData.length) {
       console.log("装载一下树结构");

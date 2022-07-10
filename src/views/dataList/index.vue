@@ -24,10 +24,15 @@
     >
       <el-table-column prop="caseNo" label="客户案号" width="180">
         <template slot-scope="scope">
-            <span>
-              {{ scope.row.caseNo }}
-            </span>
-        <div v-if="scope.row.showTip" style="margin-top:5px;color:#86909C;font-size:14px;">点击进入撰写流程</div>
+          <span>
+            {{ scope.row.caseNo }}
+          </span>
+          <div
+            v-if="scope.row.showTip"
+            style="margin-top: 5px; color: #86909c; font-size: 14px"
+          >
+            点击进入撰写流程
+          </div>
         </template>
       </el-table-column>
       <el-table-column prop="tianyuan" label="天元案号" width="180">
@@ -106,11 +111,7 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column
-        prop=""
-        width="140px;"
-        label="联系人"
-      >
+      <el-table-column prop="" width="140px;" label="联系人">
         <template slot-scope="scope">
           <div style="margin-bottom: 10px">
             P1：{{ scope.row.createUserName }}
@@ -129,7 +130,11 @@
               size="small"
               >审核</el-button
             >
-            <el-button @click="handleCreate(scope.row)" type="text" size="small"
+            <el-button
+              @click="handleCreate(scope.row)"
+              v-if="scope.row.status != 3"
+              type="text"
+              size="small"
               >编辑</el-button
             >
             <span
@@ -208,7 +213,7 @@ export default {
   },
   methods: {
     rowClick(row, column, event) {
-      if (column.label === "状态" ||  column.label === "操作") return;
+      if (column.label === "状态" || column.label === "操作") return;
       console.log({ row, column, event });
       this.handleEdit(row);
     },
@@ -245,11 +250,11 @@ export default {
           this.$message.error(res.message);
         });
     },
-    mouseEnter(row, column, cell, event){
-      this.$set(row,'showTip',true)
+    mouseEnter(row, column, cell, event) {
+      this.$set(row, "showTip", true);
     },
-    mouseLeave(row, column, cell, event){
-      this.$set(row,'showTip',false)
+    mouseLeave(row, column, cell, event) {
+      this.$set(row, "showTip", false);
     },
     updateStatus(row, status) {
       row.status = null;
