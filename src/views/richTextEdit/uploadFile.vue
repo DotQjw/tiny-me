@@ -40,14 +40,20 @@
               <span v-else>请添加附图说明</span>
             </div>
             <el-input
+              :autofocus="true"
+              :ref="`input${index}`"
+              v-myFocus
               style="max-width: 150px"
               @blur="handleBlur(item, index)"
               v-else
               v-model="inputValue"
             ></el-input>
-            <i class="el-icon-delete delete-icon"  @click="handleDelete(item,index)">
-              
-            </i>
+            <div>
+              <i
+                class="el-icon-delete delete-icon"
+                @click="handleDelete(item, index)"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -142,12 +148,13 @@ export default {
     },
     beforeUpload(file) {
       console.log("file", file);
-      const isJpg = /image\/(png|jpe?g|gif)$/.test(file.type)
-      if(!isJpg){
-        this.$message.warning('只能上传png,jpg,jpeg,gif格式的图片,上传的文件格式有误，请重试')
+      const isJpg = /image\/(png|jpe?g|gif)$/.test(file.type);
+      if (!isJpg) {
+        this.$message.warning(
+          "只能上传png,jpg,jpeg,gif格式的图片,上传的文件格式有误，请重试"
+        );
         return false;
       }
-      
     },
     handleExceed(file) {
       console.log("handleExceed", file);
@@ -165,13 +172,13 @@ export default {
       });
     },
     handleBlur(item, index) {
+      console.log("Blur");
       if (this.inputValue === item.desc) {
         console.log("没有改变");
       } else {
         this.$set(this.fileList[index], "desc", this.inputValue);
         this.inputValue = "";
       }
-
       this.$set(this.fileList[index], "edit", false);
     },
     handleOver(item, index) {
@@ -194,12 +201,12 @@ export default {
       this.selectedUrl = item.url;
       this.$set(this.fileList[index], "showSpan", false);
     },
-    handleDelete(item,index){
-      if(item.url ===  this.selectedUrl ){
-         this.selectedUrl  = ""
+    handleDelete(item, index) {
+      if (item.url === this.selectedUrl) {
+        this.selectedUrl = "";
       }
-      this.fileList.splice(index,1);
-    }
+      this.fileList.splice(index, 1);
+    },
   },
 };
 </script>
@@ -263,11 +270,11 @@ export default {
   bottom: 10px;
   text-align: center;
 }
-.delete-icon{
-  margin-top:22px;
+.delete-icon {
+  margin-top: 22px;
   cursor: pointer;
-  &:hover{
-    color:red;
+  &:hover {
+    color: red;
   }
 }
 </style>

@@ -16,6 +16,13 @@ Vue.use(VueClipboard);
 
 import "@/icons"; // icon
 import "@/permission"; // permission control
+Vue.directive('myFocus', {
+  inserted (el, binding, vnode) {
+    console.log("el进来",)
+    // 聚焦元素
+    el.querySelector('input').focus()
+  }
+})
 
 /**
  * If you don't want to use mock-server

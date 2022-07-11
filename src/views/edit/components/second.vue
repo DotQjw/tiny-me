@@ -9,7 +9,14 @@
         <div class="custom-label">
           <span> 本专利应用在哪个领域？ </span>
           <span class="right-tool">
-            <span class="tool-item" @click="openFileList('domain')">
+            <span
+              class="tool-item"
+              v-if="
+                formData.domain.recordFiles.length ||
+                formData.domain.attachments.length
+              "
+              @click="openFileList('domain')"
+            >
               <i class="el-icon-paperclip"></i>
               <span class="tool-label">附件列表</span>
             </span>
@@ -36,7 +43,14 @@
         <div class="custom-label">
           <span>该领域存在什么痛点？</span>
           <span class="right-tool">
-            <span class="tool-item" @click="openFileList('painPoint')">
+            <span
+              class="tool-item"
+              v-if="
+                formData.painPoint.recordFiles.length ||
+                formData.painPoint.attachments.length
+              "
+              @click="openFileList('painPoint')"
+            >
               <i class="el-icon-paperclip"></i>
               <span class="tool-label">附件列表</span>
             </span>
@@ -63,7 +77,14 @@
         <div class="custom-label">
           <span>当前是如何解决这些痛点的？</span>
           <span class="right-tool">
-            <span class="tool-item" @click="openFileList('currentSolution')">
+            <span
+              class="tool-item"
+              v-if="
+                formData.currentSolution.recordFiles.length ||
+                formData.currentSolution.attachments.length
+              "
+              @click="openFileList('currentSolution')"
+            >
               <i class="el-icon-paperclip"></i>
               <span class="tool-label">附件列表</span>
             </span>
@@ -90,7 +111,14 @@
         <div class="custom-label">
           <span>解决这些痛点的方案所存在的且本专利要解决的缺陷有哪些？</span>
           <span class="right-tool">
-            <span class="tool-item" @click="openFileList('pendingDefect')">
+            <span
+              class="tool-item"
+              v-if="
+                formData.pendingDefect.recordFiles.length ||
+                formData.pendingDefect.attachments.length
+              "
+              @click="openFileList('pendingDefect')"
+            >
               <i class="el-icon-paperclip"></i>
               <span class="tool-label">附件列表</span>
             </span>

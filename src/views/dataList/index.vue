@@ -3,7 +3,12 @@
     <div class="title-box">
       <div class="page-title">
         <div class="title-text">案件管理</div>
-        <el-tabs v-model="status" class="filter" type="card" @tab-click="handleStatusClick">
+        <el-tabs
+          v-model="status"
+          class="filter"
+          type="card"
+          @tab-click="handleStatusClick"
+        >
           <el-tab-pane label="全部" name="0"></el-tab-pane>
           <el-tab-pane label="进行中" name="1"></el-tab-pane>
           <el-tab-pane label="暂停中" name="2"></el-tab-pane>
@@ -38,15 +43,20 @@
       :data="tableData"
       :height="pgaeHeight"
       fit
-      style="wdith: 100%;cursor: pointer;padding: 0 35px;background: #f8f8f8;"
+      style="wdith: 100%; cursor: pointer; padding: 0 35px; background: #f8f8f8"
       @row-click="rowClick"
     >
       <el-table-column prop="caseNo" label="客户案号">
         <template slot-scope="scope">
-            <span>
-              {{ scope.row.caseNo }}
-            </span>
-        <div v-if="scope.row.showTip" style="margin-top:5px;color:#86909C;font-size:14px;">点击进入撰写流程</div>
+          <span>
+            {{ scope.row.caseNo }}
+          </span>
+          <div
+            v-if="scope.row.showTip"
+            style="margin-top: 5px; color: #86909c; font-size: 14px"
+          >
+            点击进入撰写流程
+          </div>
         </template>
       </el-table-column>
       <el-table-column prop="tianyuan" label="天元案号">
@@ -125,10 +135,7 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column
-        prop=""
-        label="联系人"
-      >
+      <el-table-column prop="" label="联系人">
         <template slot-scope="scope">
           <div style="margin-bottom: 10px">
             P1：{{ scope.row.createUserName }}
@@ -139,48 +146,46 @@
 
       <el-table-column fixed="right" label="操作" width="134px">
         <template slot-scope="scope">
-            <el-button
-              @click="handleCheck(scope.row, 'review')"
-              v-if="scope.row.reviewStatus === 1 && scope.row.status === 1"
-              type="text"
-              size="small"
-              class="operation-btn"
-              >审核</el-button
-            >
-            <el-button @click="handleCreate(scope.row)" type="text"
-              style="
-                font-size: 12px;
-              "
-              size="small"
-              class="operation-btn"
-              >编辑</el-button
-            >
-            <el-button
-              @click="handleRemove(scope.row)"
-              type="text"
-              v-if="[2, 4].includes(scope.row.status)"
-              style="
-                color: red;
-                font-size: 12px;
-              "
-              class="operation-btn"
-              >删除</el-button
-            >
+          <el-button
+            @click="handleCheck(scope.row, 'review')"
+            v-if="scope.row.reviewStatus === 1 && scope.row.status === 1"
+            type="text"
+            size="small"
+            class="operation-btn"
+            >审核</el-button
+          >
+          <el-button
+            @click="handleCreate(scope.row)"
+            type="text"
+            style="font-size: 12px"
+            size="small"
+            v-if="scope.row.status != 3"
+            class="operation-btn"
+            >编辑</el-button
+          >
+          <el-button
+            @click="handleRemove(scope.row)"
+            type="text"
+            v-if="[2, 4].includes(scope.row.status)"
+            style="color: red; font-size: 12px"
+            class="operation-btn"
+            >删除</el-button
+          >
 
-            <el-button
-              v-if="scope.row.status === 3"
-              @click="handleCheck(scope.row, 'check')"
-              type="text"
-              size="small"
-              class="operation-btn"
-              >查看详情</el-button
-            >
+          <el-button
+            v-if="scope.row.status === 3"
+            @click="handleCheck(scope.row, 'check')"
+            type="text"
+            size="small"
+            class="operation-btn"
+            >查看详情</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
 
     <el-pagination
-      style="margin-top: 20px;text-align: center"
+      style="margin-top: 20px; text-align: center"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="pages.currentPage"
@@ -224,7 +229,7 @@ export default {
       tableData: [],
       role: this.$store.getters.roles,
       isFull: false,
-      status: '0'
+      status: "0",
     };
   },
   created() {
@@ -233,14 +238,14 @@ export default {
   },
   computed: {
     pgaeHeight() {
-      const page = document.documentElement.clientHeight
-      const height = page - 240
-      return height
-    }
+      const page = document.documentElement.clientHeight;
+      const height = page - 240;
+      return height;
+    },
   },
   methods: {
     rowClick(row, column, event) {
-      if (column.label === "状态" ||  column.label === "操作") return;
+      if (column.label === "状态" || column.label === "操作") return;
       console.log({ row, column, event });
       this.handleEdit(row);
     },
@@ -277,11 +282,11 @@ export default {
           this.$message.error(res.message);
         });
     },
-    mouseEnter(row, column, cell, event){
-      this.$set(row,'showTip',true)
+    mouseEnter(row, column, cell, event) {
+      this.$set(row, "showTip", true);
     },
-    mouseLeave(row, column, cell, event){
-      this.$set(row,'showTip',false)
+    mouseLeave(row, column, cell, event) {
+      this.$set(row, "showTip", false);
     },
     updateStatus(row, status) {
       row.status = null;
@@ -304,7 +309,7 @@ export default {
         sortType: this.sortType,
         sortField: this.sortField,
         keyword: this.keyword,
-        status: this.status
+        status: this.status,
       };
       this.tableLoading = true;
       getList(param)
@@ -343,7 +348,10 @@ export default {
       this.showDialog = true;
     },
     handleEdit(row) {
-      this.$router.push({ path: "/data-edit", query: { id: row.id, proposalName: row.proposalName, active: 'case' } });
+      this.$router.push({
+        path: "/data-edit",
+        query: { id: row.id, proposalName: row.proposalName, active: "case" },
+      });
     },
     handleEditRichText(row) {
       console.log("type");
@@ -365,7 +373,7 @@ export default {
       this.pages.currentPage = 1;
       this.pages.perPage = 20;
       this.fetchData();
-    }
+    },
   },
 };
 </script>
@@ -394,14 +402,14 @@ export default {
     }
     ::v-deep .el-table__body-wrapper::-webkit-scrollbar-track {
       border-radius: 0px; /*滚动条的背景区域的圆角*/
-      background-color: rgba(2,29,87,1); /*滚动条的背景颜色*/
+      background-color: rgba(2, 29, 87, 1); /*滚动条的背景颜色*/
     }
     ::v-deep .el-table__body-wrapper::-webkit-scrollbar-corner {
-      background-color: rgba(2,29,87,1);
+      background-color: rgba(2, 29, 87, 1);
     }
     ::v-deep .el-table__body-wrapper::-webkit-scrollbar-thumb {
       border-radius: 4px; /*滚动条的圆角*/
-      background-color: rgba(24,144,255,0.50); /*滚动条的背景颜色*/
+      background-color: rgba(24, 144, 255, 0.5); /*滚动条的背景颜色*/
     }
   }
 }
@@ -429,10 +437,10 @@ export default {
 .tian_name {
   height: 46px;
   display: -webkit-box; /** 对象作为伸缩盒子模型显示 **/
-  overflow: hidden;  
-  word-break: break-all;   /* break-all(允许在单词内换行。)  对pc端可以不要*/ 
-  text-overflow: ellipsis;   /* 超出部分省略号 */
-  -webkit-box-orient: vertical;   /** 设置或检索伸缩盒对象的子元素的排列方式 **/
+  overflow: hidden;
+  word-break: break-all; /* break-all(允许在单词内换行。)  对pc端可以不要*/
+  text-overflow: ellipsis; /* 超出部分省略号 */
+  -webkit-box-orient: vertical; /** 设置或检索伸缩盒对象的子元素的排列方式 **/
   -webkit-line-clamp: 2;
 }
 .cancel-case {
@@ -468,10 +476,10 @@ export default {
     // flex: 1;
     .title-text {
       margin-bottom: 20px;
-      font-family: 'PingFang SC';
+      font-family: "PingFang SC";
       font-style: normal;
       font-size: 24px;
-      color: #1D2129;
+      color: #1d2129;
     }
     .filter {
       background: #fff;

@@ -323,17 +323,34 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+::v-deep .el-dialog__header {
+  background: #0e42d2;
+  border: 1px solid #fff;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  padding: 6px 0 10px 0;
+}
+::v-deep .el-dialog__headerbtn {
+  // display: none;
+  top: 10px;
+}
+::v-deep .el-dialog__title {
+  color: #fff;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+}
 ::v-deep .el-dialog--center .el-dialog__body {
   // padding: 25px 25px 0 25px;
   padding: 0;
 }
 .dialog-main {
   line-height: 30px;
-  padding:20px 30px; 
+  padding: 20px 30px 14px 30px;
 }
 .dialog-btn {
   margin-top: 20px;
-  margin-bottom: 20px;
+  // margin-bottom: 20px;
   text-align: center;
 }
 .unready {

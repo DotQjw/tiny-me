@@ -7,7 +7,17 @@
     :close-on-click-modal="false"
     width="480px"
   >
-    <el-form :model="form" ref="form" label-width="100px" :rules="formRule">
+    <div class="tips" v-if="showTip">
+      创建案件后你可以点击对应项目名称开始项目撰写流程
+      <i class="el-icon-close close" @click="closeTips"></i>
+    </div>
+    <el-form
+      :model="form"
+      ref="form"
+      label-width="100px"
+      class="custom-form"
+      :rules="formRule"
+    >
       <el-form-item label="客户案号：">
         <el-input
           v-model="form.caseNo"
@@ -56,7 +66,7 @@
         </el-autocomplete>
       </el-form-item>
     </el-form>
-    <div slot="footer" class="dialog-footer">
+    <div class="dialog-footer">
       <el-button @click="handleClose">返 回</el-button>
       <el-button type="primary" @click="submit">确 定</el-button>
     </div>
@@ -78,6 +88,7 @@ export default {
   },
   data() {
     return {
+      showTip: false,
       title: this.createData.id ? "编辑案件" : "创建案件",
       showMore: false,
       form: this.createData,
@@ -93,13 +104,17 @@ export default {
           { required: true, message: "请输入提案名称", change: "blur" },
         ],
         type: [
-          { required: true,validator(f,v,c){
-            if(v){
-              c()
-            }else{
-              c(new Error("请选择专利类型"))
-            }
-          }, change: "change" },
+          {
+            required: true,
+            validator(f, v, c) {
+              if (v) {
+                c();
+              } else {
+                c(new Error("请选择专利类型"));
+              }
+            },
+            change: "change",
+          },
         ],
       },
       // form: {
@@ -113,7 +128,13 @@ export default {
       // },
     };
   },
+  created() {
+    this.showTip = this.createData.id ? false : true;
+  },
   methods: {
+    closeTips() {
+      this.showTip = false;
+    },
     querySearch(queryString, cb) {
       if (queryString.length === 11) {
         userSearch({
@@ -141,7 +162,7 @@ export default {
     },
     handleClose() {
       this.$emit("update:show", false);
-      console.log('this.form',this.form)
+      console.log("this.form", this.form);
       // if (!this.form.id) {
       //   this.$router.go(-1);
       // }
@@ -184,7 +205,10 @@ export default {
             this.$message.success("新建成功");
             // this.$emit("updateId", res.data.id);
             this.$emit("update:show", false);
-            this.$router.push({ path: "/data-edit", query: { id: res.data.id }});
+            this.$router.push({
+              path: "/data-edit",
+              query: { id: res.data.id },
+            });
           } else {
             this.$message.error("服务器有点忙，请重试");
           }
@@ -198,11 +222,37 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+::v-deep .el-dialog__body {
+  padding: 0;
+}
+::v-deep .el-dialog {
+  border-radius: 4px;
+}
+
+.custom-form {
+  padding: 0 30px;
+  margin-top: 20px;
+}
 .custom-input {
   width: 300px;
 }
 .more {
   text-align: center;
+  cursor: pointer;
+}
+.dialog-footer {
+  border-top: 1px solid #e5e6e8;
+  margin-top: 18px;
+  text-align: right;
+  padding: 16px 20px 16px 0;
+}
+.tips {
+  background: #e8f3ff;
+  padding: 9px 20px;
+  color: #165dff;
+}
+.close {
+  float: right;
   cursor: pointer;
 }
 </style>
