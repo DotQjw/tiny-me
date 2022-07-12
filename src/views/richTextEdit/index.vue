@@ -1,5 +1,5 @@
 <template>
-  <div class="page">
+  <div class="rich-edit-page">
     <el-breadcrumb separator="/">
       <el-breadcrumb-item><a @click="gotoIndex">首页</a></el-breadcrumb-item>
       <el-breadcrumb-item><a>说明书编辑</a></el-breadcrumb-item>
@@ -48,13 +48,35 @@
           </div>
           <div class="right-content">
             <div class="content-item">
-              <div class="content-item-title">
+              <div
+                class="content-item-title"
+                @click="handleChangeStatus('techArea')"
+              >
                 1.技术领域： {{ detailData.techArea }}
+                <span
+                  class="right-warning"
+                  v-if="modifiedFields && modifiedFields.includes('techArea')"
+                >
+                  <i class="el-icon-warning-outline"></i>
+                  有变动
+                </span>
               </div>
             </div>
             <div class="content-item">
-              <div class="content-item-title">2.本专利应用在哪个领域</div>
-              <div class="content-item-text">
+              <div class="content-item-title">
+                2.本专利应用在哪个领域
+                <span
+                  class="right-warning"
+                  v-if="modifiedFields && modifiedFields.includes('domain')"
+                >
+                  <i class="el-icon-warning-outline"></i>
+                  有变动
+                </span>
+              </div>
+              <div
+                class="content-item-text"
+                @click="handleChangeStatus('domain')"
+              >
                 {{ (detailData.domain && detailData.domain.text) || "" }}
               </div>
               <div class="tool-item tool-item1" @click="openFileList('domain')">
@@ -63,8 +85,20 @@
               </div>
             </div>
             <div class="content-item">
-              <div class="content-item-title">3.该领域存在什么痛点</div>
-              <div class="content-item-text">
+              <div class="content-item-title">
+                3.该领域存在什么痛点
+                <span
+                  class="right-warning"
+                  v-if="modifiedFields && modifiedFields.includes('painPoint')"
+                >
+                  <i class="el-icon-warning-outline"></i>
+                  有变动
+                </span>
+              </div>
+              <div
+                class="content-item-text"
+                @click="handleChangeStatus('painPoint')"
+              >
                 {{ (detailData.painPoint && detailData.painPoint.text) || "" }}
                 <div class="tool-item" @click="openFileList('painPoint')">
                   <i class="el-icon-paperclip"></i>
@@ -73,8 +107,22 @@
               </div>
             </div>
             <div class="content-item">
-              <div class="content-item-title">4.当前是如何解决这些痛点的的</div>
-              <div class="content-item-text">
+              <div class="content-item-title">
+                4.当前是如何解决这些痛点的
+                <span
+                  class="right-warning"
+                  v-if="
+                    modifiedFields && modifiedFields.includes('currentSolution')
+                  "
+                >
+                  <i class="el-icon-warning-outline"></i>
+                  有变动
+                </span>
+              </div>
+              <div
+                class="content-item-text"
+                @click="handleChangeStatus('currentSolution')"
+              >
                 {{
                   (detailData.currentSolution &&
                     detailData.currentSolution.text) ||
@@ -89,8 +137,20 @@
             <div class="content-item">
               <div class="content-item-title">
                 5.解决这些痛点的方案所存在的且本专利要解决的问题有哪些
+                <span
+                  class="right-warning"
+                  v-if="
+                    modifiedFields && modifiedFields.includes('pendingDefect')
+                  "
+                >
+                  <i class="el-icon-warning-outline"></i>
+                  有变动
+                </span>
               </div>
-              <div class="content-item-text">
+              <div
+                class="content-item-text"
+                @click="handleChangeStatus('pendingDefect')"
+              >
                 {{
                   (detailData.pendingDefect && detailData.pendingDefect.text) ||
                   ""
@@ -103,8 +163,22 @@
               </div>
             </div>
             <div class="content-item">
-              <div class="content-item-title">6.本专利如何解决上述缺陷的？</div>
-              <div class="content-item-text">
+              <div class="content-item-title">
+                6.本专利如何解决上述缺陷的？
+                <span
+                  class="right-warning"
+                  v-if="
+                    modifiedFields && modifiedFields.includes('fixDefectMethod')
+                  "
+                >
+                  <i class="el-icon-warning-outline"></i>
+                  有变动
+                </span>
+              </div>
+              <div
+                class="content-item-text"
+                @click="handleChangeStatus('fixDefectMethod')"
+              >
                 {{
                   (detailData.fixDefectMethod &&
                     detailData.fixDefectMethod.text) ||
@@ -118,14 +192,49 @@
               </div>
             </div>
             <div class="content-item">
-              <div class="content-item-title">7.权利要求书</div>
-              <div class="content-item-text" v-if="claimStr" v-html="claimStr">
-                <!-- {{ claimStr || "" }} -->
-
-                <!-- <div class="tool-item" @click="openFileList('fixDefectMethod')">
-                  <i class="el-icon-paperclip"></i>
-                  <span class="tool-label">附件列表</span>
-                </div> -->
+              <div class="content-item-title">
+                7.权利要求书
+                <span
+                  class="right-warning"
+                  v-if="modifiedFields && modifiedFields.includes('claims')"
+                >
+                  <i class="el-icon-warning-outline"></i>
+                  有变动
+                </span>
+              </div>
+              <div
+                class="content-item-text"
+                @click="handleChangeStatus('claims')"
+                v-for="(item, index) in detailData.claim"
+                :key="index"
+              >
+                <div class="claim-title">{{ index + 1 }}：{{ item.name }}</div>
+                <div class="kernel-box">
+                  <template
+                    v-for="(childItem, childIndex) in item.claimContent"
+                  >
+                    <!-- {{JSON.stringify(item)}} -->
+                    <div class="kernel-item" :key="childIndex">
+                      <div class="kernel-item-row">
+                        <div>内核{{ childIndex + 1 }}：</div>
+                        <div>{{ childItem.kernel }}</div>
+                      </div>
+                      <div class="kernel-item-note">
+                        <div>备注：</div>
+                        <div>{{ childItem.note }}</div>
+                      </div>
+                    </div>
+                  </template>
+                  <div class="kernel-item-tool">
+                    <div
+                      class="tool-item tool-item1"
+                      @click="openClaimFileList(index)"
+                    >
+                      <i class="el-icon-paperclip"></i>
+                      <span class="tool-label">附件列表</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -256,16 +365,19 @@
       <!-- <div class="custom-title">附图</div> -->
       <div class="patent-name-box">
         <div class="patent-name-title" style="line-height: 20px">附图</div>
-        <span class="addimg" style="margin-right:10px;"  @click="handleTextToRich">添加文本到文档</span>
+        <span
+          class="addimg"
+          style="margin-right: 10px"
+          @click="handleTextToRich"
+          >添加文本到文档</span
+        >
         <div class="main-add-img" v-if="drawings.length">
           <span
             class="el-icon-picture-outline"
             style="font-size: 10px"
             @click="handleUpload"
           ></span>
-          <span class="addimg" @click="handleUpload"
-            >添加附图</span
-          >
+          <span class="addimg" @click="handleUpload">添加附图</span>
         </div>
       </div>
       <div class="custom-tips" v-if="!drawings.length">你还没有任何附图</div>
@@ -323,6 +435,7 @@ import {
   editDescription,
   download_description,
   submitData,
+  clearRedPoint,
 } from "@/api/table";
 export default {
   components: { Editor, uploadFile, draggable, fileList },
@@ -336,21 +449,12 @@ export default {
         el.name = `图${index + 1}`;
       });
     },
-    // allContent(n, o) {
-    //   if (this.richTextUpdata === 2) {
-    //     this.richTextUpdata = 0
-    //     if (this.timer) {
-    //       clearTimeout(this.timer);
-    //     }
-    //     this.timer = setTimeout(() => {
-    //       this.handleSave("autosave");
-    //     }, 1000);
-    //   }
-    // },
   },
   data() {
     return {
       claimStr: "",
+      changeStatusLoading: false,
+      modifiedFields: [],
       replaceLoading: false,
       haveNewContent: false,
       richTextUpdata: 0,
@@ -432,14 +536,14 @@ export default {
         this.handleQuit();
       }
     },
-    handleTextToRich(){
-      console.log("DRWAING",this.drawings)
-      let textStr = ""
-      this.drawings.map((item,index)=>{
-        console.log("item,",item,index)
-        textStr += `<p>&#x3000;&#x3000;${item.name}${item.desc}</p>`
-      })
-      console.log('textStr',textStr)
+    handleTextToRich() {
+      console.log("DRWAING", this.drawings);
+      let textStr = "";
+      this.drawings.map((item, index) => {
+        console.log("item,", item, index);
+        textStr += `<p>&#x3000;&#x3000;${item.name}${item.desc}</p>`;
+      });
+      console.log("textStr", textStr);
       let content = this.allContent;
       // 清理标签之间的空格。不然正则匹配不到
       content = content.replace(/<\/p>\r?\n|(?<!\n)\r/g, "</p>");
@@ -450,11 +554,11 @@ export default {
         console.log("中间匹配到的字符", str, "||||||", textStr);
         return `<h3 style="text-decoration: underline;">附图说明</h3>${textStr}<p>&#x3000;&#x3000;主要元件符号说明：</p>`;
       });
-      console.log("content",content)
-      this.$nextTick(()=>{
+      console.log("content", content);
+      this.$nextTick(() => {
         this.allContent = content;
-        this.handleSave('ImgtextToRich')
-      })
+        this.handleSave("ImgtextToRich");
+      });
     },
     handleQuit() {
       this.$router.push({ path: "/case-list" });
@@ -493,11 +597,12 @@ export default {
         this.handleClaimToRightText(this.claim);
         this.drawings = res.data.drawings;
         this.typeLabel = res.data.type == "1" ? "发明" : "实用新型";
+        this.modifiedFields = res.data.modifiedFields || [];
         console.log("typeLabel", this.typeLabel);
         this.abstractUrl = res.data.abstractUrl;
         if (res.data.abstract) {
           this.mainContent = res.data.abstract;
-          // this.showMainEdit = true;
+          this.showMainEdit = true;
         }
         if (res.data.drawingReferences[0]) {
           this.imgMarkList = res.data.drawingReferences;
@@ -508,7 +613,7 @@ export default {
 
         if (res.data.description) {
           this.allContent = res.data.description;
-          // return;
+          return;
         }
         console.log("新增才会走下面");
         // 处理独权从权
@@ -627,7 +732,7 @@ export default {
               patentContentBox = "";
             }
             patentContentBox += `<p>&#x3000;&#x3000;第${singleIndexToHan}方面，本${typeLabel}提供的是${name}，${kernel}`;
-            console.log('kernel',kernel)
+            console.log("kernel", kernel);
             str += `<p>&#x3000;&#x3000;${index}. ${name}，其特征在于，${kernel}`;
             kernel = "";
             note = "";
@@ -659,7 +764,8 @@ export default {
             note = "";
           }
           console.log("patentContentBox", patentContentBox);
-          console.log("childKernel", childKernel);        }
+          console.log("childKernel", childKernel);
+        }
         // 防止最后一个的数据没提交上去length
         if (dataIndex + 1 === detail.claim.length) {
           console.log("我是最后一个了", patentContentBox, item);
@@ -697,10 +803,10 @@ export default {
       let typeLabel = this.typeLabel;
       let techArea = this.detailData.techArea || "";
       let str = `<p>&#x3000;&#x3000;本${typeLabel}属于${techArea}领域，提供${patentName}，`;
-      this.detailData.claim.forEach((el,index) => {
+      this.detailData.claim.forEach((el, index) => {
         console.log("claim", el);
         // 独权
-        if (el.no === el.parentNo && el.no === el.ancestorNo && index===0) {
+        if (el.no === el.parentNo && el.no === el.ancestorNo && index === 0) {
           str += el.name;
           el.claimContent.forEach((childItem) => {
             str += childItem.kernel;
@@ -1162,6 +1268,42 @@ export default {
       this.currentFileList = this.detailData[type].attachments;
       this.showFileList = true;
     },
+    openClaimFileList(index) {
+      // console.log({
+      //   index,
+      //   claim: this.detailData.claim[index],
+      // });
+      this.currentRecordList = [];
+      this.currentFileList = this.detailData.claim[index].attachments;
+      this.showFileList = true;
+    },
+    handleChangeStatus(type) {
+      if (!this.modifiedFields.includes(type)) {
+        console.log("不在数组内");
+        return;
+      }
+      if (this.changeStatusLoading) {
+        return;
+      }
+      this.changeStatusLoading = true;
+      console.log("type", type);
+      clearRedPoint({
+        id: this.$route.query.id,
+        modifiedField: type,
+      })
+        .then((res) => {
+          this.changeStatusLoading = false;
+          this.modifiedFields =
+            this.modifiedFields.filter((v) => v != type);
+          console.log(
+            "this.detailData.modifiedFields",
+            this.detailData.modifiedFields
+          );
+        })
+        .catch((_) => {
+          this.changeStatusLoading = false;
+        });
+    },
   },
 };
 </script>
@@ -1169,8 +1311,11 @@ export default {
 ::v-deep .el-tree-node .el-tree-node__content {
   height: 40px;
 }
-.page {
+.rich-edit-page {
   margin: 0 10px 100px 0;
+  padding-bottom: 100px;
+  height: 100vh;
+  overflow-y: scroll;
   .custom-title {
     font-weight: bold;
     margin-bottom: 20px;
@@ -1387,5 +1532,60 @@ export default {
   z-index: 9999;
   cursor: pointer;
   color: red;
+}
+.kernel-box {
+  border: 1px solid #e5e6eb;
+  border-radius: 4px;
+}
+.kernel-item {
+  border-top: 1px solid #e5e6eb;
+  // padding: 15px 25px;
+  // margin-bottom: 20px;
+}
+.kernel-item-row {
+  padding: 15px 25px 0;
+  display: flex;
+  font-family: "Nunito Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  color: #1d2129;
+}
+.kernel-item-note {
+  padding: 15px 25px 10px;
+  margin-top: 9px;
+  display: flex;
+  font-family: "Nunito Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  color: #86909c;
+}
+.kernel-item-tool {
+  border-top: 1px solid #e5e6eb;
+  padding-bottom: 10px;
+  padding-left: 10px;
+}
+.claim-title {
+  color: #1d2129;
+  font-family: "Nunito Sans";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 22px;
+  margin-bottom: 8px;
+}
+.right-warning {
+  display: inline-block;
+  color: red;
+  background: #ffece8;
+  border-radius: 3px;
+  padding: 3px 8px;
+  line-height: 20px;
+  font-family: "PingFang SC";
+  font-style: normal;
+  font-weight: 400;
 }
 </style>

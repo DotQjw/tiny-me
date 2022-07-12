@@ -162,3 +162,10 @@ export function changePassword(params) {
     data:params,
   })
 }
+export function clearRedPoint(params) {
+  return request({
+    url: '/api/v1/patent/clear_red_point',
+    method: 'POSt',
+    data:params,
+  })
+}
