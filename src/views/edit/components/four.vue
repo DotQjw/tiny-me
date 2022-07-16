@@ -2,23 +2,25 @@
   <div class="page">
     <div class="page-main">
       <div class="title">
-          <img src="@/assets/work_images/star.svg" alt="">
-          <span>背景技术</span>
+        <img src="@/assets/work_images/star.svg" alt="" />
+        <span>背景技术</span>
       </div>
       <div class="box step4">
         <div class="custom-label">
-          <span>本专利如何解决上述缺陷的？</span>
+          <span class="right-label-title">本专利如何解决上述缺陷的？</span>
           <span class="right-tool">
             <span
-              class="tool-item"
               v-if="
                 formData.fixDefectMethod.recordFiles.length ||
                 formData.fixDefectMethod.attachments.length
               "
               @click="openFileList('fixDefectMethod')"
             >
-              <i class="el-icon-paperclip"></i>
-              <span class="tool-label">附件列表</span>
+              <span class="tool-item-file-list">
+                <i class="el-icon-paperclip"></i>
+                <span class="tool-label">附件列表</span>
+              </span>
+              <i class="el-icon-arrow-down custom-arrow-down"></i>
             </span>
             <span class="tool-item" @click="openUploadFile('fixDefectMethod')">
               <i class="el-icon-upload2"></i>
@@ -61,8 +63,10 @@
     />
     <file-list
       :type="fileListType"
-      :recordList="currentRecordList"
-      :fileList="currentFileList"
+      @uploadRecord="uploadRecord"
+      @uploadFile="uploadFile"
+      :recordList.sync="currentRecordList"
+      :fileList.sync="currentFileList"
       v-if="showFileList"
       :show.sync="showFileList"
     />
@@ -139,6 +143,8 @@ export default {
       this.showRecord = true;
     },
     openFileList(type) {
+      this.recordType = type;
+      this.uploadFileType = type;
       this.showFileList = true;
       this.fileListType = type;
       this.currentRecordList = this.formData[type].recordFiles;
@@ -177,28 +183,55 @@ export default {
   margin-bottom: 23px;
   display: flex;
   align-items: center;
-  border-bottom: 1px solid #E5E6EB;
+  border-bottom: 1px solid #e5e6eb;
   img {
     margin-right: 10px;
   }
   span {
-    color: #1D2129;
+    color: #1d2129;
     font-weight: 500;
     font-size: 20px;
-    font-family: 'PingFang SC';
+    font-family: "PingFang SC";
   }
 }
 .right-tool {
   float: right;
+  margin-bottom: 16px;
   .tool-item {
     display: inline-block;
     padding: 5px 20px;
     background: #f2f3f5;
-    margin-right: 10px;
+    margin-left: 10px;
     cursor: pointer;
+    border-radius: 2px;
   }
   .tool-label {
     margin-left: 10px;
   }
+}
+
+.custom-arrow-down {
+  display: inline-block;
+  background: #f2f3f5;
+  line-height: 28px;
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
+  padding: 0 11px;
+  cursor: pointer;
+}
+.tool-item-file-list {
+  display: inline-block;
+  padding: 0 20px;
+  line-height: 28px;
+  background: #f2f3f5;
+  margin-left: 10px;
+  border-top-left-radius: 2px;
+  border-bottom-left-radius: 2px;
+  cursor: pointer;
+  border-right: 1px solid #e5e6eb;
+}
+.right-label-title {
+  position: relative;
+  top: 8px;
 }
 </style>

@@ -28,8 +28,8 @@
     </el-upload>
     <div v-if="this.filename">
       <div style="margin: 10px 0">
-        {{ this.filename }}  
-        <span >{{percentage === 100 ? '上传成功':'正在上传中'}}</span>
+        {{ this.filename }}
+        <span>{{ percentage === 100 ? "上传成功" : "正在上传中" }}</span>
       </div>
       <el-progress
         v-if="percentage != 0"
@@ -38,8 +38,12 @@
         :percentage="percentage"
       ></el-progress>
 
-      <div style="margin:10px 0;" v-for="(item, index) in fileList" :key="index">
-       <i class="el-icon-success" style="color:#165DFF;" /> {{ item.name }}
+      <div
+        style="margin: 10px 0"
+        v-for="(item, index) in fileList"
+        :key="index"
+      >
+        <i class="el-icon-success" style="color: #165dff" /> {{ item.name }}
       </div>
     </div>
   </el-dialog>
@@ -47,7 +51,7 @@
 <script>
 import store from "@/store";
 import { getToken } from "@/utils/auth";
-import { uploadFileUrl } from '@/utils/baseUrl';
+import { uploadFileUrl } from "@/utils/baseUrl";
 
 export default {
   props: {
@@ -66,7 +70,7 @@ export default {
   },
   data() {
     return {
-      uploadUrl:uploadFileUrl(),
+      uploadUrl: uploadFileUrl(),
       timer: null,
       percentage: 0,
       token: this.$store.getters.token || getToken(),
@@ -84,7 +88,7 @@ export default {
     handleSuccess(response, file, fileList) {
       clearInterval(this.timer);
       this.fileList = fileList;
-      console.log('fileList',this.fileList)
+      console.log("fileList", this.fileList);
       this.percentage = 100;
       console.log("handleSuccess", { response, file, fileList });
       if (response.code === 0) {
@@ -108,15 +112,40 @@ export default {
     },
     beforeUpload(file) {
       console.log("file", file);
-      this.percentage = 0;
-      this.filename = file.name;
-      this.timer = setInterval(() => {
-        this.percentage += 1;
-        if (this.percentage === 95) {
-          clearInterval(this.timer);
-        }
-      }, 100);
-      console.log("fileData", this.fileData);
+      const fileNameType = file.name.split(".")[1];
+      const typeList = [
+        "doc",
+        "docx",
+        "pdf",
+        "jpg",
+        "jpeg",
+        "png",
+        "excel",
+        "xls",
+        "xlsx",
+      ];
+      const typeLimit = typeList.includes(fileNameType);
+      if (!typeLimit) {
+        this.$message.warning(
+          "只能上传格式为doc，docx，pdf，jpg，jpeg，png，excel，xls，xlsx的文件"
+        );
+        return false;
+      }
+      let fileSize = file.size < 1024 * 1024 * 100;
+      if (!fileSize) {
+        this.$message.warning("文件大小不能超过100M");
+        return false;
+      }
+      if (typeLimit && fileSize) {
+        this.filename = file.name;
+        this.percentage = 0;
+        this.timer = setInterval(() => {
+          this.percentage += 1;
+          if (this.percentage === 95) {
+            clearInterval(this.timer);
+          }
+        }, 100);
+      }
     },
     handleExceed(file) {
       console.log("handleExceed", file);

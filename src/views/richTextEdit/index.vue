@@ -26,11 +26,16 @@
               <i
                 class="el-icon-error close-bigPic"
                 @click="() => (bigPicUrl = '')"
-              ></i>
+              ></i
+              >mini
               <el-image :src="bigPicUrl"></el-image>
             </div>
             <div class="custom-title">说明书编辑</div>
-            <el-button v-if="!showTechList" @click="showTechList = true"
+            <el-button
+              v-if="!showTechList"
+              size="mini"
+              style="margin-bottom: 20px"
+              @click="showTechList = true"
               >查看技术交底</el-button
             >
           </div>
@@ -43,8 +48,13 @@
         </div>
         <div class="first-right" v-if="showTechList">
           <div class="first-right-title">
-            <div class="">技术交底</div>
-            <el-button @click="showTechList = false">收起</el-button>
+            <div class="custom-title">技术交底</div>
+            <el-button
+              size="mini"
+              style="margin-bottom: 20px"
+              @click="showTechList = false"
+              >收起</el-button
+            >
           </div>
           <div class="right-content">
             <div class="content-item">
@@ -52,7 +62,11 @@
                 class="content-item-title"
                 @click="handleChangeStatus('techArea')"
               >
-                1.技术领域： {{ detailData.techArea }}
+                <span class="right-title">
+                  1.技术领域：<span class="right-content-item">
+                    {{ detailData.techArea }}</span
+                  >
+                </span>
                 <span
                   class="right-warning"
                   v-if="modifiedFields && modifiedFields.includes('techArea')"
@@ -64,7 +78,7 @@
             </div>
             <div class="content-item">
               <div class="content-item-title">
-                2.本专利应用在哪个领域
+                <span class="right-title"> 2.本专利应用在哪个领域 </span>
                 <span
                   class="right-warning"
                   v-if="modifiedFields && modifiedFields.includes('domain')"
@@ -78,10 +92,20 @@
                 @click="handleChangeStatus('domain')"
               >
                 {{ (detailData.domain && detailData.domain.text) || "" }}
-              </div>
-              <div class="tool-item tool-item1" @click="openFileList('domain')">
-                <i class="el-icon-paperclip"></i>
-                <span class="tool-label">附件列表</span>
+
+                <div
+                  @click="openFileList('domain')"
+                  v-if="
+                    detailData.domain.attachments.length ||
+                    detailData.domain.recordFiles.length
+                  "
+                >
+                  <div class="tool-item">
+                    <i class="el-icon-paperclip"></i>
+                    <span class="tool-label">附件列表</span>
+                  </div>
+                  <i class="el-icon-arrow-down custom-arrow-down"></i>
+                </div>
               </div>
             </div>
             <div class="content-item">
@@ -100,9 +124,18 @@
                 @click="handleChangeStatus('painPoint')"
               >
                 {{ (detailData.painPoint && detailData.painPoint.text) || "" }}
-                <div class="tool-item" @click="openFileList('painPoint')">
-                  <i class="el-icon-paperclip"></i>
-                  <span class="tool-label">附件列表</span>
+                <div
+                  @click="openFileList('painPoint')"
+                  v-if="
+                    detailData.painPoint.attachments.length ||
+                    detailData.painPoint.recordFiles.length
+                  "
+                >
+                  <div class="tool-item">
+                    <i class="el-icon-paperclip"></i>
+                    <span class="tool-label">附件列表</span>
+                  </div>
+                  <i class="el-icon-arrow-down custom-arrow-down"></i>
                 </div>
               </div>
             </div>
@@ -128,9 +161,18 @@
                     detailData.currentSolution.text) ||
                   ""
                 }}
-                <div class="tool-item" @click="openFileList('currentSolution')">
-                  <i class="el-icon-paperclip"></i>
-                  <span class="tool-label">附件列表</span>
+                <div
+                  @click="openFileList('currentSolution')"
+                  v-if="
+                    detailData.currentSolution.attachments.length ||
+                    detailData.currentSolution.recordFiles.length
+                  "
+                >
+                  <div class="tool-item">
+                    <i class="el-icon-paperclip"></i>
+                    <span class="tool-label">附件列表</span>
+                  </div>
+                  <i class="el-icon-arrow-down custom-arrow-down"></i>
                 </div>
               </div>
             </div>
@@ -156,9 +198,18 @@
                   ""
                 }}
 
-                <div class="tool-item" @click="openFileList('pendingDefect')">
-                  <i class="el-icon-paperclip"></i>
-                  <span class="tool-label">附件列表</span>
+                <div
+                  @click="openFileList('pendingDefect')"
+                  v-if="
+                    detailData.pendingDefect.attachments.length ||
+                    detailData.pendingDefect.recordFiles.length
+                  "
+                >
+                  <div class="tool-item">
+                    <i class="el-icon-paperclip"></i>
+                    <span class="tool-label">附件列表</span>
+                  </div>
+                  <i class="el-icon-arrow-down custom-arrow-down"></i>
                 </div>
               </div>
             </div>
@@ -185,9 +236,18 @@
                   ""
                 }}
 
-                <div class="tool-item" @click="openFileList('fixDefectMethod')">
-                  <i class="el-icon-paperclip"></i>
-                  <span class="tool-label">附件列表</span>
+                <div
+                  @click="openFileList('fixDefectMethod')"
+                  v-if="
+                    detailData.fixDefectMethod.attachments.length ||
+                    detailData.fixDefectMethod.recordFiles.length
+                  "
+                >
+                  <div class="tool-item">
+                    <i class="el-icon-paperclip"></i>
+                    <span class="tool-label">附件列表</span>
+                  </div>
+                  <i class="el-icon-arrow-down custom-arrow-down"></i>
                 </div>
               </div>
             </div>
@@ -213,7 +273,6 @@
                   <template
                     v-for="(childItem, childIndex) in item.claimContent"
                   >
-                    <!-- {{JSON.stringify(item)}} -->
                     <div class="kernel-item" :key="childIndex">
                       <div class="kernel-item-row">
                         <div>内核{{ childIndex + 1 }}：</div>
@@ -225,13 +284,16 @@
                       </div>
                     </div>
                   </template>
-                  <div class="kernel-item-tool">
-                    <div
-                      class="tool-item tool-item1"
-                      @click="openClaimFileList(index)"
-                    >
-                      <i class="el-icon-paperclip"></i>
-                      <span class="tool-label">附件列表</span>
+                  <div
+                    class="kernel-item-tool"
+                    v-if="detailData.claim[index].attachments.length"
+                  >
+                    <div @click="openClaimFileList(index)">
+                      <div class="tool-item tool-item1">
+                        <i class="el-icon-paperclip"></i>
+                        <span class="tool-label">附件列表</span>
+                      </div>
+                      <i class="el-icon-arrow-down custom-arrow-down"></i>
                     </div>
                   </div>
                 </div>
@@ -242,7 +304,7 @@
       </div>
 
       <div>
-        <hr style="color: grey" />
+        <div class="cut-line"></div>
         <div class="patent-name-box">
           <div class="patent-name-title">专利名称</div>
           <el-button @click="updatePatentName()">添加名称至文档</el-button>
@@ -365,20 +427,24 @@
       <!-- <div class="custom-title">附图</div> -->
       <div class="patent-name-box">
         <div class="patent-name-title" style="line-height: 20px">附图</div>
-        <span
+        <!-- <span
           class="addimg"
           style="margin-right: 10px"
           @click="handleTextToRich"
           >添加文本到文档</span
-        >
-        <div class="main-add-img" v-if="drawings.length">
+        > -->
+        <el-button style="margin-right: 10px" @click="handleTextToRich">
+          添加文本到文档
+        </el-button>
+        <el-button @click="handleUpload"> 添加附图 </el-button>
+        <!-- <div class="main-add-img" v-if="drawings.length">
           <span
             class="el-icon-picture-outline"
             style="font-size: 10px"
             @click="handleUpload"
           ></span>
           <span class="addimg" @click="handleUpload">添加附图</span>
-        </div>
+        </div> -->
       </div>
       <div class="custom-tips" v-if="!drawings.length">你还没有任何附图</div>
       <span
@@ -1293,8 +1359,7 @@ export default {
       })
         .then((res) => {
           this.changeStatusLoading = false;
-          this.modifiedFields =
-            this.modifiedFields.filter((v) => v != type);
+          this.modifiedFields = this.modifiedFields.filter((v) => v != type);
           console.log(
             "this.detailData.modifiedFields",
             this.detailData.modifiedFields
@@ -1334,7 +1399,7 @@ export default {
   margin-top: 20px;
   // box-shadow: -2px 2px 100px gainsboro;
   border: 1px solid #f2f3f5;
-  padding: 24px;
+  padding: 31px 24px;
   border-radius: 8px;
   .box1-content {
     display: flex;
@@ -1346,7 +1411,7 @@ export default {
       .left-title {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 20px;
+        // margin-bottom: 20px;
       }
     }
     .first-right {
@@ -1357,12 +1422,24 @@ export default {
       overflow-y: scroll;
       // border: 1px solid red;
       .content-item {
-        margin: 10px 0 20px 0;
+        margin: 10px 0 13px 0;
         &-title {
           margin-bottom: 8px;
+          font-family: "PingFang SC";
+          font-style: normal;
+          font-weight: 400;
+          font-size: 14px;
+          line-height: 20px;
+          color: #1d2129;
         }
         &-text {
           margin-left: 14px;
+          font-family: "PingFang SC";
+          font-style: normal;
+          font-weight: 400;
+          font-size: 14px;
+          line-height: 20px;
+          color: #4e5969;
         }
       }
     }
@@ -1370,7 +1447,7 @@ export default {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 5px 0;
+      // padding: 5px 0;
       margin-bottom: 20px;
       .custom-fold {
         cursor: pointer;
@@ -1502,13 +1579,16 @@ export default {
   }
 }
 .tool-item {
-  display: block;
-  width: 150px;
-  padding: 5px 20px;
+  display: inline-block;
+  // width: 150px;
+  padding: 5px 16px;
   background: #f2f3f5;
+  border-right: 1px solid #e5e6eb;
+  border-top-left-radius: 2px;
+  border-bottom-left-radius: 2px;
   // margin-left: 15px;
   cursor: pointer;
-  margin-top: 20px;
+  margin-top: 14px;
 }
 .tool-item1 {
   margin-left: 15px;
@@ -1576,6 +1656,7 @@ export default {
   font-size: 14px;
   line-height: 22px;
   margin-bottom: 8px;
+  margin-top: 6px;
 }
 .right-warning {
   display: inline-block;
@@ -1587,5 +1668,36 @@ export default {
   font-family: "PingFang SC";
   font-style: normal;
   font-weight: 400;
+}
+.cut-line {
+  height: 1px;
+  width: 100%;
+  background: #f2f3f5;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+.right-title {
+  font-family: "PingFang SC";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #1d2129;
+}
+.right-content-item {
+  font-family: "PingFang SC";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #4e5969;
+}
+.custom-arrow-down {
+  display: inline-block;
+  background: #f2f3f5;
+  padding: 8px 11px;
+  cursor: pointer;
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
 }
 </style>

@@ -119,7 +119,7 @@ export default {
     };
   },
   created() {
-    console.log("this.type", this.type);
+    console.log("this.type", this.type,this.maxIndex);
     if (navigator.mediaDevices.getUserMedia) {
       const constraints = { audio: true };
       navigator.mediaDevices.getUserMedia(constraints).then(

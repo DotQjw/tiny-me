@@ -1,24 +1,26 @@
 <template>
   <div class="page">
-    <div class="page-main step2 ">
+    <div class="page-main step2">
       <div class="title">
-          <img src="@/assets/work_images/star.svg" alt="">
-          <span>背景技术</span>
+        <img src="@/assets/work_images/star.svg" alt="" />
+        <span>背景技术</span>
       </div>
       <div class="box">
         <div class="custom-label">
-          <span> 本专利应用在哪个领域？ </span>
+          <span class="right-label-title"> 本专利应用在哪个领域？ </span>
           <span class="right-tool">
             <span
-              class="tool-item"
               v-if="
                 formData.domain.recordFiles.length ||
                 formData.domain.attachments.length
               "
               @click="openFileList('domain')"
             >
-              <i class="el-icon-paperclip"></i>
-              <span class="tool-label">附件列表</span>
+              <span class="tool-item-file-list">
+                <i class="el-icon-paperclip"></i>
+                <span class="tool-label">附件列表</span>
+              </span>
+              <i class="el-icon-arrow-down custom-arrow-down"></i>
             </span>
             <span class="tool-item" @click="openUploadFile('domain')">
               <i class="el-icon-upload2"></i>
@@ -44,15 +46,17 @@
           <span>该领域存在什么痛点？</span>
           <span class="right-tool">
             <span
-              class="tool-item"
               v-if="
                 formData.painPoint.recordFiles.length ||
                 formData.painPoint.attachments.length
               "
               @click="openFileList('painPoint')"
             >
-              <i class="el-icon-paperclip"></i>
-              <span class="tool-label">附件列表</span>
+              <span class="tool-item-file-list">
+                <i class="el-icon-paperclip"></i>
+                <span class="tool-label">附件列表</span>
+              </span>
+              <i class="el-icon-arrow-down custom-arrow-down"></i>
             </span>
             <span class="tool-item" @click="openUploadFile('painPoint')">
               <i class="el-icon-upload2"></i>
@@ -78,15 +82,17 @@
           <span>当前是如何解决这些痛点的？</span>
           <span class="right-tool">
             <span
-              class="tool-item"
               v-if="
                 formData.currentSolution.recordFiles.length ||
                 formData.currentSolution.attachments.length
               "
               @click="openFileList('currentSolution')"
             >
-              <i class="el-icon-paperclip"></i>
-              <span class="tool-label">附件列表</span>
+              <span class="tool-item-file-list">
+                <i class="el-icon-paperclip"></i>
+                <span class="tool-label">附件列表</span>
+              </span>
+              <i class="el-icon-arrow-down custom-arrow-down"></i>
             </span>
             <span class="tool-item" @click="openUploadFile('currentSolution')">
               <i class="el-icon-upload2"></i>
@@ -112,15 +118,17 @@
           <span>解决这些痛点的方案所存在的且本专利要解决的缺陷有哪些？</span>
           <span class="right-tool">
             <span
-              class="tool-item"
               v-if="
                 formData.pendingDefect.recordFiles.length ||
                 formData.pendingDefect.attachments.length
               "
               @click="openFileList('pendingDefect')"
             >
-              <i class="el-icon-paperclip"></i>
-              <span class="tool-label">附件列表</span>
+              <span class="tool-item-file-list">
+                <i class="el-icon-paperclip"></i>
+                <span class="tool-label">附件列表</span>
+              </span>
+              <i class="el-icon-arrow-down custom-arrow-down"></i>
             </span>
             <span class="tool-item" @click="openUploadFile('pendingDefect')">
               <i class="el-icon-upload2"></i>
@@ -163,8 +171,10 @@
     />
     <file-list
       :type="fileListType"
-      :recordList="currentRecordList"
-      :fileList="currentFileList"
+      :recordList.sync="currentRecordList"
+      @uploadRecord="uploadRecord"
+      @uploadFile="uploadFile"
+      :fileList.sync="currentFileList"
       v-if="showFileList"
       :show.sync="showFileList"
     />
@@ -239,6 +249,8 @@ export default {
       this.showRecord = true;
     },
     openFileList(type) {
+      this.recordType = type;
+      this.uploadFileType = type;
       this.showFileList = true;
       this.fileListType = type;
       this.currentRecordList = this.formData[type].recordFiles;
@@ -272,15 +284,15 @@ export default {
   margin-bottom: 23px;
   display: flex;
   align-items: center;
-  border-bottom: 1px solid #E5E6EB;
+  border-bottom: 1px solid #e5e6eb;
   img {
     margin-right: 10px;
   }
   span {
-    color: #1D2129;
+    color: #1d2129;
     font-weight: 500;
     font-size: 20px;
-    font-family: 'PingFang SC';
+    font-family: "PingFang SC";
   }
 }
 .box {
@@ -294,11 +306,13 @@ export default {
 }
 .right-tool {
   float: right;
+  margin-bottom: 16px;
   .tool-item {
     display: inline-block;
-    padding: 5px 20px;
+    padding: 5px 16px;
     background: #f2f3f5;
-    margin-right: 10px;
+    margin-left: 10px;
+    border-radius: 2px;
     cursor: pointer;
   }
   .tool-label {
@@ -308,5 +322,29 @@ export default {
 .bottom {
   margin-top: 20px;
   text-align: center;
+}
+.custom-arrow-down {
+  display: inline-block;
+  background: #f2f3f5;
+  line-height: 28px;
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
+  padding: 0 11px;
+  cursor: pointer;
+}
+.tool-item-file-list {
+  display: inline-block;
+  padding: 0 20px;
+  line-height: 28px;
+  background: #f2f3f5;
+  margin-left: 10px;
+  border-top-left-radius: 2px;
+  border-bottom-left-radius: 2px;
+  cursor: pointer;
+  border-right: 1px solid #e5e6eb;
+}
+.right-label-title {
+  position: relative;
+  top: 8px;
 }
 </style>
