@@ -1,6 +1,10 @@
 <template>
   <div>
-    <div class="custom-navbar"><span @click="gotoList">首页</span> / 审核</div>
+    <!-- <div class="custom-navbar"><span @click="gotoList">首页</span> / 审核</div> -->
+    <div class="header-title">
+      <div @click="gotoList" class="icon_back"><i class="el-icon-arrow-left"></i>返回</div>
+      <div class="title-name" :title="proposalName">{{proposalName}}</div>
+    </div>
     <div v-if="!fetchDataLoading">
       <div style="float: right; margin-bottom: 20px" v-if="type === 'review'">
         <el-button type="plain" @click="handleWord()" :loading="downloading">下载文档</el-button>
@@ -47,12 +51,14 @@ export default {
       pdfUrl: "",
       type: "check",
       fetchDataLoading: true,
+      proposalName: ''
     };
   },
   created() {
     console.log("in", this.$route);
     this.id = this.$route.query.id;
     this.type = this.$route.query.type;
+    this.proposalName = this.$route.query.proposalName
     if (this.id) {
       console.log("获取数据");
       this.getPdfUrl();
@@ -125,7 +131,7 @@ export default {
     },
     gotoList() {
       if (this.$store.getters.roles === 1) {
-        this.$router.push({ path: "/data-list" });
+        this.$router.push({ path: "/data-list", query: { active: 'case' } });
       } else {
         this.$router.push({ path: "/case-list" });
       }
@@ -144,9 +150,30 @@ export default {
   color: gray;
   margin-bottom: 20px;
 }
+.header-title {
+  box-sizing: border-box;
+  height: 80px;
+  padding: 15px 0 20px 33px;
+    .icon_back {
+      cursor: pointer;
+      width: 60px;
+    }
+    .title-name {
+      padding: 8px;
+      font-family: 'PingFang SC';
+      font-style: normal;
+      font-weight: 500;
+      font-size: 24px;
+      color: #1D2129;
+      width: 418px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+}
 .iframeContent {
   height: calc(100vh - 250px);
-  margin-top: 60px;
+  // margin-top: 60px;
 }
 .gujiapin {
   background: gray;

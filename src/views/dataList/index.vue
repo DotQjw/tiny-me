@@ -20,18 +20,20 @@
         <div class="full">
           <el-checkbox v-model="isFull">显示完整表格</el-checkbox>
         </div>
-        <el-input
-          style="max-width: 200px; display: inline-block; margin-right: 10px"
-          placeholder="输入关键词搜索"
-          class="search_input"
-          v-model="keyword"
-          @keyup.enter.native="fetchData"
-        >
-          <template slot="suffix">
-            <i class="el-icon-search" @click="fetchData"></i>
-          </template>
-        </el-input>
-        <el-button type="primary" @click="handleCreate"> 创建案件 </el-button>
+        <div class="search_btm">
+          <el-input
+            style="max-width: 200px; display: inline-block; margin-right: 10px"
+            placeholder="输入关键词搜索"
+            class="search_input"
+            v-model="keyword"
+            @keyup.enter.native="fetchData"
+          >
+            <template slot="suffix">
+              <i class="el-icon-search" @click="fetchData"></i>
+            </template>
+          </el-input>
+          <el-button type="primary" @click="handleCreate"> 创建案件 </el-button>
+        </div>
       </div>
     </div>
     <el-table
@@ -48,20 +50,15 @@
     >
       <el-table-column prop="caseNo" label="客户案号">
         <template slot-scope="scope">
-          <span>
-            {{ scope.row.caseNo }}
-          </span>
-          <div
-            v-if="scope.row.showTip"
-            style="margin-top: 5px; color: #86909c; font-size: 14px"
-          >
-            点击进入撰写流程
-          </div>
+            <div class="tian_name" :title="scope.row.caseNo">
+              {{ scope.row.caseNo }}
+            </div>
+        <div v-if="scope.row.showTip" style="margin-top:5px;color:#86909C;font-size:14px;">点击进入撰写流程</div>
         </template>
       </el-table-column>
       <el-table-column prop="tianyuan" label="天元案号">
         <template slot-scope="scope">
-          <div>
+          <div class="tian_name" :title="scope.row.tianyuan">
             {{ scope.row.tianyuan }}
           </div>
         </template>
@@ -119,7 +116,13 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="clientName" label="客户名称"> </el-table-column>
+      <el-table-column prop="clientName" label="客户名称">
+        <template slot-scope="scope">
+          <div class="tian_name" :title="scope.row.clientName">
+            {{ scope.row.clientName }}
+          </div>
+        </template>
+      </el-table-column>
       <el-table-column
         prop="createdAt"
         label="时间"
@@ -328,7 +331,7 @@ export default {
       console.log("check", row);
       this.$router.push({
         path: "/data-review",
-        query: { id: row.id, type: type },
+        query: { id: row.id, type: type, proposalName: row.proposalName, active: 'case' },
       });
     },
     handleCreate(data) {
@@ -493,15 +496,21 @@ export default {
       text-align: right;
       padding-bottom: 25px;
     }
-    .search_input {
-      ::v-deep .el-input__suffix {
-        width: 25px;
-        height: 100%;
-        right: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
+    .search_btm{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-sizing: border-box;
+      .search_input {
+        ::v-deep .el-input__suffix {
+          width: 25px;
+          height: 100%;
+          right: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+        }
       }
     }
   }

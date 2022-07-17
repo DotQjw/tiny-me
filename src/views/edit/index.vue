@@ -25,7 +25,7 @@
         <el-tabs class="custom-table" v-model="activeName">
           <el-tab-pane label="技术方案" name="first">
           </el-tab-pane>
-          <el-tab-pane label="权力要求" name="second">
+          <el-tab-pane label="权利要求" name="second">
           </el-tab-pane>
         </el-tabs>
       </el-col>
@@ -502,8 +502,9 @@ export default {
     }
   }
   .custom-content {
-    height: calc(100vh - 227px);
+    height: calc(100vh - 230px);
     overflow-y: scroll;
+    width: 100%;
     .table-content {
       width: 70%;
       min-width: 900px;
