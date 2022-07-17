@@ -14,6 +14,7 @@
           style="width: 100%; margin-top: 15px"
           @cell-mouse-enter="mouseEnter"
           @cell-mouse-leave="mouseLeave"
+          align="top"
         >
           <el-table-column prop="realIndex" label="序号" width="100">
             <template slot-scope="scope">
@@ -50,7 +51,7 @@
                     :ref="`input${scope.row.realIndex}`"
                     @input="nameInputChange($event, scope.row, 'name')"
                     type="textarea"
-                    rows="1"
+                    :autosize="{ minRows: 1 }"
                     v-model="scope.row.name"
                   ></el-input>
                   <el-button
@@ -69,6 +70,7 @@
                     <el-input
                       :ref="`input${scope.row.realIndex}`"
                       @input="nameInputChange($event, scope.row, 'name')"
+                      :autosize="{ minRows: 1 }"
                       v-model="scope.row.name"
                       class="child-input"
                     ></el-input>
@@ -83,7 +85,98 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="kernel" min-width="150px" label="内核">
+          <el-table-column prop="" width="720">
+             <template slot="header">
+              <el-row class="card-head">
+                <el-col style="width: 370px">内核</el-col>
+                <el-col style="width: 60px">必经</el-col>
+                <el-col style="width: 60px">可视</el-col>
+                <el-col style="width: 60px">逻辑</el-col>
+                <el-col style="width: 60px">备注</el-col>
+              </el-row>
+            </template>
+            <template slot-scope="scope">
+              <span v-for="(item, index) in scope.row.claimContent" :key="index" class="operation">
+                <span style="width: 370px">
+                  <div
+                    @mouseenter="
+                      kernelMouseEnter(item, index, scope.row.claimContent)
+                    "
+                    @mouseleave="
+                      kernelMouseLeave(item, index, scope.row.claimContent)
+                    "
+                  >
+                    <el-input
+                      @input="inputChange"
+                      class="kernel"
+                      type="textarea"
+                      :autosize="{ minRows: 1 }"
+                      v-model="item.kernel"
+                    ></el-input>
+                    <div
+                      v-if="item.isShowDelete && index != 0"
+                      @click="
+                        handleKernelDelete(item, index, scope.row.claimContent)
+                      "
+                      class="kernel-delete"
+                    >
+                      删除
+                    </div>
+                  </div>
+                </span>
+                <div class="check-row-box">
+                  <div
+                  >
+                    <el-checkbox v-model="item.check.necessaryStep" @change="inputChange"></el-checkbox>
+                  </div>
+                </div>
+                <div class="check-row-box">
+                  <div
+                  >
+                    <el-checkbox v-model="item.check.visible" @change="inputChange"></el-checkbox>
+                  </div>
+                </div>
+                <div class="check-row-box">
+                  <div
+                  >
+                    <el-checkbox v-model="item.check.logic" @change="inputChange"></el-checkbox>
+                  </div>
+                </div>
+                <div class="note-row" style="width: 60px">
+                  <div class="note_box">
+                    <img src="@/assets/work_images/flag.svg" alt="" class="note_icon" v-if="item.note === ''" @click="openNote(item, index)">
+                    <img src="@/assets/work_images/flag_active.svg" class="note_icon" alt="" v-else @click="openNote(item, index)">
+                  </div>
+                  <div class="dialog-note" v-show="dialogNote">
+                    <div class="note-content">
+                      <div class="dialog-title">
+                        <span>备注</span>
+                      </div>
+                      <div class="dialog-con">
+                        <el-input
+                          @input="inputChange"
+                          v-model="noteObj.note"
+                          type="textarea"
+                          rows="1"
+                        ></el-input>
+                      </div>
+                      <div class="dialog-footer">
+                        <el-button @click="closeNote(item)">返回</el-button>
+                        <el-button type="primary" @click="closeNote(item)">提交</el-button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </span>
+              <el-button
+                  icon="el-icon-plus"
+                  @click="handleInner(scope.row, scope.$index, treeData)"
+                >
+                  添加内核
+                </el-button>
+            </template>
+          </el-table-column>
+          <!-- <el-table-column prop="kernel" min-width="150px" label="内核">
             <template slot-scope="scope">
               <span>
                 <div
@@ -121,7 +214,7 @@
                 </el-button>
               </span>
             </template>
-          </el-table-column>
+          </el-table-column> -->
           <!-- <el-table-column prop="" label="校核" width="270px">
             <template slot-scope="scope">
               <div class="check-row-box">
@@ -139,7 +232,7 @@
               </div>
             </template>
           </el-table-column> -->
-          <el-table-column prop="" label="必经" width="90px">
+          <!-- <el-table-column prop="" label="必经" width="90px">
             <template slot-scope="scope">
               <div class="check-row-box">
                 <div
@@ -177,15 +270,15 @@
                 </div>
               </div>
             </template>
-          </el-table-column>
-          <el-table-column prop="note" label="备注">
+          </el-table-column> -->
+          <!-- <el-table-column prop="note" label="备注">
             <template slot-scope="scope">
               <div class="note-row">
                 <div
                   v-for="(item, index) in scope.row.claimContent"
                   :key="index"
                 >
-                  <!-- <div class="note_box">
+                  <div class="note_box">
                     <img src="@/assets/work_images/flag.svg" alt="" class="note_icon" v-if="item.note === ''" @click="dialogNote = true">
                     <img src="@/assets/work_images/flag_active.svg" class="note_icon" alt="" v-else @click="dialogNote = true">
                   </div>
@@ -207,7 +300,7 @@
                       <el-button @click="dialogNote = false">返回</el-button>
                       <el-button type="primary" @click="dialogNote = false">提交</el-button>
                     </span>
-                  </el-dialog> -->
+                  </el-dialog>
                     <el-input
                       @input="inputChange"
                       v-model="item.note"
@@ -217,11 +310,11 @@
                 </div>
               </div>
             </template>
-          </el-table-column>
-          <el-table-column prop="" label="有益效果" width="270px">
+          </el-table-column> -->
+          <el-table-column prop="" label="有益效果">
             <template slot-scope="scope">
               <span class="main-upload">
-                <el-upload
+                <!-- <el-upload
                   :headers="{
                     Authorization: `Bearer ${token}`,
                   }"
@@ -229,20 +322,20 @@
                   :action="uploadUrl"
                   :on-success="handleSuccess"
                   :before-upload="(file) => beforeUpload(file, scope.row)"
-                >
-                  <el-button size="small" class="el-icon-plus"
+                > -->
+                  <el-button size="small" class="el-icon-plus" @click="handleUpload(scope.row)"
                     >点击上传</el-button
                   >
-                </el-upload>
+                <!-- </el-upload> -->
 
                 <el-input
                   class="good-input"
                   type="textarea"
-                  rows="1"
+                  :autosize="{ minRows: 1 }"
                   @input="nameInputChange($event, scope.row, 'goodEffect')"
                   v-model="scope.row.goodEffect"
                 ></el-input>
-                <div v-if="scope.row.attachments" style="margin-top: 10px">
+                <!-- <div v-if="scope.row.attachments" style="margin-top: 10px">
                   <span
                     v-for="(item, index) in scope.row.attachments"
                     :key="index"
@@ -251,11 +344,130 @@
                       {{ item.name }}
                     </div>
                   </span>
-                </div>
+                </div> -->
               </span>
             </template>
           </el-table-column>
         </el-table>
+        <!-- <el-row class="card-head">
+          <el-col style="width: 100px">序号</el-col>
+          <el-col style="width: 280px">权力名称</el-col>
+          <el-col style="width: 554px">内核</el-col>
+          <el-col style="width: 90px">必经</el-col>
+          <el-col style="width: 90px">可视</el-col>
+          <el-col style="width: 90px">逻辑</el-col>
+          <el-col style="width: 294px">备注</el-col>
+          <el-col style="width: 255px">有益效果</el-col>
+        </el-row> -->
+        <!-- <div class="card-list">
+          <el-card class="box-card" v-for="(item, index) in claims" :key="item.no">
+            <el-row>
+              <el-col class="card-realIndex" style="width: 85px">
+                <div>
+                  {{ index + 1 }}
+                </div>
+                /* <div
+                  v-if="scope.row.showTip"
+                  @click="handleDelete(scope.row)"
+                  class="row-click"
+                >
+                  删除
+                </div> */
+              </el-col>
+              <el-col class="card-name" style="width: 280px">
+                <div
+                  class="name-input"
+                  v-if="
+                    item.no === item.parentNo &&
+                    item.no === item.ancestorNo
+                  "
+                >
+                  <el-input
+                    :ref="`input${item.realIndex}`"
+                    @input="nameInputChange($event, item, 'name')"
+                    type="textarea"
+                    rows="1"
+                    v-model="item.name"
+                  ></el-input>
+                  <el-button
+                    icon="el-icon-plus"
+                    style="margin-top: 10px"
+                    @click="handleChild(item, index)"
+                    >添加从权</el-button
+                  >
+                </div>
+                <div v-else class="child-name">
+                  <div>
+                    <span
+                      >根据
+                      <span style="color: #165dff">权利要求</span>
+                    </span>
+                    <el-input
+                      :ref="`input${item.realIndex}`"
+                      @input="nameInputChange($event, item, 'name')"
+                      v-model="item.name"
+                      class="child-input"
+                    ></el-input>
+                  </div>
+                  <el-button
+                    icon="el-icon-plus"
+                    style="margin-top: 10px"
+                    @click="handleChild(item, index)"
+                    >添加从权</el-button
+                  >
+                </div>
+              </el-col>
+              <el-col class="card-operation" style="width: 914px" v-for="(row, row_index) in item.claimContent" :key="row_index">
+                <div class="card-operation-kernel" style="width: 554px">
+                  <div
+                    @mouseenter="
+                      kernelMouseEnter(li, li_index, row)
+                    "
+                    @mouseleave="
+                      kernelMouseLeave(li, li_index, row)
+                    "
+                    v-for="(li, li_index) in row"
+                    :key="li_index"
+                  >
+                    <el-input
+                      @input="inputChange"
+                      class="kernel"
+                      type="textarea"
+                      rows="1"
+                      v-model="li.kernel"
+                    ></el-input>
+                    <div
+                      v-if="li.isShowDelete && li_index != 0"
+                      @click="
+                        handleKernelDelete(li, li_index, row)
+                      "
+                      class="kernel-delete"
+                    >
+                      删除
+                    </div>
+                  </div>
+                  <el-button
+                    icon="el-icon-plus"
+                    @click="handleInner(item, row_index, treeData)"
+                  >
+                    添加内核
+                  </el-button>
+                </div>
+                <div class="card-operation-checkout" style="wdith: 90px">
+                  <div class="check-row-box">
+                    <div
+                      class="check-row"
+                      v-for="(item, index) in scope.row.claimContent"
+                      :key="index"
+                    >
+                      <el-checkbox v-model="row.check.necessaryStep" @change="inputChange"></el-checkbox>
+                    </div>
+                  </div>
+                </div>
+              </el-col>
+            </el-row>   
+          </el-card>
+        </div> -->
       </div>
     </div>
     <!-- <div class="bottom">
@@ -263,6 +475,11 @@
       <el-button @click="saveData('last')">上一步</el-button>
       <el-button @click="saveData('save')">保 存</el-button>
     </div> -->
+    <file-list
+      :fileList="currentFileList"
+      v-if="showFileList"
+      :show.sync="showFileList"
+    />
   </div>
 </template>
 <script>
@@ -270,6 +487,7 @@ import { cloneDeep } from "lodash";
 import { getToken } from "@/utils/auth";
 import { uploadFile } from "@/api/upload";
 import { uploadFileUrl, baseUrl } from "@/utils/baseUrl";
+import fileList from "./fileList_five";
 //  不支持import 语法，也就是module引入
 const jsDiff = require('diff');
 export default {
@@ -278,6 +496,9 @@ export default {
       type: Array,
       default: () => [],
     },
+  },
+  components: {
+    fileList
   },
   watch: {
     realIndex(n) {
@@ -317,7 +538,10 @@ export default {
         attachments: [],
         children: [],
       },
-      dialogNote: false
+      dialogNote: false,
+      showFileList: false,
+      currentFileList: [],
+      noteObj: {}
     };
   },
   created() {
@@ -397,6 +621,16 @@ export default {
         step: 5,
         claims: this.claims,
       });
+    },
+    openNote(value) {
+      console.log('cccc', value)
+      this.noteObj = value
+      console.log('sss', this.noteObj)
+      this.dialogNote = true
+    },
+    closeNote(value) {
+      console.log('ffff', value)
+      this.dialogNote = false
     },
     handleEditData(data) {
       var list = cloneDeep(data);
@@ -636,6 +870,11 @@ export default {
       this.fileData = { size, name };
       this.uploadFileRow = row;
     },
+    handleUpload(value) {
+      this.showFileList = true
+      this.currentFileList = value.attachments
+      console.log('bbb', this.fileList);
+    }
   },
 };
 </script>
@@ -656,7 +895,8 @@ export default {
   .el-textarea__inner {
     margin: 10px 0;
     padding: 5px 2px;
-    height: 124px !important;
+    resize: none;
+    // height: 124px !important;
   }
   .el-table tbody tr:hover > td {
     background-color: #fff !important;
@@ -665,8 +905,8 @@ export default {
     .el-textarea__inner {
       margin: 10px 0;
       padding: 5px 2px;
-      height: 30px !important;
-      max-height: 124px !important;
+      // height: 30px !important;
+      // max-height: 124px !important;
     }
   }
   .child-input {
@@ -679,13 +919,24 @@ export default {
   }
 }
 .dialog-note {
-  width: 520px !important;
-  height: 290px;
-  .el-dialog__header {
-    box-sizing: border-box;
-    border-bottom: 1px solid #E5E6E8;
-    padding: 12px 21px;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: rgba($color: #000000, $alpha: 0.1);
+  z-index: 999;
+  .note-content {
+    width: 520px !important;
+    height: 290px;
+    position: relative;
+    top: 40%;
+    left: 35%;
+    background-color: #fff;
     .dialog-title {
+      box-sizing: border-box;
+      border-bottom: 1px solid #E5E6E8;
+      padding: 12px 21px;
       text-align: center;
       font-family: 'Nunito Sans';
       font-style: normal;
@@ -694,18 +945,56 @@ export default {
       line-height: 24px;
       color: #1D2129;
     }
+    .dialog-con {
+      padding: 26px 18px;
+      .el-textarea {
+        .el-textarea__inner {
+          margin: 0;
+        }
+      }
+    }
+    .dialog-footer {
+      box-sizing: border-box;
+      border-top: 1px solid #E5E6E8;
+      display: flex;
+      justify-content: flex-end;
+      padding: 16px 20px;
+    }
   }
-  .el-dialog__body {
-    padding: 26px 18px;
-    .el-textarea {
-      .el-textarea__inner {
-        margin: 0;
+}
+.card-head {
+  // padding: 15px;
+  box-sizing: border-box;
+  div {
+    padding: 0 10px;
+    &:first-child {
+      padding-left: 0;
+    }
+    &:last-child {
+      padding-right: 0;
+    }
+  }
+}
+.card-list {
+  .box-card {
+    .el-card__body {
+      padding: 15px;
+      .card-name {
+        .name-input {
+          padding: 0 10px;
+        }
       }
     }
   }
-  .el-dialog__footer {
-    box-sizing: border-box;
-    border-top: 1px solid #E5E6E8;
+}
+.operation {
+  display: flex;
+  .note-row {
+    .el-textarea {
+      .el-textarea__inner {
+        margin: 0 !important;
+      }
+    }
   }
 }
 </style>
@@ -719,8 +1008,8 @@ export default {
   //   padding: 30px 50px;
 }
 .main-upload {
-  position: absolute;
-  top: 24px;
+  // position: absolute;
+  // top: 24px;
 }
 .page-main {
   background: #fff;
@@ -778,11 +1067,16 @@ export default {
 }
 .note-row,
 .check-row-box {
-  padding-bottom: 41px;
+  // padding-bottom: 41px;
+  width: 60px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 8px 0;
 }
 .check-row-box {
-  position: absolute;
-  top: 40px;
+  // position: absolute;
+  // top: 40px;
 }
 // .note_box {
 //   height: 144px;
@@ -801,8 +1095,8 @@ export default {
 //   top:-20px;
 // }
 .sort-index {
-  position: absolute;
-  top: 24px;
+  // position: absolute;
+  // top: 24px;
 }
 .row-click {
   position: absolute;

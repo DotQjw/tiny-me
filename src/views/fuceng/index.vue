@@ -65,7 +65,7 @@ $dark_gray: #889aa4;
 $light_gray: #eee;
 
 .guide-container{
-  padding: 105px 64px 0 192px;
+  padding: 105px 192px 0 192px;
   display: flex;
   justify-content: center;
 .box {
