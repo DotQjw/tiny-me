@@ -36,7 +36,8 @@
         </div>
       </div>
     </div>
-    <el-table
+    <div style="padding: 0 35px">
+      <el-table
       header-cell-class-name="table_header"
       @sort-change="sortChange"
       @cell-mouse-enter="mouseEnter"
@@ -45,7 +46,7 @@
       :data="tableData"
       :height="pgaeHeight"
       fit
-      style="wdith: 100%; cursor: pointer; padding: 0 35px; background: #f8f8f8"
+      style="wdith: 100%; cursor: pointer; background: #f8f8f8"
       @row-click="rowClick"
     >
       <el-table-column prop="caseNo" label="客户案号">
@@ -186,6 +187,7 @@
         </template>
       </el-table-column>
     </el-table>
+    </div>
 
     <el-pagination
       style="margin-top: 20px; text-align: center"
@@ -312,7 +314,7 @@ export default {
         sortType: this.sortType,
         sortField: this.sortField,
         keyword: this.keyword,
-        status: this.status,
+        status: this.status
       };
       this.tableLoading = true;
       getList(param)

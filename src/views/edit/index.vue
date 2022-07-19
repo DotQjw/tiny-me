@@ -36,29 +36,47 @@
       </el-col>
     </el-row>
     <div class="custom-content">
+      <div class="left-tool">
+        <div
+          v-for="(item, index) in toolList"
+          @click="handleTool(index)"
+          :key="index"
+          :class="{ active: currentTool == index }"
+        >
+          {{ item }}
+        </div>
+      </div>
       <div class="table-content" v-if="isShow">
         <div v-show="activeName ==='first'">
-          <first
-            @saveData="saveData"
-            :id="formData.id"
-            :techArea="formData.techArea"
-            :type="type"
-          />
-          <second
-            @saveData="saveData"
-            :secondStepsData="secondStepsData"
-            :id="formData.id"
-          />
-          <third
-            @saveData="saveData"
-            :idea="formData.idea"
-            :id="formData.id"
-          />
-          <four
-            @saveData="saveData"
-            :fixDefectMethod="formData.fixDefectMethod"
-            :id="formData.id"
-          />
+          <div id="box1">
+            <first
+              @saveData="saveData"
+              :id="formData.id"
+              :techArea="formData.techArea"
+              :type="type"
+            />
+          </div>
+          <div id="box2">
+            <second
+              @saveData="saveData"
+              :secondStepsData="secondStepsData"
+              :id="formData.id"
+            />
+          </div>
+          <div id="box3">
+            <third
+              @saveData="saveData"
+              :idea="formData.idea"
+              :id="formData.id"
+            />
+          </div>
+          <div id="box4">
+            <four
+              @saveData="saveData"
+              :fixDefectMethod="formData.fixDefectMethod"
+              :id="formData.id"
+            />
+          </div>
         </div>
         <div v-show="activeName === 'second'">
           <five
@@ -72,7 +90,7 @@
     <div class="bottom">
       <el-button type="primary" @click="saveStep('submit')" v-show="activeName === 'second'">提交</el-button>
       <el-button type="primary" @click="saveStep('next')" v-show="activeName === 'first'">下一步</el-button>
-      <el-button type="primary" @click="saveStep('last')" v-show="activeName === 'second'">上一步</el-button>
+      <el-button @click="saveStep('last')" v-show="activeName === 'second'">上一步</el-button>
       <el-button @click="saveStep('save')">保 存</el-button>
     </div>
   </div>
@@ -243,7 +261,9 @@ export default {
         },
       },
       isShow: false,
-      proposalName: ''
+      proposalName: '',
+      currentTool: 0,
+      toolList: ["技术领域", "背景技术", "方案概述", "实现方案"],
     };
   },
   created() {
@@ -417,11 +437,39 @@ export default {
     },
     handleSingle () {
       this.$refs.five.handleSingle()
-    }
+    },
+    handleTool(index) {
+      this.currentTool = index;
+      this.$el.querySelector(`#box${index + 1}`).scrollIntoView();
+    },
   },
 };
 </script>
 <style lang="scss">
+.left-tool {
+  cursor: pointer;
+  position: fixed;
+  z-index: 1888;
+  left: 0;
+  top: 30vh;
+  background: #fff;
+  box-shadow: 1px 1px 10px gainsboro;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  padding: 16px 16px;
+  div {
+    text-align: center;
+    padding: 8px 0;
+    margin: 15px 0;
+    width: 80px;
+    font-size: 16px;
+    line-height: 24px;
+  }
+  .active {
+    background: rgba(106, 161, 255, 0.1);
+    color: #165DFF;
+  }
+}
 .edit-page {
   position: relative;
   .steps-box {
@@ -450,6 +498,9 @@ export default {
       .icon_back {
         cursor: pointer;
         width: 60px;
+        &:hover {
+          color: #165DFF;
+        }
       }
       .title-name {
         padding: 8px;

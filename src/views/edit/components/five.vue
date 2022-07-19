@@ -1,5 +1,5 @@
 <template>
-  <div class="page">
+  <div class="page_five">
     <!-- <div class="page-top">
       <div>权利要求书</div>
       <el-button type="primary" icon="el-icon-plus" @click="handleSingle"
@@ -15,6 +15,7 @@
           @cell-mouse-enter="mouseEnter"
           @cell-mouse-leave="mouseLeave"
           align="top"
+          :max-height="tableHeight"
         >
           <el-table-column prop="realIndex" label="序号" width="100">
             <template slot-scope="scope">
@@ -508,6 +509,13 @@ export default {
       console.log("treeData change", n);
     },
   },
+  computed: {
+    tableHeight() {
+      const page = document.documentElement.clientHeight;
+      const height = page - 275;
+      return height;
+    },
+  },
   data() {
     return {
       parentChildren: [],
@@ -884,12 +892,15 @@ export default {
 }
 .el-table td,
 .el-table th {
-  vertical-align: text-top;
+  vertical-align: inherit !important;
   // position: absolute;
   // top:5px;
 }
 .el-textarea__inner:focus {
   border: 1px solid #165dff !important;
+}
+.page_five .el-table tbody {
+  vertical-align: top;
 }
 .no-border-input {
   .el-textarea__inner {

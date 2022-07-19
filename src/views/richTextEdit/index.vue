@@ -1,98 +1,104 @@
 <template>
   <div class="rich-edit-page">
-    <el-breadcrumb separator="/">
+    <!-- <el-breadcrumb separator="/">
       <el-breadcrumb-item><a @click="gotoIndex">首页</a></el-breadcrumb-item>
       <el-breadcrumb-item><a>说明书编辑</a></el-breadcrumb-item>
       <el-breadcrumb-item>{{
         detailData.proposalName || "-"
       }}</el-breadcrumb-item>
-    </el-breadcrumb>
-
-    <div class="left-tool">
-      <div
-        v-for="(item, index) in toolList"
-        @click="handleTool(index)"
-        :key="index"
-        :class="{ active: currentTool == index }"
-      >
-        {{ item }}
+    </el-breadcrumb> -->
+    <div class="header-title">
+      <div>
+        <div @click="gotoIndex" class="icon_back"><i class="el-icon-arrow-left"></i>返回</div>
+        <div class="title-name" :title="proposalName">{{proposalName}}</div>
+      </div>
+      <div class="bottom-btn">
+        <el-button type="info" plain @click="handleSave('save')" style="color: #1D2129;">保 存</el-button>
+        <el-button type="info" plain @click="handleSave('preview')" style="color: #1D2129;">预 览</el-button>
+        <el-button type="primary" @click="handleSave('submit')">提交审核</el-button>
       </div>
     </div>
-    <div id="box1">
-      <div class="box1-content">
-        <div class="first-left">
-          <div class="left-title">
-            <div v-if="bigPicUrl" class="big-pic">
-              <i
-                class="el-icon-error close-bigPic"
-                @click="() => (bigPicUrl = '')"
-              ></i
-              >
-              <el-image :src="bigPicUrl"></el-image>
-            </div>
-            <div class="custom-title">说明书编辑</div>
-            <el-button
-              v-if="!showTechList"
-              size="mini"
-              style="margin-bottom: 20px"
-              @click="showTechList = true"
-              >查看技术交底</el-button
-            >
-          </div>
-          <editor
-            v-if="allContent"
-            selectorId="edit1"
-            @updateRichText="updateRichText"
-            :defaultValue="allContent"
-          />
-        </div>
-        <div class="first-right" v-if="showTechList">
-          <div class="first-right-title">
-            <div class="custom-title">技术交底</div>
-            <el-button
-              size="mini"
-              style="margin-bottom: 20px"
-              @click="showTechList = false"
-              >收起</el-button
-            >
-          </div>
-          <div class="right-content">
-            <div class="content-item">
-              <div
-                class="content-item-title"
-                @click="handleChangeStatus('techArea')"
-              >
-                <span class="right-title">
-                  1.技术领域：<span class="right-content-item">
-                    {{ detailData.techArea }}</span
-                  >
-                </span>
-                <span
-                  class="right-warning"
-                  v-if="modifiedFields && modifiedFields.includes('techArea')"
-                >
-                  <i class="el-icon-warning-outline"></i>
-                  有变动
-                </span>
-              </div>
-            </div>
-            <div class="content-item">
-              <div class="content-item-title">
-                <span class="right-title"> 2.本专利应用在哪个领域 </span>
-                <span
-                  class="right-warning"
-                  v-if="modifiedFields && modifiedFields.includes('domain')"
-                >
-                  <i class="el-icon-warning-outline"></i>
-                  有变动
-                </span>
-              </div>
-              <div
-                class="content-item-text"
-                @click="handleChangeStatus('domain')"
-              >
-                {{ (detailData.domain && detailData.domain.text) || "" }}
 
+    <div class="page-con">
+      <div class="left-tool">
+        <div
+          v-for="(item, index) in toolList"
+          @click="handleTool(index)"
+          :key="index"
+          :class="{ active: currentTool == index }"
+        >
+          {{ item }}
+        </div>
+      </div>
+      <div id="box1">
+        <div class="box1-content">
+          <div class="first-left">
+            <div class="left-title">
+              <div v-if="bigPicUrl" class="big-pic">
+                <i
+                  class="el-icon-error close-bigPic"
+                  @click="() => (bigPicUrl = '')"
+                ></i
+                >mini
+                <el-image :src="bigPicUrl"></el-image>
+              </div>
+              <div class="custom-title">说明书编辑</div>
+              <el-button
+                v-if="!showTechList"
+                size="mini"
+                style="margin-bottom: 20px"
+                @click="showTechList = true"
+                >查看技术交底</el-button
+              >
+            </div>
+            <editor
+              v-if="allContent"
+              selectorId="edit1"
+              @updateRichText="updateRichText"
+              :defaultValue="allContent"
+            />
+          </div>
+          <div class="first-right" v-if="showTechList">
+            <div class="first-right-title">
+              <div class="custom-title">技术交底</div>
+              <el-button
+                size="mini"
+                style="margin-bottom: 20px"
+                @click="showTechList = false"
+                >收起</el-button
+              >
+            </div>
+            <div class="right-content">
+              <div class="content-item">
+                <div
+                  class="content-item-title"
+                  @click="handleChangeStatus('techArea')"
+                >
+                  <span class="right-title">
+                    1.技术领域：<span class="right-content-item">
+                      {{ detailData.techArea }}</span
+                    >
+                  </span>
+                  <span
+                    class="right-warning"
+                    v-if="modifiedFields && modifiedFields.includes('techArea')"
+                  >
+                    <i class="el-icon-warning-outline"></i>
+                    有变动
+                  </span>
+                </div>
+              </div>
+              <div class="content-item">
+                <div class="content-item-title">
+                  <span class="right-title"> 2.本专利应用在哪个领域 </span>
+                  <span
+                    class="right-warning"
+                    v-if="modifiedFields && modifiedFields.includes('domain')"
+                  >
+                    <i class="el-icon-warning-outline"></i>
+                    有变动
+                  </span>
+                </div>
                 <div
                   class="file-list-tool"
                   @click="openFileList('domain')"
@@ -101,30 +107,34 @@
                     detailData.domain.recordFiles.length
                   "
                 >
-                  <div class="tool-item">
-                    <i class="el-icon-paperclip"></i>
-                    <span class="tool-label">附件列表</span>
+                  {{ (detailData.domain && detailData.domain.text) || "" }}
+
+                  <div
+                    @click="openFileList('domain')"
+                    v-if="
+                      detailData.domain.attachments.length ||
+                      detailData.domain.recordFiles.length
+                    "
+                  >
+                    <div class="tool-item">
+                      <i class="el-icon-paperclip"></i>
+                      <span class="tool-label">附件列表</span>
+                    </div>
+                    <i class="el-icon-arrow-down custom-arrow-down"></i>
                   </div>
-                  <i class="el-icon-arrow-down custom-arrow-down"></i>
                 </div>
               </div>
-            </div>
-            <div class="content-item">
-              <div class="content-item-title">
-                3.该领域存在什么痛点
-                <span
-                  class="right-warning"
-                  v-if="modifiedFields && modifiedFields.includes('painPoint')"
-                >
-                  <i class="el-icon-warning-outline"></i>
-                  有变动
-                </span>
-              </div>
-              <div
-                class="content-item-text"
-                @click="handleChangeStatus('painPoint')"
-              >
-                {{ (detailData.painPoint && detailData.painPoint.text) || "" }}
+              <div class="content-item">
+                <div class="content-item-title">
+                  3.该领域存在什么痛点
+                  <span
+                    class="right-warning"
+                    v-if="modifiedFields && modifiedFields.includes('painPoint')"
+                  >
+                    <i class="el-icon-warning-outline"></i>
+                    有变动
+                  </span>
+                </div>
                 <div
                   class="file-list-tool"
                   @click="openFileList('painPoint')"
@@ -133,36 +143,35 @@
                     detailData.painPoint.recordFiles.length
                   "
                 >
-                  <div class="tool-item">
-                    <i class="el-icon-paperclip"></i>
-                    <span class="tool-label">附件列表</span>
+                  {{ (detailData.painPoint && detailData.painPoint.text) || "" }}
+                  <div
+                    @click="openFileList('painPoint')"
+                    v-if="
+                      detailData.painPoint.attachments.length ||
+                      detailData.painPoint.recordFiles.length
+                    "
+                  >
+                    <div class="tool-item">
+                      <i class="el-icon-paperclip"></i>
+                      <span class="tool-label">附件列表</span>
+                    </div>
+                    <i class="el-icon-arrow-down custom-arrow-down"></i>
                   </div>
-                  <i class="el-icon-arrow-down custom-arrow-down"></i>
                 </div>
               </div>
-            </div>
-            <div class="content-item">
-              <div class="content-item-title">
-                4.当前是如何解决这些痛点的
-                <span
-                  class="right-warning"
-                  v-if="
-                    modifiedFields && modifiedFields.includes('currentSolution')
-                  "
-                >
-                  <i class="el-icon-warning-outline"></i>
-                  有变动
-                </span>
-              </div>
-              <div
-                class="content-item-text"
-                @click="handleChangeStatus('currentSolution')"
-              >
-                {{
-                  (detailData.currentSolution &&
-                    detailData.currentSolution.text) ||
-                  ""
-                }}
+              <div class="content-item">
+                <div class="content-item-title">
+                  4.当前是如何解决这些痛点的
+                  <span
+                    class="right-warning"
+                    v-if="
+                      modifiedFields && modifiedFields.includes('currentSolution')
+                    "
+                  >
+                    <i class="el-icon-warning-outline"></i>
+                    有变动
+                  </span>
+                </div>
                 <div
                   class="file-list-tool"
                   @click="openFileList('currentSolution')"
@@ -171,36 +180,39 @@
                     detailData.currentSolution.recordFiles.length
                   "
                 >
-                  <div class="tool-item">
-                    <i class="el-icon-paperclip"></i>
-                    <span class="tool-label">附件列表</span>
+                  {{
+                    (detailData.currentSolution &&
+                      detailData.currentSolution.text) ||
+                    ""
+                  }}
+                  <div
+                    @click="openFileList('currentSolution')"
+                    v-if="
+                      detailData.currentSolution.attachments.length ||
+                      detailData.currentSolution.recordFiles.length
+                    "
+                  >
+                    <div class="tool-item">
+                      <i class="el-icon-paperclip"></i>
+                      <span class="tool-label">附件列表</span>
+                    </div>
+                    <i class="el-icon-arrow-down custom-arrow-down"></i>
                   </div>
-                  <i class="el-icon-arrow-down custom-arrow-down"></i>
                 </div>
               </div>
-            </div>
-            <div class="content-item">
-              <div class="content-item-title">
-                5.解决这些痛点的方案所存在的且本专利要解决的问题有哪些
-                <span
-                  class="right-warning"
-                  v-if="
-                    modifiedFields && modifiedFields.includes('pendingDefect')
-                  "
-                >
-                  <i class="el-icon-warning-outline"></i>
-                  有变动
-                </span>
-              </div>
-              <div
-                class="content-item-text"
-                @click="handleChangeStatus('pendingDefect')"
-              >
-                {{
-                  (detailData.pendingDefect && detailData.pendingDefect.text) ||
-                  ""
-                }}
-
+              <div class="content-item">
+                <div class="content-item-title">
+                  5.解决这些痛点的方案所存在的且本专利要解决的问题有哪些
+                  <span
+                    class="right-warning"
+                    v-if="
+                      modifiedFields && modifiedFields.includes('pendingDefect')
+                    "
+                  >
+                    <i class="el-icon-warning-outline"></i>
+                    有变动
+                  </span>
+                </div>
                 <div
                   class="file-list-tool"
                   @click="openFileList('pendingDefect')"
@@ -209,37 +221,39 @@
                     detailData.pendingDefect.recordFiles.length
                   "
                 >
-                  <div class="tool-item">
-                    <i class="el-icon-paperclip"></i>
-                    <span class="tool-label">附件列表</span>
+                  {{
+                    (detailData.pendingDefect && detailData.pendingDefect.text) ||
+                    ""
+                  }}
+
+                  <div
+                    @click="openFileList('pendingDefect')"
+                    v-if="
+                      detailData.pendingDefect.attachments.length ||
+                      detailData.pendingDefect.recordFiles.length
+                    "
+                  >
+                    <div class="tool-item">
+                      <i class="el-icon-paperclip"></i>
+                      <span class="tool-label">附件列表</span>
+                    </div>
+                    <i class="el-icon-arrow-down custom-arrow-down"></i>
                   </div>
-                  <i class="el-icon-arrow-down custom-arrow-down"></i>
                 </div>
               </div>
-            </div>
-            <div class="content-item">
-              <div class="content-item-title">
-                6.本专利如何解决上述缺陷的？
-                <span
-                  class="right-warning"
-                  v-if="
-                    modifiedFields && modifiedFields.includes('fixDefectMethod')
-                  "
-                >
-                  <i class="el-icon-warning-outline"></i>
-                  有变动
-                </span>
-              </div>
-              <div
-                class="content-item-text"
-                @click="handleChangeStatus('fixDefectMethod')"
-              >
-                {{
-                  (detailData.fixDefectMethod &&
-                    detailData.fixDefectMethod.text) ||
-                  ""
-                }}
-
+              <div class="content-item">
+                <div class="content-item-title">
+                  6.本专利如何解决上述缺陷的？
+                  <span
+                    class="right-warning"
+                    v-if="
+                      modifiedFields && modifiedFields.includes('fixDefectMethod')
+                    "
+                  >
+                    <i class="el-icon-warning-outline"></i>
+                    有变动
+                  </span>
+                </div>
                 <div
                   class="file-list-tool"
                   @click="openFileList('fixDefectMethod')"
@@ -248,57 +262,71 @@
                     detailData.fixDefectMethod.recordFiles.length
                   "
                 >
-                  <div class="tool-item">
-                    <i class="el-icon-paperclip"></i>
-                    <span class="tool-label">附件列表</span>
-                  </div>
-                  <i class="el-icon-arrow-down custom-arrow-down"></i>
-                </div>
-              </div>
-            </div>
-            <div class="content-item">
-              <div class="content-item-title">
-                7.权利要求书
-                <span
-                  class="right-warning"
-                  v-if="modifiedFields && modifiedFields.includes('claims')"
-                >
-                  <i class="el-icon-warning-outline"></i>
-                  有变动
-                </span>
-              </div>
-              <div
-                class="content-item-text"
-                @click="handleChangeStatus('claims')"
-                v-for="(item, index) in detailData.claim"
-                :key="index"
-              >
-                <div class="claim-title">{{ index + 1 }}：{{ item.name }}</div>
-                <div class="kernel-box">
-                  <template
-                    v-for="(childItem, childIndex) in item.claimContent"
-                  >
-                    <div class="kernel-item" :key="childIndex">
-                      <div class="kernel-item-row">
-                        <div>内核{{ childIndex + 1 }}：</div>
-                        <div>{{ childItem.kernel }}</div>
-                      </div>
-                      <div class="kernel-item-note">
-                        <div>备注：</div>
-                        <div>{{ childItem.note }}</div>
-                      </div>
-                    </div>
-                  </template>
+                  {{
+                    (detailData.fixDefectMethod &&
+                      detailData.fixDefectMethod.text) ||
+                    ""
+                  }}
+
                   <div
-                    class="kernel-item-tool"
-                    v-if="detailData.claim[index].attachments.length"
+                    @click="openFileList('fixDefectMethod')"
+                    v-if="
+                      detailData.fixDefectMethod.attachments.length ||
+                      detailData.fixDefectMethod.recordFiles.length
+                    "
                   >
-                    <div @click="openClaimFileList(index)">
-                      <div class="tool-item tool-item1">
-                        <i class="el-icon-paperclip"></i>
-                        <span class="tool-label">附件列表</span>
+                    <div class="tool-item">
+                      <i class="el-icon-paperclip"></i>
+                      <span class="tool-label">附件列表</span>
+                    </div>
+                    <i class="el-icon-arrow-down custom-arrow-down"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="content-item">
+                <div class="content-item-title">
+                  7.权利要求书
+                  <span
+                    class="right-warning"
+                    v-if="modifiedFields && modifiedFields.includes('claims')"
+                  >
+                    <i class="el-icon-warning-outline"></i>
+                    有变动
+                  </span>
+                </div>
+                <div
+                  class="content-item-text"
+                  @click="handleChangeStatus('claims')"
+                  v-for="(item, index) in detailData.claim"
+                  :key="index"
+                >
+                  <div class="claim-title">{{ index + 1 }}：{{ item.name }}</div>
+                  <div class="kernel-box">
+                    <template
+                      v-for="(childItem, childIndex) in item.claimContent"
+                    >
+                      <div class="kernel-item" :key="childIndex">
+                        <div class="kernel-item-row">
+                          <div>内核{{ childIndex + 1 }}：</div>
+                          <div>{{ childItem.kernel }}</div>
+                        </div>
+                        <div class="kernel-item-note">
+                          <div>备注：</div>
+                          <div>{{ childItem.note }}</div>
+                        </div>
                       </div>
-                      <i class="el-icon-arrow-down custom-arrow-down"></i>
+                    </template>
+                    <div
+                      class="kernel-item-tool"
+                      v-if="detailData.claim[index].attachments.length"
+                    >
+                      <div @click="openClaimFileList(index)">
+                        <div class="tool-item tool-item1">
+                          <i class="el-icon-paperclip"></i>
+                          <span class="tool-label">附件列表</span>
+                        </div>
+                        <i class="el-icon-arrow-down custom-arrow-down"></i>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -306,178 +334,172 @@
             </div>
           </div>
         </div>
-      </div>
 
-      <div>
-        <div class="cut-line"></div>
-        <div class="patent-name-box">
-          <div class="patent-name-title">专利名称</div>
-          <el-button @click="updatePatentName()">添加名称至文档</el-button>
+        <div>
+          <div class="cut-line"></div>
+          <div class="patent-name-box">
+            <div class="patent-name-title">专利名称</div>
+            <el-button @click="updatePatentName()">添加名称至文档</el-button>
+          </div>
+          <el-input
+            style="max-width: 300px"
+            placeholder="请输入专利名称"
+            v-model="patentName"
+          ></el-input>
         </div>
-        <el-input
-          style="max-width: 300px"
-          placeholder="请输入专利名称"
-          v-model="patentName"
-        ></el-input>
       </div>
-    </div>
-    <div id="imgmark">
-      <div class="patent-name-box">
-        <div class="patent-name-title">附图标记</div>
-        <el-button :loading="replaceLoading" @click="replaceText('add')"
-          >替换内容</el-button
+      <div id="imgmark">
+        <div class="patent-name-box">
+          <div class="patent-name-title">附图标记</div>
+          <el-button :loading="replaceLoading" @click="replaceText('add')"
+            >替换内容</el-button
+          >
+          <el-button @click="addImgTextToRich('add')">添加标记至文档</el-button>
+        </div>
+        <!-- <div class="custom-title">附图标记</div> -->
+        <div class="custom-tips" v-if="imgMarkList.length === 0">
+          你还没有添加任何附图标记
+        </div>
+        <el-tree
+          v-else
+          style="margin-bottom: 20px"
+          :data="imgMarkList"
+          :props="defaultProps"
+          :expand-on-click-node="false"
+          :default-expand-all="true"
         >
-        <el-button @click="addImgTextToRich('add')">添加标记至文档</el-button>
-      </div>
-      <!-- <div class="custom-title">附图标记</div> -->
-      <div class="custom-tips" v-if="imgMarkList.length === 0">
-        你还没有添加任何附图标记
-      </div>
-      <el-tree
-        v-else
-        style="margin-bottom: 20px"
-        :data="imgMarkList"
-        :props="defaultProps"
-        :expand-on-click-node="false"
-        :default-expand-all="true"
-      >
-        <span class="custom-tree-node" slot-scope="{ node, data }">
-          <div class="custom-tree-row">
-            <!-- <span
-              v-if="data.nameEdit != 1"
-              @click="treeEdit(node, data, 'name')"
-              >{{ data.name }}</span
-            > -->
-            <el-input
-              v-if="data.nameEdit != 1"
-              ref="input"
-              size="mini"
-              v-model="data.name"
-              style="max-width: 100px"
-            ></el-input>
-            <el-input
-              v-if="data.nameEdit == 1"
-              ref="input"
-              size="mini"
-              @blur="() => submitEdit(node, data, 'name')"
-              v-model="labelValue"
-              style="max-width: 100px"
-            ></el-input>
-            <span
-              v-if="data.numberEdit != 1"
-              style="margin-left: 10px; color: gray"
-              >{{ data.number }}</span
-            >
-            <el-input
-              v-if="data.numberEdit == 1"
-              ref="input"
-              size="mini"
-              @blur="() => submitEdit(node, data, 'num')"
-              v-model="labelValue"
-              style="max-width: 100px"
-            ></el-input>
-            <span style="margin-left: 20px">
-              <el-button
-                type="text"
+          <span class="custom-tree-node" slot-scope="{ node, data }">
+            <div class="custom-tree-row">
+              <!-- <span
+                v-if="data.nameEdit != 1"
+                @click="treeEdit(node, data, 'name')"
+                >{{ data.name }}</span
+              > -->
+              <el-input
+                v-if="data.nameEdit != 1"
+                ref="input"
                 size="mini"
-                @click="treeEdit(node, data, 'num')"
-              >
-                添加编号
-              </el-button>
-              <el-button
-                type="text"
+                v-model="data.name"
+                style="max-width: 100px"
+              ></el-input>
+              <el-input
+                v-if="data.nameEdit == 1"
+                ref="input"
                 size="mini"
-                @click="() => handleAppendChild(node, data)"
+                @blur="() => submitEdit(node, data, 'name')"
+                v-model="labelValue"
+                style="max-width: 100px"
+              ></el-input>
+              <span
+                v-if="data.numberEdit != 1"
+                style="margin-left: 10px; color: gray"
+                >{{ data.number }}</span
               >
-                添加子集
-              </el-button>
-              <el-button
-                type="text"
+              <el-input
+                v-if="data.numberEdit == 1"
+                ref="input"
                 size="mini"
-                @click="() => handleRemoveTreeData(node, data)"
-              >
-                删除
-              </el-button>
-            </span>
-          </div>
-        </span>
-      </el-tree>
-      <span class="addimg" @click="handleImgMark">添加附图标记</span>
-    </div>
-    <div id="box2">
-      <!-- <div class="custom-title">摘要</div> -->
-      <div class="patent-name-box">
-        <div class="patent-name-title">摘要</div>
-        <el-button v-if="showMainEdit" @click="handleMainEdit"
-          >重新生成摘要</el-button
-        >
-      </div>
-      <div v-if="!showMainEdit" class="custom-tips">
-        要编辑摘要，请先填写好上方的内容，再点击下方的生成摘要按钮
-      </div>
-      <el-button v-if="!showMainEdit" @click="handleMainEdit" type="primary"
-        >生成摘要</el-button
-      >
-      <div v-show="showMainEdit" class="main-edit">
-        <editor
-          v-if="mainContent"
-          ref="mainEdit"
-          selectorId="mainEdit"
-          @updateRichText="updateMainRichText"
-          :defaultValue="mainContent"
-        />
-      </div>
-    </div>
-    <div id="box3">
-      <!-- <div class="custom-title">附图</div> -->
-      <div class="patent-name-box">
-        <div class="patent-name-title" style="line-height: 20px">附图</div>
-        <!-- <span
-          class="addimg"
-          style="margin-right: 10px"
-          @click="handleTextToRich"
-          >添加文本到文档</span
-        > -->
-        <el-button style="margin-right: 10px" @click="handleTextToRich">
-          添加文本到文档
-        </el-button>
-        <el-button @click="handleUpload"> 添加附图 </el-button>
-        <!-- <div class="main-add-img" v-if="drawings.length">
-          <span
-            class="el-icon-picture-outline"
-            style="font-size: 10px"
-            @click="handleUpload"
-          ></span>
-          <span class="addimg" @click="handleUpload">添加附图</span>
-        </div> -->
-      </div>
-      <div class="custom-tips" v-if="!drawings.length">你还没有任何附图</div>
-      <span
-        class="el-icon-picture-outline addimg"
-        v-if="!drawings.length"
-        @click="handleUpload"
-        >添加附图</span
-      >
-      <draggable v-model="drawings">
-        <transition-group>
-          <div class="img-box" v-for="(item, index) in drawings" :key="index">
-            <div :key="index" class="item-content">
-              <el-image
-                @click="handleBigPic(fileBaseUrl + item.url)"
-                class="item-img"
-                :src="fileBaseUrl + item.url"
-              ></el-image>
-              <div>{{ item.name }}</div>
+                @blur="() => submitEdit(node, data, 'num')"
+                v-model="labelValue"
+                style="max-width: 100px"
+              ></el-input>
+              <span style="margin-left: 20px">
+                <el-button
+                  type="text"
+                  size="mini"
+                  @click="treeEdit(node, data, 'num')"
+                >
+                  添加编号
+                </el-button>
+                <el-button
+                  type="text"
+                  size="mini"
+                  @click="() => handleAppendChild(node, data)"
+                >
+                  添加子集
+                </el-button>
+                <el-button
+                  type="text"
+                  size="mini"
+                  @click="() => handleRemoveTreeData(node, data)"
+                >
+                  删除
+                </el-button>
+              </span>
             </div>
-          </div>
-        </transition-group>
-      </draggable>
-    </div>
-
-    <div class="bottom-btn">
-      <el-button type="primary" @click="handleSave('submit')">提 交</el-button>
-      <el-button type="" @click="handleSave('preview')">预 览</el-button>
-      <el-button type="plain" @click="handleSave('save')">保 存</el-button>
+          </span>
+        </el-tree>
+        <span class="addimg" @click="handleImgMark">添加附图标记</span>
+      </div>
+      <div id="box2">
+        <!-- <div class="custom-title">摘要</div> -->
+        <div class="patent-name-box">
+          <div class="patent-name-title">摘要</div>
+          <el-button v-if="showMainEdit" @click="handleMainEdit"
+            >重新生成摘要</el-button
+          >
+        </div>
+        <div v-if="!showMainEdit" class="custom-tips">
+          要编辑摘要，请先填写好上方的内容，再点击下方的生成摘要按钮
+        </div>
+        <el-button v-if="!showMainEdit" @click="handleMainEdit" type="primary"
+          >生成摘要</el-button
+        >
+        <div v-show="showMainEdit" class="main-edit">
+          <editor
+            v-if="mainContent"
+            ref="mainEdit"
+            selectorId="mainEdit"
+            @updateRichText="updateMainRichText"
+            :defaultValue="mainContent"
+          />
+        </div>
+      </div>
+      <div id="box3">
+        <!-- <div class="custom-title">附图</div> -->
+        <div class="patent-name-box">
+          <div class="patent-name-title" style="line-height: 20px">附图</div>
+          <!-- <span
+            class="addimg"
+            style="margin-right: 10px"
+            @click="handleTextToRich"
+            >添加文本到文档</span
+          > -->
+          <el-button style="margin-right: 10px" @click="handleTextToRich">
+            添加文本到文档
+          </el-button>
+          <el-button @click="handleUpload"> 添加附图 </el-button>
+          <!-- <div class="main-add-img" v-if="drawings.length">
+            <span
+              class="el-icon-picture-outline"
+              style="font-size: 10px"
+              @click="handleUpload"
+            ></span>
+            <span class="addimg" @click="handleUpload">添加附图</span>
+          </div> -->
+        </div>
+        <div class="custom-tips" v-if="!drawings.length">你还没有任何附图</div>
+        <span
+          class="el-icon-picture-outline addimg"
+          v-if="!drawings.length"
+          @click="handleUpload"
+          >添加附图</span
+        >
+        <draggable v-model="drawings">
+          <transition-group>
+            <div class="img-box" v-for="(item, index) in drawings" :key="index">
+              <div :key="index" class="item-content">
+                <el-image
+                  @click="handleBigPic(fileBaseUrl + item.url)"
+                  class="item-img"
+                  :src="fileBaseUrl + item.url"
+                ></el-image>
+                <div>{{ item.name }}</div>
+              </div>
+            </div>
+          </transition-group>
+        </draggable>
+      </div>
     </div>
 
     <upload-file
@@ -578,9 +600,11 @@ export default {
                     <hr style="border: 1px solid #000; background: #000;" size="1px" width="100%">
         `,
       mainContent: ``,
+      proposalName: ''
     };
   },
   created() {
+    this.proposalName = this.$route.query.proposalName
     if (this.$route.query.id) {
       console.log("获取数据");
       this.fetchData(this.$route.query.id);
@@ -632,7 +656,7 @@ export default {
       });
     },
     handleQuit() {
-      this.$router.push({ path: "/case-list" });
+      this.$router.push({ path: "/case-list", query: { active: 'case' } });
     },
     updateRichText(data) {
       this.allContent = data.content;
@@ -1381,11 +1405,41 @@ export default {
 ::v-deep .el-tree-node .el-tree-node__content {
   height: 40px;
 }
-.rich-edit-page {
-  margin: 0 10px 100px 0;
-  padding-bottom: 100px;
-  height: 100vh;
+.header-title {
+  box-sizing: border-box;
+  height: 80px;
+  padding: 15px 0 20px 33px;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+    .icon_back {
+      cursor: pointer;
+      width: 60px;
+      &:hover {
+        color: #165DFF;
+      }
+    }
+    .title-name {
+      padding: 8px;
+      font-family: 'PingFang SC';
+      font-style: normal;
+      font-weight: 500;
+      font-size: 24px;
+      color: #1D2129;
+      width: 418px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+}
+.page-con {
+  height: calc(100vh - 154px);
   overflow-y: scroll;
+}
+.rich-edit-page {
+  margin: 0 10px 10px 0;
+  // height: 100vh;
+  // overflow-y: scroll;
   .custom-title {
     font-weight: bold;
     margin-bottom: 20px;
@@ -1527,16 +1581,13 @@ export default {
   }
 }
 .bottom-btn {
-  width: 100vw;
-  text-align: center;
-  padding: 15px 0;
-  background: #fff;
-  position: fixed;
-  z-index: 99999;
-  left: 0;
-  bottom: 0;
-  box-shadow: -2px 2px 100px gainsboro;
+  // width: 100vw;
+  // text-align: center;
+  // padding: 15px 0;
+  // background: #fff;
+  // box-shadow: -2px 2px 100px gainsboro;
   // height: 80px;
+  padding-top: 5px;
 }
 .main-edit {
   width: 100%;

@@ -6,12 +6,6 @@
                 <img src="@/assets/login_images/logo_t.svg" alt="" style="width: 33px;height: 33px">
                 <span class="title-text">DAJIA PAT</span>
             </span>
-            <!-- <el-tabs class="operator-table" v-model="activeName" @tab-click="handleClick">
-                <el-tab-pane label="用户管理" name="first">用户管理</el-tab-pane>
-                <el-tab-pane label="配置管理" name="second">配置管理</el-tab-pane>
-                <el-tab-pane label="角色管理" name="third">角色管理</el-tab-pane>
-                <el-tab-pane label="定时任务补偿" name="fourth">定时任务补偿</el-tab-pane>
-            </el-tabs> -->
             <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleMenu">
                 <el-menu-item index="work">
                     <template slot="title">
