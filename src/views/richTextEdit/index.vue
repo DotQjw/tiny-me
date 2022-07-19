@@ -100,16 +100,13 @@
                   </span>
                 </div>
                 <div
-                  class="file-list-tool"
-                  @click="openFileList('domain')"
-                  v-if="
-                    detailData.domain.attachments.length ||
-                    detailData.domain.recordFiles.length
-                  "
+                  class="content-item-text"
+                  @click="handleChangeStatus('domain')"
                 >
                   {{ (detailData.domain && detailData.domain.text) || "" }}
 
                   <div
+                    class="file-list-tool"
                     @click="openFileList('domain')"
                     v-if="
                       detailData.domain.attachments.length ||
@@ -136,15 +133,13 @@
                   </span>
                 </div>
                 <div
-                  class="file-list-tool"
-                  @click="openFileList('painPoint')"
-                  v-if="
-                    detailData.painPoint.attachments.length ||
-                    detailData.painPoint.recordFiles.length
-                  "
+                  class="content-item-text"
+                  @click="handleChangeStatus('painPoint')"
                 >
                   {{ (detailData.painPoint && detailData.painPoint.text) || "" }}
                   <div
+                                      class="file-list-tool"
+
                     @click="openFileList('painPoint')"
                     v-if="
                       detailData.painPoint.attachments.length ||
@@ -173,12 +168,8 @@
                   </span>
                 </div>
                 <div
-                  class="file-list-tool"
-                  @click="openFileList('currentSolution')"
-                  v-if="
-                    detailData.currentSolution.attachments.length ||
-                    detailData.currentSolution.recordFiles.length
-                  "
+                  class="content-item-text"
+                  @click="handleChangeStatus('currentSolution')"
                 >
                   {{
                     (detailData.currentSolution &&
@@ -186,6 +177,8 @@
                     ""
                   }}
                   <div
+                                      class="file-list-tool"
+
                     @click="openFileList('currentSolution')"
                     v-if="
                       detailData.currentSolution.attachments.length ||
@@ -214,12 +207,8 @@
                   </span>
                 </div>
                 <div
-                  class="file-list-tool"
-                  @click="openFileList('pendingDefect')"
-                  v-if="
-                    detailData.pendingDefect.attachments.length ||
-                    detailData.pendingDefect.recordFiles.length
-                  "
+                  class="content-item-text"
+                  @click="handleChangeStatus('pendingDefect')"
                 >
                   {{
                     (detailData.pendingDefect && detailData.pendingDefect.text) ||
@@ -227,6 +216,8 @@
                   }}
 
                   <div
+                                      class="file-list-tool"
+
                     @click="openFileList('pendingDefect')"
                     v-if="
                       detailData.pendingDefect.attachments.length ||
@@ -255,12 +246,8 @@
                   </span>
                 </div>
                 <div
-                  class="file-list-tool"
-                  @click="openFileList('fixDefectMethod')"
-                  v-if="
-                    detailData.fixDefectMethod.attachments.length ||
-                    detailData.fixDefectMethod.recordFiles.length
-                  "
+                  class="content-item-text"
+                  @click="handleChangeStatus('fixDefectMethod')"
                 >
                   {{
                     (detailData.fixDefectMethod &&
@@ -269,6 +256,8 @@
                   }}
 
                   <div
+                                      class="file-list-tool"
+
                     @click="openFileList('fixDefectMethod')"
                     v-if="
                       detailData.fixDefectMethod.attachments.length ||
@@ -1767,8 +1756,8 @@ export default {
   cursor: pointer;
   border-top-right-radius: 2px;
   border-bottom-right-radius: 2px;
-  line-height: 22px;
-  position: relative;
-  top: 0.5px;
+  line-height: 22.5px;
+  // position: relative;
+  // top: 0.5px;
 }
 </style>
