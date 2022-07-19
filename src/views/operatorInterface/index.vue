@@ -3,7 +3,7 @@
     <div class='operator-interface'>
         <div class="interface-header">
             <span class="title">
-                <img src="@/assets/interface_images/Z.svg" alt="">
+                <img src="@/assets/login_images/logo_t.svg" alt="" style="width: 33px;height: 33px">
                 <span class="title-text">DAJIA PAT</span>
             </span>
             <!-- <el-tabs class="operator-table" v-model="activeName" @tab-click="handleClick">
