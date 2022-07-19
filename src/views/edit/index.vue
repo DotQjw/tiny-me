@@ -36,7 +36,7 @@
       </el-col>
     </el-row>
     <div class="custom-content">
-      <div class="left-tool">
+      <div class="left-tool" v-show="activeName === 'first'">
         <div
           v-for="(item, index) in toolList"
           @click="handleTool(index)"
