@@ -27,7 +27,7 @@
                 class="el-icon-error close-bigPic"
                 @click="() => (bigPicUrl = '')"
               ></i
-              >mini
+              >
               <el-image :src="bigPicUrl"></el-image>
             </div>
             <div class="custom-title">说明书编辑</div>
