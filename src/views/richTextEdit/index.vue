@@ -94,6 +94,7 @@
                 {{ (detailData.domain && detailData.domain.text) || "" }}
 
                 <div
+                  class="file-list-tool"
                   @click="openFileList('domain')"
                   v-if="
                     detailData.domain.attachments.length ||
@@ -125,6 +126,7 @@
               >
                 {{ (detailData.painPoint && detailData.painPoint.text) || "" }}
                 <div
+                  class="file-list-tool"
                   @click="openFileList('painPoint')"
                   v-if="
                     detailData.painPoint.attachments.length ||
@@ -162,6 +164,7 @@
                   ""
                 }}
                 <div
+                  class="file-list-tool"
                   @click="openFileList('currentSolution')"
                   v-if="
                     detailData.currentSolution.attachments.length ||
@@ -199,6 +202,7 @@
                 }}
 
                 <div
+                  class="file-list-tool"
                   @click="openFileList('pendingDefect')"
                   v-if="
                     detailData.pendingDefect.attachments.length ||
@@ -237,6 +241,7 @@
                 }}
 
                 <div
+                  class="file-list-tool"
                   @click="openFileList('fixDefectMethod')"
                   v-if="
                     detailData.fixDefectMethod.attachments.length ||
@@ -1589,9 +1594,17 @@ export default {
   // margin-left: 15px;
   cursor: pointer;
   margin-top: 14px;
+  font-family: "Nunito Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
 }
-.tool-item1 {
-  margin-left: 15px;
+.file-list-tool {
+  color: #4e5969;
+  &:hover {
+    color: #165dff;
+  }
 }
 .tool-label {
   margin-left: 10px;
@@ -1647,6 +1660,10 @@ export default {
   border-top: 1px solid #e5e6eb;
   padding-bottom: 10px;
   padding-left: 10px;
+  color: #4e5969;
+  &:hover {
+    color: #165dff;
+  }
 }
 .claim-title {
   color: #1d2129;
@@ -1695,9 +1712,12 @@ export default {
 .custom-arrow-down {
   display: inline-block;
   background: #f2f3f5;
-  padding: 8px 11px;
+  padding: 5px 11px;
   cursor: pointer;
   border-top-right-radius: 2px;
   border-bottom-right-radius: 2px;
+  line-height: 22px;
+  position: relative;
+  top: 0.5px;
 }
 </style>

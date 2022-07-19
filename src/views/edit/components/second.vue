@@ -10,6 +10,7 @@
           <span class="right-label-title"> 本专利应用在哪个领域？ </span>
           <span class="right-tool">
             <span
+              class="file-list-tool"
               v-if="
                 formData.domain.recordFiles.length ||
                 formData.domain.attachments.length
@@ -46,6 +47,7 @@
           <span>该领域存在什么痛点？</span>
           <span class="right-tool">
             <span
+              class="file-list-tool"
               v-if="
                 formData.painPoint.recordFiles.length ||
                 formData.painPoint.attachments.length
@@ -82,6 +84,7 @@
           <span>当前是如何解决这些痛点的？</span>
           <span class="right-tool">
             <span
+              class="file-list-tool"
               v-if="
                 formData.currentSolution.recordFiles.length ||
                 formData.currentSolution.attachments.length
@@ -118,6 +121,7 @@
           <span>解决这些痛点的方案所存在的且本专利要解决的缺陷有哪些？</span>
           <span class="right-tool">
             <span
+              class="file-list-tool"
               v-if="
                 formData.pendingDefect.recordFiles.length ||
                 formData.pendingDefect.attachments.length
@@ -311,9 +315,18 @@ export default {
     display: inline-block;
     padding: 5px 16px;
     background: #f2f3f5;
+    font-family: "Nunito Sans";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 22px;
+    color: #4e5969;
     margin-left: 10px;
     border-radius: 2px;
     cursor: pointer;
+    &:hover {
+      color: #165dff;
+    }
   }
   .tool-label {
     margin-left: 10px;
@@ -326,22 +339,39 @@ export default {
 .custom-arrow-down {
   display: inline-block;
   background: #f2f3f5;
-  line-height: 28px;
+  line-height: 22px;
   border-top-right-radius: 2px;
   border-bottom-right-radius: 2px;
-  padding: 0 11px;
+  padding: 5px 11px;
   cursor: pointer;
+  position: relative;
+  top: 0.5px;
 }
 .tool-item-file-list {
   display: inline-block;
-  padding: 0 20px;
+  padding: 5px 16px;
   line-height: 28px;
   background: #f2f3f5;
   margin-left: 10px;
   border-top-left-radius: 2px;
   border-bottom-left-radius: 2px;
   cursor: pointer;
+  font-family: "Nunito Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  // color: #4e5969;
   border-right: 1px solid #e5e6eb;
+  &:hover {
+    color: #165dff;
+  }
+}
+.file-list-tool {
+    color: #4e5969;
+  &:hover {
+    color: #165dff !important;
+  }
 }
 .right-label-title {
   position: relative;

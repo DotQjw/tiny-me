@@ -10,6 +10,7 @@
           <span class="right-label-title">本专利如何解决上述缺陷的？</span>
           <span class="right-tool">
             <span
+              class="file-list-tool"
               v-if="
                 formData.fixDefectMethod.recordFiles.length ||
                 formData.fixDefectMethod.attachments.length
@@ -204,6 +205,15 @@ export default {
     margin-left: 10px;
     cursor: pointer;
     border-radius: 2px;
+    font-family: "Nunito Sans";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 22px;
+    color: #4e5969;
+    &:hover {
+      color: #165dff;
+    }
   }
   .tool-label {
     margin-left: 10px;
@@ -213,15 +223,17 @@ export default {
 .custom-arrow-down {
   display: inline-block;
   background: #f2f3f5;
-  line-height: 28px;
+  line-height: 22px;
   border-top-right-radius: 2px;
   border-bottom-right-radius: 2px;
-  padding: 0 11px;
+  padding: 5px 11px;
   cursor: pointer;
+  position: relative;
+  top: 0.5px;
 }
 .tool-item-file-list {
   display: inline-block;
-  padding: 0 20px;
+  padding: 5px 20px;
   line-height: 28px;
   background: #f2f3f5;
   margin-left: 10px;
@@ -229,6 +241,25 @@ export default {
   border-bottom-left-radius: 2px;
   cursor: pointer;
   border-right: 1px solid #e5e6eb;
+  font-family: "Nunito Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  font-family: "Nunito Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  &:hover {
+    color: #165dff;
+  }
+}
+.file-list-tool {
+  color: #4e5969;
+  &:hover {
+    color: #165dff !important;
+  }
 }
 .right-label-title {
   position: relative;
