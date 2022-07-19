@@ -47,6 +47,7 @@
       :height="pgaeHeight"
       fit
       style="wdith: 100%; cursor: pointer; background: #f8f8f8"
+      class="p1-table"
       @row-click="rowClick"
     >
       <el-table-column prop="caseNo" label="客户案号">
@@ -386,6 +387,13 @@ export default {
 .el-table td,
 .el-table th {
   vertical-align: text-top;
+}
+.p1-table{
+  .el-table__body-wrapper {
+    tbody {
+      vertical-align: top;
+    }
+  }
 }
 </style>
 <style lang="scss" scoped>
