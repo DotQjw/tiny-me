@@ -3,7 +3,7 @@
     <div class="page-main">
       <div class="title">
         <img src="@/assets/work_images/star.svg" alt="" />
-        <span>背景技术</span>
+        <span>方案概述</span>
       </div>
       <div class="box step3">
         <div class="custom-label">

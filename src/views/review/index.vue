@@ -133,7 +133,7 @@ export default {
       if (this.$store.getters.roles === 1) {
         this.$router.push({ path: "/data-list", query: { active: 'case' } });
       } else {
-        this.$router.push({ path: "/case-list" });
+        this.$router.push({ path: "/case-list", query: { active: 'case' } });
       }
     },
   },
@@ -157,6 +157,9 @@ export default {
     .icon_back {
       cursor: pointer;
       width: 60px;
+      &:hover {
+        color: #165DFF;
+      }
     }
     .title-name {
       padding: 8px;

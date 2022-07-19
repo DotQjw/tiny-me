@@ -156,7 +156,7 @@ export default {
                 this.$router.push({ path: "/interface" });
               } else {
                 console.log('走i这里')
-                this.$router.push({ path: "/case-list" });
+                this.$router.push({ path: "/case-list", query: {active: 'case'}});
               }
               this.loading = false;
             })
