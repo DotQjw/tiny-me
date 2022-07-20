@@ -28,7 +28,7 @@ export default {
   overflow: hidden;
   height: 100%;
   min-width: 1440px;
-  overflow-y: scroll;
+  /* overflow-y: scroll; */
 }
 .fixed-header + .app-main {
   padding-top: 50px;
