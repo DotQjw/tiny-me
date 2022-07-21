@@ -324,9 +324,16 @@
                   :on-success="handleSuccess"
                   :before-upload="(file) => beforeUpload(file, scope.row)"
                 > -->
-                  <el-button size="small" class="el-icon-plus" @click="handleUpload(scope.row)"
-                    >点击上传</el-button
+                  <span
+                    class="file-list-tool"
+                    @click="handleUpload(scope.row)"
                   >
+                    <span class="tool-item-file-list">
+                      <i class="el-icon-paperclip"></i>
+                      <span class="tool-label">点击上传</span>
+                    </span>
+                    <i class="el-icon-arrow-down custom-arrow-down"></i>
+                  </span>
                 <!-- </el-upload> -->
 
                 <el-input
@@ -1108,6 +1115,30 @@ export default {
   }
 }
 
+.tool-item-file-list {
+  display: inline-block;
+  padding: 5px 20px;
+  line-height: 28px;
+  background: #f2f3f5;
+  margin-left: 10px;
+  border-top-left-radius: 2px;
+  border-bottom-left-radius: 2px;
+  cursor: pointer;
+  border-right: 1px solid #e5e6eb;
+  font-family: "Nunito Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  font-family: "Nunito Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  &:hover {
+    color: #165dff;
+  }
+}
 
 // .fisrt-check-row{
 //   position: relative;
@@ -1139,5 +1170,25 @@ export default {
 .kernel-delete {
   color: red;
   cursor: pointer;
+}
+.file-list-tool {
+  color: #4e5969;
+  &:hover {
+    color: #165dff !important;
+  }
+  .tool-label {
+    margin-left: 10px;
+  }
+}
+.custom-arrow-down {
+  display: inline-block;
+  background: #f2f3f5;
+  line-height: 22px;
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
+  padding: 5px 11px;
+  cursor: pointer;
+  position: relative;
+  top: 0.5px;
 }
 </style>
