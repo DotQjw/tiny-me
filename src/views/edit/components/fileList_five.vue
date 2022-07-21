@@ -32,6 +32,20 @@
               ></span>
             </span>
           </div>
+          <el-upload
+              class="upload-input"
+              :action="uploadUrl"
+              :headers="{
+                Authorization: `Bearer ${token}`,
+              }"
+              :on-success="handleSuccess"
+              :show-file-list="false"
+              :before-upload="beforeUpload"
+              drag
+            >
+              <i style="margin-top: 10px" class="el-icon-plus"></i>
+              <div class="el-upload__text">继续上传</div>
+            </el-upload>
         </div>
         <div v-else>还没有上传文件</div>
       </div>
@@ -164,5 +178,16 @@ export default {
 }
 .recording {
   color: #67c23a;
+}
+.upload-input {
+  height: 100px;
+  ::v-deep .el-upload {
+    width: 100%; 
+    .el-upload-dragger {
+      height: 78px !important;
+      width: 100%;
+      background: #f7f8fa;
+    }
+  }
 }
 </style>

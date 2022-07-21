@@ -86,10 +86,10 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="" width="720">
+          <el-table-column prop="" width="770">
              <template slot="header">
               <el-row class="card-head">
-                <el-col style="width: 370px">内核</el-col>
+                <el-col style="width: 506px">内核</el-col>
                 <el-col style="width: 60px">必经</el-col>
                 <el-col style="width: 60px">可视</el-col>
                 <el-col style="width: 60px">逻辑</el-col>
@@ -98,7 +98,7 @@
             </template>
             <template slot-scope="scope">
               <span v-for="(item, index) in scope.row.claimContent" :key="index" class="operation">
-                <span style="width: 370px">
+                <span style="width: 506px">
                   <div
                     @mouseenter="
                       kernelMouseEnter(item, index, scope.row.claimContent)
@@ -144,7 +144,7 @@
                   </div>
                 </div>
                 <div class="note-row" style="width: 60px">
-                  <div class="note_box">
+                  <div class="note_box" :title="item.note">
                     <img src="@/assets/work_images/flag.svg" alt="" class="note_icon" v-if="item.note === ''" @click="openNote(item, index)">
                     <img src="@/assets/work_images/flag_active.svg" class="note_icon" alt="" v-else @click="openNote(item, index)">
                   </div>
@@ -312,7 +312,7 @@
               </div>
             </template>
           </el-table-column> -->
-          <el-table-column prop="" label="有益效果">
+          <el-table-column prop="" label="有益效果" width="315">
             <template slot-scope="scope">
               <span class="main-upload">
                 <!-- <el-upload
@@ -887,15 +887,25 @@ export default {
 };
 </script>
 <style lang="scss">
+.page_five {
+  width: 1465px;
+  margin: 0 auto;
+  .el-table td,
+  .el-table th {
+    vertical-align: inherit !important;
+    // position: absolute;
+    // top:5px;
+  }
+  .table_header {
+    .cell {
+      box-sizing: border-box;
+    }
+}
+}
 .el-table {
   position: relative;
 }
-.el-table td,
-.el-table th {
-  vertical-align: inherit !important;
-  // position: absolute;
-  // top:5px;
-}
+
 .el-textarea__inner:focus {
   border: 1px solid #165dff !important;
 }
@@ -959,6 +969,9 @@ export default {
     .dialog-con {
       padding: 26px 18px;
       .el-textarea {
+        textarea {
+          height: 120px;
+        }
         .el-textarea__inner {
           margin: 0;
         }
@@ -975,8 +988,8 @@ export default {
 }
 .card-head {
   // padding: 15px;
-  box-sizing: border-box;
   div {
+    box-sizing: border-box;
     padding: 0 10px;
     &:first-child {
       padding-left: 0;
@@ -1089,16 +1102,11 @@ export default {
   // position: absolute;
   // top: 40px;
 }
-// .note_box {
-//   height: 144px;
-//   position: relative;
-//   top: -20px;
-//   .note_icon {
-//     cursor: pointer;
-//     position: absolute;
-//     top: 30px;
-//   }
-// }
+.note_box {
+  img {
+    cursor: pointer;
+  }
+}
 
 
 // .fisrt-check-row{
