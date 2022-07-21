@@ -23,7 +23,6 @@ router.beforeEach(async (to, from, next) => {
   // const hasToken = localStorage.getItem("token");
   if (hasToken) {
     if (to.path === "/login") {
-      // if is logged in, redirect to the home page
       if (store.getters.roles === 1) {
         next({ path: "/data-list" });
       } else {
