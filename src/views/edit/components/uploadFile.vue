@@ -123,11 +123,15 @@ export default {
         "excel",
         "xls",
         "xlsx",
+        "dwg",
+        "stp",
+        "rar",
+        "zip",
       ];
       const typeLimit = typeList.includes(fileNameType);
       if (!typeLimit) {
         this.$message.warning(
-          "只能上传格式为doc，docx，pdf，jpg，jpeg，png，excel，xls，xlsx的文件"
+          "只能上传格式为doc,docx,pdf,jpg,jpeg,png,excel,xls,xlsx,dwg,stp,rar,zip的文件"
         );
         return false;
       }
