@@ -43,7 +43,7 @@
       </div>
       <div class="box">
         <div class="custom-label">
-          <span>该领域存在什么痛点？</span>
+          <span class="right-label-title">该领域存在什么痛点？</span>
           <span class="right-tool">
             <span
               v-if="
@@ -79,7 +79,7 @@
       </div>
       <div class="box">
         <div class="custom-label">
-          <span>当前是如何解决这些痛点的？</span>
+          <span class="right-label-title">当前是如何解决这些痛点的？</span>
           <span class="right-tool">
             <span
               v-if="
@@ -115,7 +115,7 @@
       </div>
       <div class="box">
         <div class="custom-label">
-          <span>解决这些痛点的方案所存在的且本专利要解决的缺陷有哪些？</span>
+          <span class="right-label-title">解决这些痛点的方案所存在的且本专利要解决的缺陷有哪些？</span>
           <span class="right-tool">
             <span
               v-if="

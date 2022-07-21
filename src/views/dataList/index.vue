@@ -1,5 +1,5 @@
 <template>
-  <div class="page">
+  <div class="page-data">
     <div class="title-box">
       <div class="page-title">
         <div class="title-text">案件管理</div>
@@ -384,20 +384,18 @@ export default {
 };
 </script>
 <style lang="scss">
-.el-table td,
-.el-table th {
-  vertical-align: text-top;
+.page-data .el-table tbody {
+  vertical-align: top;
 }
-.p1-table{
-  .el-table__body-wrapper {
-    tbody {
-      vertical-align: top;
+.page-data {
+    .el-table td,
+    .el-table th {
+      vertical-align: inherit !important;
     }
-  }
 }
 </style>
 <style lang="scss" scoped>
-.page {
+.page-data {
   &-title {
     font-weight: bold;
     font-size: 18px;
@@ -498,6 +496,13 @@ export default {
       background: #fff;
       ::v-deep .el-tabs__header {
         margin: 0;
+      }
+      ::v-deep .el-tabs__item.is-active {
+        color: #165DFF;
+        border-left: 1px solid #E4E7ED;
+      }
+      ::v-deep .el-tabs__item:hover {
+        color: #165DFF;
       }
     }
   }
