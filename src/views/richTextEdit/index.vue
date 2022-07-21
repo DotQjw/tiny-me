@@ -13,8 +13,8 @@
         <div class="title-name" :title="proposalName">{{proposalName}}</div>
       </div>
       <div class="bottom-btn">
-        <el-button type="info" plain @click="handleSave('save')" style="color: #1D2129;">保 存</el-button>
-        <el-button type="info" plain @click="handleSave('preview')" style="color: #1D2129;">预 览</el-button>
+        <el-button @click="handleSave('save')" style="color: #1D2129;">保 存</el-button>
+        <el-button @click="handleSave('preview')" style="color: #1D2129;">预 览</el-button>
         <el-button type="primary" @click="handleSave('submit')">提交审核</el-button>
       </div>
     </div>
@@ -552,7 +552,7 @@ export default {
       typeLabel: "", //类型。1.发明 2。实用新型
       showTechList: true,
       detailData: {},
-      toolList: ["撰写", "摘要", "附图", "预览"],
+      toolList: ["正文", "摘要", "附图", "预览"],
       currentTool: 0,
       showMainEdit: false,
       allContent: "",
@@ -1388,10 +1388,12 @@ export default {
 .header-title {
   box-sizing: border-box;
   height: 80px;
-  padding: 15px 0 20px 33px;
+  padding: 15px 33px 20px 33px;
   display: flex;
   justify-content: space-between;
   width: 100%;
+  background-color: #fff;
+  border-bottom: 1px solid rgba(0,0,0, 0.08);
     .icon_back {
       cursor: pointer;
       width: 60px;
@@ -1413,11 +1415,12 @@ export default {
     }
 }
 .page-con {
-  height: calc(100vh - 154px);
+  height: calc(100vh - 144px);
   overflow-y: scroll;
+  padding: 0 40px;
 }
 .rich-edit-page {
-  margin: 0 10px 10px 0;
+  // margin: 0 10px 10px 0;
   // height: 100vh;
   // overflow-y: scroll;
   .custom-title {
@@ -1522,6 +1525,7 @@ export default {
   // box-shadow: -2px 2px 100px gainsboro;
   border: 1px solid #f2f3f5;
   padding: 24px;
+  margin-bottom: 20px;
 }
 .main-add-img {
   display: inline-block;

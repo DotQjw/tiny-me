@@ -557,7 +557,7 @@ export default {
     overflow-y: scroll;
     width: 100%;
     .table-content {
-      width: 70%;
+      width: 90%;
       min-width: 900px;
       margin: 0 auto;
     }
@@ -571,6 +571,7 @@ export default {
     // position: absolute;
     // bottom: 0;
     // z-index: 2;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
     background: #fff;
   }
 }
