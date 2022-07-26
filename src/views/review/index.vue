@@ -5,7 +5,7 @@
       <div @click="gotoList" class="icon_back"><i class="el-icon-arrow-left"></i>返回</div>
       <div class="title-name" :title="proposalName">{{proposalName}}</div>
     </div>
-    <div v-if="!fetchDataLoading">
+    <div v-if="!fetchDataLoading" style="background-color: #fff">
       <div style="float: right; margin-bottom: 20px" v-if="type === 'review'">
         <el-button type="plain" @click="handleWord()" :loading="downloading">下载文档</el-button>
         <el-button type="danger" @click="handleReview('nopass')"
@@ -154,6 +154,7 @@ export default {
   box-sizing: border-box;
   height: 80px;
   padding: 15px 0 20px 33px;
+  background-color: #fff;
     .icon_back {
       cursor: pointer;
       width: 60px;

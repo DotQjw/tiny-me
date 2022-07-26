@@ -4,7 +4,7 @@
       <div class="bg_text">
         <div class="title">
           <img src="@/assets/login_images/logo_s.svg" alt="">
-          <span>DAJIA PAT</span>
+          <span>大贾知本</span>
         </div>
         <div class="b_text">
           引导式流程
@@ -26,12 +26,12 @@
         <div class="icon">
           <img src="@/assets/login_images/logo_b.svg" alt="">
         </div>
-        <h3 class="title">欢迎使用 DAJIA PAT</h3>
+        <h3 class="title">欢迎使用大贾知本</h3>
       </div>
 
       <el-form-item prop="username">
         <!-- <span class="svg-container">
-        </span> -->
+        </span> --> 
         <el-input
           auto-complete="new-password"
           v-model="loginForm.username"
@@ -96,6 +96,9 @@
         <span><i class="el-icon-chat-line-round" style="font-size: 16px;margin-right: 8px"></i>联系客服使用本产品</span>
       </div>
     </el-form>
+    <div class="login-btm">
+      <span>Copyright 2022 Dajiazhiben Technology. All Rights Reserved. 深圳大贾知本科技有限公司 版权所有 备案/许可证编号为：<a href="https://beian.miit.gov.cn">粤ICP备2022091282号-1</a></span>
+    </div>
   </div>
 </template>
 
@@ -313,6 +316,9 @@ $cursor: #fff;
         background-color: #fff;
         right: 12px;
       }
+      &:focus-within {
+        border: 1px solid #409EFF;
+      }
       // input {
       //   background: transparent;
       //   border: 0px;
@@ -352,6 +358,15 @@ $cursor: #fff;
         cursor: pointer;
       }
     }
+  }
+  .login-btm {
+    position: absolute;
+    bottom: 0;
+    font-size: 14px;
+    display: flex;
+    text-align: center;
+    line-height: 22px;
+    color: #999999;
   }
 }
 </style>

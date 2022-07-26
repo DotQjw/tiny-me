@@ -63,7 +63,7 @@
                   >
                 </div>
                 <div v-else class="child-name">
-                  <div>
+                  <div style="width: 240px">
                     <span
                       >根据
                       <!-- <span style="color: #165dff">权利要求</span> -->
@@ -326,13 +326,18 @@
                 > -->
                   <span
                     class="file-list-tool"
+                    v-if="scope.row.attachments.length"
                     @click="handleUpload(scope.row)"
                   >
                     <span class="tool-item-file-list">
                       <i class="el-icon-paperclip"></i>
-                      <span class="tool-label">点击上传</span>
+                      <span class="tool-label">附件列表</span>
                     </span>
                     <i class="el-icon-arrow-down custom-arrow-down"></i>
+                  </span>
+                  <span v-else class="tool-item" @click="openUploadFile(scope.row)">
+                    <i class="el-icon-upload2"></i>
+                    <span class="tool-label">上传附件</span>
                   </span>
                 <!-- </el-upload> -->
 
@@ -483,9 +488,16 @@
       <el-button @click="saveData('last')">上一步</el-button>
       <el-button @click="saveData('save')">保 存</el-button>
     </div> -->
+    <upload-file
+      v-if="showUpload"
+      :show.sync="showUpload"
+      :maxIndex="maxIndex"
+      @uploadFile="uploadFile"
+    />
     <file-list
       :fileList="currentFileList"
       v-if="showFileList"
+      @uploadFile="uploadFile"
       :show.sync="showFileList"
     />
   </div>
@@ -493,9 +505,9 @@
 <script>
 import { cloneDeep } from "lodash";
 import { getToken } from "@/utils/auth";
-import { uploadFile } from "@/api/upload";
 import { uploadFileUrl, baseUrl } from "@/utils/baseUrl";
 import fileList from "./fileList_five";
+import uploadFile from "./uploadFile";
 //  不支持import 语法，也就是module引入
 const jsDiff = require('diff');
 export default {
@@ -506,7 +518,8 @@ export default {
     },
   },
   components: {
-    fileList
+    fileList,
+    uploadFile
   },
   watch: {
     realIndex(n) {
@@ -556,7 +569,13 @@ export default {
       dialogNote: false,
       showFileList: false,
       currentFileList: [],
-      noteObj: {}
+      noteObj: {},
+      maxIndex: 0,
+      showUpload: false,
+      formData: {
+        id: this.id || "001",
+        idea: this.idea,
+      },
     };
   },
   created() {
@@ -885,11 +904,31 @@ export default {
       this.fileData = { size, name };
       this.uploadFileRow = row;
     },
-    handleUpload(value) {
+    // uploadRecord(data) {
+    //   this.template[this.recordType]["recordFiles"].push(data);
+    //   this.saveData("autoFile");
+
+    //   console.log("formData", this.template[this.recordType]["recordFiles"]);
+    // },
+    uploadFile(data) {
+      this.template.attachments.push(data);
+      this.saveData("autoFile");
+
+      console.log(
+        "formData",
+        this.template.attachments
+      );
+    },
+    handleUpload() {
       this.showFileList = true
-      this.currentFileList = value.attachments
-      console.log('bbb', this.fileList);
-    }
+      this.currentFileList = this.template.attachments
+      this.saveData()
+    },
+    openUploadFile() {
+      this.maxIndex = this.template.attachments.length + 1;
+      this.showUpload = true;
+      this.saveData()
+    },
   },
 };
 </script>
@@ -938,7 +977,7 @@ export default {
     }
   }
   .child-input {
-    max-width: 120px;
+    max-width: 200px;
     .el-input__inner {
       padding: 0 3px;
       border: 1px solid #fff !important;

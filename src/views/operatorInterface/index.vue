@@ -4,7 +4,7 @@
         <div class="interface-header">
             <span class="title">
                 <img src="@/assets/login_images/logo_t.svg" alt="" style="width: 33px;height: 33px">
-                <span class="title-text">DAJIA PAT</span>
+                <span class="title-text">大贾知本</span>
             </span>
             <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleMenu">
                 <el-menu-item index="work">

@@ -38,7 +38,7 @@ module.exports = {
       "/": {
         ws: true,
         // target:"http://8.129.8.125:8080",
-        target: "http://120.76.247.78:8781",
+        target: "https://www.dajiapat.com/",
         changeOrigin: true,
       },
     },

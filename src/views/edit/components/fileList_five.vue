@@ -54,7 +54,9 @@
 </template>
 <script>
 import { audioToText } from "@/api/table";
-import { baseUrl } from "@/utils/baseUrl";
+import { baseUrl, uploadFileUrl } from "@/utils/baseUrl";
+import { getToken } from "@/utils/auth";
+
 
 export default {
   props: {
@@ -75,6 +77,8 @@ export default {
       activeName: "1",
       audioSrc: "",
       baseUrl: baseUrl(),
+      uploadUrl: uploadFileUrl(),
+      token: this.$store.getters.token || getToken(),
     };
   },
   created() {
@@ -131,6 +135,57 @@ export default {
     },
     handleClose() {
       this.$emit("update:show", false);
+    },
+    beforeUpload(file) {
+      this.filename = file.name;
+      const fileNameType = file.name.split(".")[1];
+      const typeList = [
+        "doc",
+        "docx",
+        "pdf",
+        "jpg",
+        "jpeg",
+        "png",
+        "excel",
+        "xls",
+        "xlsx",
+        "dwg",
+        "stp",
+        "rar",
+        "zip"
+      ];
+      if (!typeList.includes(fileNameType)) {
+        this.$message.warning(
+          "只能上传格式为doc,docx,pdf,jpg,jpeg,png,excel,xls,xlsx,dwg,stp,rar,zip的文件"
+        );
+        return false
+      }
+      let fileSize = file.size < 1024 * 1024 * 100;
+      if (!fileSize) {
+        this.$message.warning("文件大小不能超过100M");
+        return false
+      }
+    },
+    handleSuccess(res, file, fileList) {
+      console.log({ res, file, fileList });
+      if (res.code === 0) {
+        this.$message.success("文件上传成功");
+        this.$emit("uploadFile", {
+          name: this.filename,
+          url: res.data.url,
+          size: file.size,
+        });
+      } else if (res.code === 20103) {
+        this.$confirm("登录过期,请重新登录", "提示", {
+          confirmButtonText: "重新登录",
+          cancelButtonText: "取消",
+          type: "warning",
+        }).then(() => {
+          store.dispatch("user/resetToken").then(() => {
+            location.reload();
+          });
+        });
+      }
     },
   },
 };
