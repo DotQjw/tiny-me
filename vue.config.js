@@ -64,15 +64,6 @@ module.exports = {
         }),
       ],
     },
-    minimizer: [
-      new TerserPlugin({
-        terserOptions: {
-          compress: {
-            drop_console: true,
-          },
-        },
-      }),
-    ],
     resolve: {
       alias: {
         "@": resolve("src"),
