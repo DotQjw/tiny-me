@@ -264,7 +264,7 @@ export default {
   computed: {
     tableHeight() {
       const page = document.documentElement.clientHeight;
-      const height = page - 275;
+      const height = page - 245;
       return height;
     }
   },
