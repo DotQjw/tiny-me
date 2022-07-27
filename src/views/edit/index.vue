@@ -78,10 +78,11 @@
             />
           </div>
         </div>
-        <div v-show="activeName === 'second'">
+        <div v-if="activeName === 'second'">
           <five
             @saveData="saveData"
             :claimData="formData.claim"
+            :id="formData.id"
             ref="five"
           />
         </div>
