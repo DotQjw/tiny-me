@@ -211,6 +211,7 @@
                   class="good-input"
                   type="textarea"
                   :autosize="{ minRows: 1 }"
+                  :ref="`effectInputType${scope.$index}`"
                   @input="nameInputChange($event, scope.row, 'goodEffect')"
                   v-model="scope.row.goodEffect"
                 ></el-input>
@@ -333,6 +334,12 @@ export default {
       this.$refs.inputType.map(item => {
         this.$nextTick(() => {
           item.resizeTextarea()
+          // this.$refs.effectInputType.resizeTextarea()
+        })
+      })
+      this.claims.map((i, index) => {
+        this.$nextTick(() => {
+          this.$refs[`effectInputType${index}`].resizeTextarea()
         })
       })
     },0)
