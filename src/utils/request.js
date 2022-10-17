@@ -5,7 +5,7 @@ import "nprogress/nprogress.css"; //css美化进度条
 import store from "@/store";
 import { getToken } from "@/utils/auth";
 
-// create an axios instance
+// create an axios instance 1 => 2 => 3 => 4 => 5 => 6 => 7 => 8 => 1 =>2 => 3 =>4
 const service = axios.create({
   baseURL: "http://8.129.8.125:8080/", // url = base url + request url
   // baseURL:"http://120.76.247.78:8781/",
