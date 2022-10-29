@@ -7,9 +7,9 @@ import { getToken } from "@/utils/auth";
 
 // create an axios instance
 const service = axios.create({
-  // baseURL: "http://8.129.8.125:8080/", // url = base url + request url
+  baseURL: "http://8.129.8.125:8080/", // url = base url + request url
   // baseURL:"http://120.76.247.78:8781/",
-  baseURL:"https://www.dajiapat.com/",
+  // baseURL:"https://www.dajiapat.com/",
   // withCredentials: true, // send cookies when cross-domain requests
   timeout: 300000, // request timeout
 });

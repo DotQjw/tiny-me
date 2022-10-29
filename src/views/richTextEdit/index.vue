@@ -9,13 +9,21 @@
     </el-breadcrumb> -->
     <div class="header-title">
       <div>
-        <div @click="gotoIndex" class="icon_back"><i class="el-icon-arrow-left"></i>返回</div>
-        <div class="title-name" :title="proposalName">{{proposalName}}</div>
+        <div @click="gotoIndex" class="icon_back">
+          <i class="el-icon-arrow-left"></i>返回
+        </div>
+        <div class="title-name" :title="proposalName">{{ proposalName }}</div>
       </div>
       <div class="bottom-btn">
-        <el-button @click="handleSave('save')" style="color: #1D2129;">保 存</el-button>
-        <el-button @click="handleSave('preview')" style="color: #1D2129;">预 览</el-button>
-        <el-button type="primary" @click="handleSave('submit')">提交审核</el-button>
+        <el-button @click="handleSave('save')" style="color: #1d2129"
+          >保 存</el-button
+        >
+        <el-button @click="handleSave('preview')" style="color: #1d2129"
+          >预 览</el-button
+        >
+        <el-button type="primary" @click="handleSave('submit')"
+          >提交审核</el-button
+        >
       </div>
     </div>
 
@@ -109,8 +117,9 @@
                     class="file-list-tool"
                     @click="openFileList('domain')"
                     v-if="
-                      detailData.domain.attachments.length ||
-                      detailData.domain.recordFiles.length
+                      detailData.domain &&
+                      (detailData.domain.attachments.length ||
+                        detailData.domain.recordFiles.length)
                     "
                   >
                     <div class="tool-item">
@@ -126,7 +135,9 @@
                   3.该领域存在什么痛点
                   <span
                     class="right-warning"
-                    v-if="modifiedFields && modifiedFields.includes('painPoint')"
+                    v-if="
+                      modifiedFields && modifiedFields.includes('painPoint')
+                    "
                   >
                     <i class="el-icon-warning-outline"></i>
                     有变动
@@ -136,14 +147,16 @@
                   class="content-item-text"
                   @click="handleChangeStatus('painPoint')"
                 >
-                  {{ (detailData.painPoint && detailData.painPoint.text) || "" }}
+                  {{
+                    (detailData.painPoint && detailData.painPoint.text) || ""
+                  }}
                   <div
-                                      class="file-list-tool"
-
+                    class="file-list-tool"
                     @click="openFileList('painPoint')"
                     v-if="
-                      detailData.painPoint.attachments.length ||
-                      detailData.painPoint.recordFiles.length
+                      detailData.painPoint &&
+                      (detailData.painPoint.attachments.length ||
+                        detailData.painPoint.recordFiles.length)
                     "
                   >
                     <div class="tool-item">
@@ -160,7 +173,8 @@
                   <span
                     class="right-warning"
                     v-if="
-                      modifiedFields && modifiedFields.includes('currentSolution')
+                      modifiedFields &&
+                      modifiedFields.includes('currentSolution')
                     "
                   >
                     <i class="el-icon-warning-outline"></i>
@@ -177,12 +191,12 @@
                     ""
                   }}
                   <div
-                                      class="file-list-tool"
-
+                    class="file-list-tool"
                     @click="openFileList('currentSolution')"
                     v-if="
-                      detailData.currentSolution.attachments.length ||
-                      detailData.currentSolution.recordFiles.length
+                      detailData.currentSolution &&
+                      (detailData.currentSolution.attachments.length ||
+                        detailData.currentSolution.recordFiles.length)
                     "
                   >
                     <div class="tool-item">
@@ -211,17 +225,18 @@
                   @click="handleChangeStatus('pendingDefect')"
                 >
                   {{
-                    (detailData.pendingDefect && detailData.pendingDefect.text) ||
+                    (detailData.pendingDefect &&
+                      detailData.pendingDefect.text) ||
                     ""
                   }}
 
                   <div
-                                      class="file-list-tool"
-
+                    class="file-list-tool"
                     @click="openFileList('pendingDefect')"
                     v-if="
-                      detailData.pendingDefect.attachments.length ||
-                      detailData.pendingDefect.recordFiles.length
+                      detailData.pendingDefect &&
+                      (detailData.pendingDefect.attachments.length ||
+                        detailData.pendingDefect.recordFiles.length)
                     "
                   >
                     <div class="tool-item">
@@ -238,7 +253,8 @@
                   <span
                     class="right-warning"
                     v-if="
-                      modifiedFields && modifiedFields.includes('fixDefectMethod')
+                      modifiedFields &&
+                      modifiedFields.includes('fixDefectMethod')
                     "
                   >
                     <i class="el-icon-warning-outline"></i>
@@ -256,12 +272,12 @@
                   }}
 
                   <div
-                                      class="file-list-tool"
-
+                    class="file-list-tool"
                     @click="openFileList('fixDefectMethod')"
                     v-if="
-                      detailData.fixDefectMethod.attachments.length ||
-                      detailData.fixDefectMethod.recordFiles.length
+                      detailData.fixDefectMethod &&
+                      (detailData.fixDefectMethod.attachments.length ||
+                        detailData.fixDefectMethod.recordFiles.length)
                     "
                   >
                     <div class="tool-item">
@@ -289,7 +305,9 @@
                   v-for="(item, index) in detailData.claim"
                   :key="index"
                 >
-                  <div class="claim-title">{{ index + 1 }}：{{ item.name }}</div>
+                  <div class="claim-title">
+                    {{ index + 1 }}：{{ item.name }}
+                  </div>
                   <div class="kernel-box">
                     <template
                       v-for="(childItem, childIndex) in item.claimContent"
@@ -523,10 +541,6 @@ export default {
   components: { Editor, uploadFile, draggable, fileList },
   watch: {
     drawings(n, o) {
-      console.log({
-        n,
-        o,
-      });
       n.forEach((el, index) => {
         el.name = `图${index + 1}`;
       });
@@ -589,13 +603,12 @@ export default {
                     <hr style="border: 1px solid #000; background: #000;" size="1px" width="100%">
         `,
       mainContent: ``,
-      proposalName: ''
+      proposalName: "",
     };
   },
   created() {
-    this.proposalName = this.$route.query.proposalName
+    this.proposalName = this.$route.query.proposalName;
     if (this.$route.query.id) {
-      console.log("获取数据");
       this.fetchData(this.$route.query.id);
     } else {
       this.$message.warning("缺少必需参数");
@@ -616,18 +629,14 @@ export default {
             this.handleQuit();
           });
       } else {
-        console.log("here");
         this.handleQuit();
       }
     },
     handleTextToRich() {
-      console.log("DRWAING", this.drawings);
       let textStr = "";
       this.drawings.map((item, index) => {
-        console.log("item,", item, index);
         textStr += `<p>&#x3000;&#x3000;${item.name}${item.desc}</p>`;
       });
-      console.log("textStr", textStr);
       let content = this.allContent;
       // 清理标签之间的空格。不然正则匹配不到
       content = content.replace(/<\/p>\r?\n|(?<!\n)\r/g, "</p>");
@@ -635,17 +644,15 @@ export default {
       let textReg =
         /<h3 style="text-decoration: underline;">附图说明<\/h3>.*?主要元件符号说明：<\/p>/g;
       content = content.replace(textReg, (str) => {
-        console.log("中间匹配到的字符", str, "||||||", textStr);
         return `<h3 style="text-decoration: underline;">附图说明</h3>${textStr}<p>&#x3000;&#x3000;主要元件符号说明：</p>`;
       });
-      console.log("content", content);
       this.$nextTick(() => {
         this.allContent = content;
         this.handleSave("ImgtextToRich");
       });
     },
     handleQuit() {
-      this.$router.push({ path: "/case-list", query: { active: 'case' } });
+      this.$router.push({ path: "/case-list", query: { active: "case" } });
     },
     updateRichText(data) {
       this.allContent = data.content;
@@ -675,14 +682,12 @@ export default {
     },
     fetchData(id) {
       patentDetail({ id }).then((res) => {
-        console.log("res", res);
         this.detailData = res.data;
         this.claim = res.data.claim;
         this.handleClaimToRightText(this.claim);
         this.drawings = res.data.drawings;
         this.typeLabel = res.data.type == "1" ? "发明" : "实用新型";
         this.modifiedFields = res.data.modifiedFields || [];
-        console.log("typeLabel", this.typeLabel);
         this.abstractUrl = res.data.abstractUrl;
         if (res.data.abstract) {
           this.mainContent = res.data.abstract;
@@ -1402,26 +1407,26 @@ export default {
   justify-content: space-between;
   width: 100%;
   background-color: #fff;
-  border-bottom: 1px solid rgba(0,0,0, 0.08);
-    .icon_back {
-      cursor: pointer;
-      width: 60px;
-      &:hover {
-        color: #165DFF;
-      }
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  .icon_back {
+    cursor: pointer;
+    width: 60px;
+    &:hover {
+      color: #165dff;
     }
-    .title-name {
-      padding: 8px;
-      font-family: 'PingFang SC';
-      font-style: normal;
-      font-weight: 500;
-      font-size: 24px;
-      color: #1D2129;
-      width: 418px;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
-    }
+  }
+  .title-name {
+    padding: 8px;
+    font-family: "PingFang SC";
+    font-style: normal;
+    font-weight: 500;
+    font-size: 24px;
+    color: #1d2129;
+    width: 418px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
 }
 .page-con {
   height: calc(100vh - 144px);
