@@ -843,7 +843,7 @@ export default {
             patentContentBox += `<p>&#x3000;&#x3000;可选地，${childKernel}`;
 
             index += 1;
-            str += `<p>&#x3000;&#x3000;${index}. 根据权利要求${+item.name}所述的${name}，其特征在于，${childKernel}`;
+            str += `<p>&#x3000;&#x3000;${index}. 根据${item.name}所述的${name}，其特征在于，${childKernel}`;
             childKernel = "";
             note = "";
           }
