@@ -3,17 +3,13 @@
     <div class="login_bg">
       <div class="bg_text">
         <div class="title">
-          <img src="@/assets/login_images/logo_s.svg" alt="">
+          <img src="@/assets/login_images/logo_s.svg" alt="" />
           <span>大贾知本</span>
         </div>
-        <div class="b_text">
-          引导式流程
-        </div>
-        <div class="s_text">
-          预设模板提高撰写效率
-        </div>
+        <div class="b_text">引导式流程</div>
+        <div class="s_text">预设模板提高撰写效率</div>
       </div>
-      <img class="bg_img" src="@/assets/login_images/Group.svg" alt="">
+      <img class="bg_img" src="@/assets/login_images/Group.svg" alt="" />
     </div>
     <el-form
       ref="loginForm"
@@ -24,20 +20,20 @@
     >
       <div class="title-container">
         <div class="icon">
-          <img src="@/assets/login_images/logo_b.svg" alt="">
+          <img src="@/assets/login_images/logo_b.svg" alt="" />
         </div>
         <h3 class="title">欢迎使用大贾知本</h3>
       </div>
 
       <el-form-item prop="username">
         <!-- <span class="svg-container">
-        </span> --> 
+        </span> -->
         <el-input
           auto-complete="new-password"
           v-model="loginForm.username"
           placeholder="请输入手机号/账号"
           type="text"
-          tabindex="1" 
+          tabindex="1"
           class="login_input"
         >
           <template slot="prepend">
@@ -93,11 +89,23 @@
         >登录系统</el-button
       >
       <div class="form-btm">
-        <span><i class="el-icon-chat-line-round" style="font-size: 16px;margin-right: 8px"></i>联系客服使用本产品</span>
+        <span
+          ><i
+            class="el-icon-chat-line-round"
+            style="font-size: 16px; margin-right: 8px"
+          ></i
+          >联系客服使用本产品</span
+        >
       </div>
     </el-form>
     <div class="login-btm">
-      <span>Copyright 2022 Dajiazhiben Technology. All Rights Reserved. 深圳大贾知本科技有限公司 版权所有 备案/许可证编号为：<a href="https://beian.miit.gov.cn">粤ICP备2022091282号-1</a></span>
+      <span
+        >Copyright 2022 Dajiazhiben Technology. All Rights Reserved.
+        深圳大贾知本科技有限公司 版权所有 备案/许可证编号为：<a
+          href="https://beian.miit.gov.cn"
+          >粤ICP备2022091282号-1</a
+        ></span
+      >
     </div>
   </div>
 </template>
@@ -158,8 +166,11 @@ export default {
               if (res.role === 1) {
                 this.$router.push({ path: "/interface" });
               } else {
-                console.log('走i这里')
-                this.$router.push({ path: "/case-list", query: {active: 'case'}});
+                console.log("走i这里");
+                this.$router.push({
+                  path: "/case-list",
+                  query: { active: "case" },
+                });
               }
               this.loading = false;
             })
@@ -195,7 +206,7 @@ $cursor: #fff;
 /* reset element-ui css */
 .login-container {
   position: relative;
-  background: #EEEFF5;
+  background: #eeeff5;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -217,7 +228,7 @@ $cursor: #fff;
       position: absolute;
       top: 0;
       z-index: 1;
-      .title{
+      .title {
         display: flex;
         align-items: center;
         img {
@@ -226,27 +237,27 @@ $cursor: #fff;
           margin-right: 8px;
         }
         span {
-          font-family: 'PingFang SC';
+          font-family: "PingFang SC";
           font-style: normal;
           font-weight: 600;
           font-size: 20px;
-          color: #151B4D;
+          color: #151b4d;
         }
       }
       .b_text {
         font-size: 96px;
-        font-family: 'PingFang SC';
+        font-family: "PingFang SC";
         font-weight: 600;
         font-style: normal;
-        color: #151B4D;
+        color: #151b4d;
         padding: 42px 0;
       }
       .s_text {
         font-size: 40px;
-        font-family: 'PingFang SC';
+        font-family: "PingFang SC";
         font-weight: 600;
         font-style: normal;
-        color: #151B4D;
+        color: #151b4d;
       }
     }
     .bg_img {
@@ -281,11 +292,11 @@ $cursor: #fff;
         }
       }
       .title {
-        font-family: 'PingFang SC';
+        font-family: "PingFang SC";
         font-style: normal;
         font-weight: 600;
         font-size: 24px;
-        color: #4E5969;
+        color: #4e5969;
       }
     }
     .login_input {
@@ -293,7 +304,7 @@ $cursor: #fff;
       height: 47px;
       width: 320px;
       display: flex;
-      border: 1px solid #E5E6EB;
+      border: 1px solid #e5e6eb;
       border-radius: 2px;
       box-sizing: border-box;
       ::v-deep .el-input-group__prepend {
@@ -317,7 +328,7 @@ $cursor: #fff;
         right: 12px;
       }
       &:focus-within {
-        border: 1px solid #409EFF;
+        border: 1px solid #409eff;
       }
       // input {
       //   background: transparent;
@@ -343,15 +354,15 @@ $cursor: #fff;
       position: absolute;
       left: 0;
       bottom: 0;
-      border-top: 1px solid #E5E6EB;
+      border-top: 1px solid #e5e6eb;
       span {
         display: flex;
         align-items: center;
         justify-content: center;
         width: 180px;
         height: 42px;
-        background: #F7F8FA;
-        font-family: 'PingFang SC';
+        background: #f7f8fa;
+        font-family: "PingFang SC";
         font-style: normal;
         font-weight: 400;
         font-size: 14px;
@@ -444,4 +455,5 @@ $light_gray: #eee;
     user-select: none;
   }
 }
+// test4
 </style>
