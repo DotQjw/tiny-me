@@ -29,12 +29,10 @@
                 {{ scope.$index + 1 }}
               </div>
 
-              <div
-                v-if="scope.row.showTip"
-                @click="handleDelete(scope.row)"
-                class="row-click"
-              >
-                删除
+              <div v-if="scope.row.showTip" class="row-click">
+                <span style="cursor: pointer" @click="handleDelete(scope.row)">
+                  删除
+                </span>
               </div>
             </template>
           </el-table-column>
@@ -87,7 +85,7 @@
             </template>
           </el-table-column>
           <el-table-column prop="" width="770">
-             <template slot="header">
+            <template slot="header">
               <el-row class="card-head">
                 <el-col style="width: 506px">内核</el-col>
                 <el-col style="width: 60px">必经</el-col>
@@ -97,7 +95,11 @@
               </el-row>
             </template>
             <template slot-scope="scope">
-              <span v-for="(item, index) in scope.row.claimContent" :key="index" class="operation">
+              <span
+                v-for="(item, index) in scope.row.claimContent"
+                :key="index"
+                class="operation"
+              >
                 <span style="width: 506px">
                   <div
                     @mouseenter="
@@ -115,39 +117,62 @@
                       :ref="`inputType`"
                       v-model="item.kernel"
                     ></el-input>
-                    <div
-                      v-if="item.isShowDelete && index != 0"
-                      @click="
-                        handleKernelDelete(item, index, scope.row.claimContent)
-                      "
-                      class="kernel-delete"
-                    >
-                      删除
+                    <div v-if="item.isShowDelete && index != 0">
+                      <span
+                        class="kernel-delete"
+                        @click="
+                          handleKernelDelete(
+                            item,
+                            index,
+                            scope.row.claimContent
+                          )
+                        "
+                      >
+                        删除
+                      </span>
                     </div>
                   </div>
                 </span>
                 <div class="check-row-box">
-                  <div
-                  >
-                    <el-checkbox v-model="item.check.necessaryStep" @change="inputChange"></el-checkbox>
+                  <div>
+                    <el-checkbox
+                      v-model="item.check.necessaryStep"
+                      @change="inputChange"
+                    ></el-checkbox>
                   </div>
                 </div>
                 <div class="check-row-box">
-                  <div
-                  >
-                    <el-checkbox v-model="item.check.visible" @change="inputChange"></el-checkbox>
+                  <div>
+                    <el-checkbox
+                      v-model="item.check.visible"
+                      @change="inputChange"
+                    ></el-checkbox>
                   </div>
                 </div>
                 <div class="check-row-box">
-                  <div
-                  >
-                    <el-checkbox v-model="item.check.logic" @change="inputChange"></el-checkbox>
+                  <div>
+                    <el-checkbox
+                      v-model="item.check.logic"
+                      @change="inputChange"
+                    ></el-checkbox>
                   </div>
                 </div>
                 <div class="note-row" style="width: 60px">
                   <div class="note_box" :title="item.note">
-                    <img src="@/assets/work_images/flag.svg" alt="" class="note_icon" v-if="item.note === ''" @click="openNote(item, index)">
-                    <img src="@/assets/work_images/flag_active.svg" class="note_icon" alt="" v-else @click="openNote(item, index)">
+                    <img
+                      src="@/assets/work_images/flag.svg"
+                      alt=""
+                      class="note_icon"
+                      v-if="item.note === ''"
+                      @click="openNote(item, index)"
+                    />
+                    <img
+                      src="@/assets/work_images/flag_active.svg"
+                      class="note_icon"
+                      alt=""
+                      v-else
+                      @click="openNote(item, index)"
+                    />
                   </div>
                   <div class="dialog-note" v-show="dialogNote">
                     <div class="note-content">
@@ -164,18 +189,20 @@
                       </div>
                       <div class="dialog-footer">
                         <el-button @click="closeNote(item)">返回</el-button>
-                        <el-button type="primary" @click="closeNote(item)">提交</el-button>
+                        <el-button type="primary" @click="closeNote(item)"
+                          >提交</el-button
+                        >
                       </div>
                     </div>
                   </div>
                 </div>
               </span>
               <el-button
-                  icon="el-icon-plus"
-                  @click="handleInner(scope.row, scope.$index, treeData)"
-                >
-                  添加内核
-                </el-button>
+                icon="el-icon-plus"
+                @click="handleInner(scope.row, scope.$index, treeData)"
+              >
+                添加内核
+              </el-button>
             </template>
           </el-table-column>
           <el-table-column prop="" label="有益效果" width="315">
@@ -190,21 +217,25 @@
                   :on-success="handleSuccess"
                   :before-upload="(file) => beforeUpload(file, scope.row)"
                 > -->
-                  <span
-                    class="file-list-tool"
-                    v-if="scope.row.attachments.length"
-                    @click="handleUpload(scope.row, scope.$index)"
-                  >
-                    <span class="tool-item-file-list">
-                      <i class="el-icon-paperclip"></i>
-                      <span class="tool-label">附件列表</span>
-                    </span>
-                    <i class="el-icon-arrow-down custom-arrow-down"></i>
+                <span
+                  class="file-list-tool"
+                  v-if="scope.row.attachments.length"
+                  @click="handleUpload(scope.row, scope.$index)"
+                >
+                  <span class="tool-item-file-list">
+                    <i class="el-icon-paperclip"></i>
+                    <span class="tool-label">附件列表</span>
                   </span>
-                  <span v-else class="tool-item" @click="openUploadFile(scope.row, scope.$index)">
-                    <i class="el-icon-upload2"></i>
-                    <span class="tool-label">上传附件</span>
-                  </span>
+                  <i class="el-icon-arrow-down custom-arrow-down"></i>
+                </span>
+                <span
+                  v-else
+                  class="tool-item"
+                  @click="openUploadFile(scope.row, scope.$index)"
+                >
+                  <i class="el-icon-upload2"></i>
+                  <span class="tool-label">上传附件</span>
+                </span>
                 <!-- </el-upload> -->
 
                 <el-input
@@ -219,7 +250,7 @@
             </template>
           </el-table-column>
         </el-table>
-        </div>
+      </div>
     </div>
     <upload-file
       v-if="showUpload"
@@ -242,7 +273,7 @@ import { uploadFileUrl, baseUrl } from "@/utils/baseUrl";
 import fileList from "./fileList_five";
 import uploadFile from "./uploadFile";
 //  不支持import 语法，也就是module引入
-const jsDiff = require('diff');
+const jsDiff = require("diff");
 export default {
   props: {
     claimData: {
@@ -252,7 +283,7 @@ export default {
   },
   components: {
     fileList,
-    uploadFile
+    uploadFile,
   },
   watch: {
     realIndex(n) {
@@ -267,7 +298,7 @@ export default {
       const page = document.documentElement.clientHeight;
       const height = page - 245;
       return height;
-    }
+    },
   },
   data() {
     return {
@@ -313,8 +344,8 @@ export default {
     };
   },
   created() {
-    const a= jsDiff.diffChars("我的钓鱼","钓的鱼")
-    console.log('jsDiff',a)
+    const a = jsDiff.diffChars("我的钓鱼", "钓的鱼");
+    console.log("jsDiff", a);
     console.log("init", this.claimData);
     if (this.claimData.length) {
       console.log("装载一下树结构");
@@ -331,18 +362,18 @@ export default {
   },
   mounted() {
     setTimeout(() => {
-      this.$refs.inputType.map(item => {
+      this.$refs.inputType.map((item) => {
         this.$nextTick(() => {
-          item.resizeTextarea()
+          item.resizeTextarea();
           // this.$refs.effectInputType.resizeTextarea()
-        })
-      })
+        });
+      });
       this.claims.map((i, index) => {
         this.$nextTick(() => {
-          this.$refs[`effectInputType${index}`].resizeTextarea()
-        })
-      })
-    },0)
+          this.$refs[`effectInputType${index}`].resizeTextarea();
+        });
+      });
+    }, 0);
   },
   methods: {
     kernelMouseEnter(item, index, data) {
@@ -352,28 +383,44 @@ export default {
     kernelMouseLeave(item, index, data) {
       this.$set(item, "isShowDelete", false);
     },
-    handleKernelDelete(item, index, data){
-      console.log({item, index, data})
-      data.splice(index,1)
-      this.saveData("autoSave");
+    handleKernelDelete(item, index, data) {
+      this.$confirm("确定要删除当前内核吗？", "提示", {
+        confirmButtonText: "确定删除",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          console.log({ item, index, data });
+          data.splice(index, 1);
+          this.saveData("autoSave");
+        })
+        .catch((_) => {});
     },
     handleDelete(row) {
-      console.log("row", row, this.treeData);
-      //第一级，。
-      this.parentChildren = this.treeData;
-      this.findTreeData(row.no, this.treeData);
-      this.$nextTick(() => {
-        console.log("parentChildren", this.parentChildren);
-        // return
-        let index = this.parentChildren.findIndex((v) => v.no === row.no);
-        console.log("index", index);
-        this.parentChildren.splice(index, 1);
-        console.log("this.treeData", this.treeData);
-        this.claims = [];
-        this.realIndex = 0;
-        this.handleArrayData(this.treeData);
-        this.inputChange();
-      });
+      this.$confirm("确定要删除当前权利要求吗？", "提示", {
+        confirmButtonText: "确定删除",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          console.log("row", row, this.treeData);
+          //第一级，。
+          this.parentChildren = this.treeData;
+          this.findTreeData(row.no, this.treeData);
+          this.$nextTick(() => {
+            console.log("parentChildren", this.parentChildren);
+            // return
+            let index = this.parentChildren.findIndex((v) => v.no === row.no);
+            console.log("index", index);
+            this.parentChildren.splice(index, 1);
+            console.log("this.treeData", this.treeData);
+            this.claims = [];
+            this.realIndex = 0;
+            this.handleArrayData(this.treeData);
+            this.inputChange();
+          });
+        })
+        .catch((_) => {});
       // console.log(this.treeData);
     },
     findTreeData(no, data) {
@@ -406,14 +453,14 @@ export default {
       });
     },
     openNote(value) {
-      console.log('cccc', value)
-      this.noteObj = value
-      console.log('sss', this.noteObj)
-      this.dialogNote = true
+      console.log("cccc", value);
+      this.noteObj = value;
+      console.log("sss", this.noteObj);
+      this.dialogNote = true;
     },
     closeNote(value) {
-      console.log('ffff', value)
-      this.dialogNote = false
+      console.log("ffff", value);
+      this.dialogNote = false;
     },
     handleEditData(data) {
       var list = cloneDeep(data);
@@ -621,7 +668,7 @@ export default {
           this.treeData
         );
         this.uploadFileRow.attachments.push(this.fileData);
-        this.inputChange()
+        this.inputChange();
         console.log("claims8888888", this.claims, this.uploadFileRow);
       } else if (response.code === 20103) {
         this.$confirm("登录过期,请重新登录", "提示", {
@@ -655,20 +702,17 @@ export default {
     },
     uploadFile(data) {
       // this.template.attachments.push(data);
-      this.claims[this.fileIndex].attachments.push(data)
-      console.log(
-        "formData",
-        this.claims
-      );
+      this.claims[this.fileIndex].attachments.push(data);
+      console.log("formData", this.claims);
       this.saveData("autoFile");
     },
     handleUpload(row, index) {
-      this.showFileList = true
-      this.fileIndex = index
-      this.currentFileList = this.claims[index].attachments
+      this.showFileList = true;
+      this.fileIndex = index;
+      this.currentFileList = this.claims[index].attachments;
     },
     openUploadFile(row, index) {
-      this.fileIndex = index
+      this.fileIndex = index;
       this.showUpload = true;
     },
   },
@@ -688,7 +732,7 @@ export default {
     .cell {
       box-sizing: border-box;
     }
-}
+  }
 }
 .el-table {
   position: relative;
@@ -744,15 +788,15 @@ export default {
     background-color: #fff;
     .dialog-title {
       box-sizing: border-box;
-      border-bottom: 1px solid #E5E6E8;
+      border-bottom: 1px solid #e5e6e8;
       padding: 12px 21px;
       text-align: center;
-      font-family: 'Nunito Sans';
+      font-family: "Nunito Sans";
       font-style: normal;
       font-weight: 600;
       font-size: 16px;
       line-height: 24px;
-      color: #1D2129;
+      color: #1d2129;
     }
     .dialog-con {
       padding: 26px 18px;
@@ -767,7 +811,7 @@ export default {
     }
     .dialog-footer {
       box-sizing: border-box;
-      border-top: 1px solid #E5E6E8;
+      border-top: 1px solid #e5e6e8;
       display: flex;
       justify-content: flex-end;
       padding: 16px 20px;
@@ -934,7 +978,7 @@ export default {
   bottom: 5px;
   left: 10px;
   color: red;
-  cursor: pointer;
+  // cursor: pointer;
 }
 .row-top {
   position: absolute;

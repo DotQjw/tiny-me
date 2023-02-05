@@ -183,7 +183,18 @@ export default {
     },
     handleDownLoad(item) {
       const url = this.baseUrl + item.url;
-      window.open(url);
+      const fileName = item.name;
+      const x = new XMLHttpRequest();
+      x.open("GET", url, true);
+      x.responseType = "blob";
+      x.onload = function () {
+        const url = window.URL.createObjectURL(x.response);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = fileName;
+        a.click();
+      };
+      x.send();
     },
     handlePlay(item) {
       this.audioSrc = this.baseUrl + item.url;
@@ -252,18 +263,18 @@ export default {
         "dwg",
         "stp",
         "rar",
-        "zip"
+        "zip",
       ];
       if (!typeList.includes(fileNameType)) {
         this.$message.warning(
           "只能上传格式为doc,docx,pdf,jpg,jpeg,png,excel,xls,xlsx,dwg,stp,rar,zip的文件"
         );
-        return false
+        return false;
       }
       let fileSize = file.size < 1024 * 1024 * 100;
       if (!fileSize) {
         this.$message.warning("文件大小不能超过100M");
-        return false
+        return false;
       }
     },
     handleSuccess(res, file, fileList) {

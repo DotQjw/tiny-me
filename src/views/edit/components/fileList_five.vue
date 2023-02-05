@@ -33,19 +33,19 @@
             </span>
           </div>
           <el-upload
-              class="upload-input"
-              :action="uploadUrl"
-              :headers="{
-                Authorization: `Bearer ${token}`,
-              }"
-              :on-success="handleSuccess"
-              :show-file-list="false"
-              :before-upload="beforeUpload"
-              drag
-            >
-              <i style="margin-top: 10px" class="el-icon-plus"></i>
-              <div class="el-upload__text">继续上传</div>
-            </el-upload>
+            class="upload-input"
+            :action="uploadUrl"
+            :headers="{
+              Authorization: `Bearer ${token}`,
+            }"
+            :on-success="handleSuccess"
+            :show-file-list="false"
+            :before-upload="beforeUpload"
+            drag
+          >
+            <i style="margin-top: 10px" class="el-icon-plus"></i>
+            <div class="el-upload__text">继续上传</div>
+          </el-upload>
         </div>
         <div v-else>还没有上传文件</div>
       </div>
@@ -56,7 +56,6 @@
 import { audioToText } from "@/api/table";
 import { baseUrl, uploadFileUrl } from "@/utils/baseUrl";
 import { getToken } from "@/utils/auth";
-
 
 export default {
   props: {
@@ -81,13 +80,23 @@ export default {
       token: this.$store.getters.token || getToken(),
     };
   },
-  created() {
-  },
+  created() {},
   methods: {
     handleClick() {},
     handleDownLoad(item) {
       const url = this.baseUrl + item.url;
-      window.open(url);
+      const fileName = item.name;
+      const x = new XMLHttpRequest();
+      x.open("GET", url, true);
+      x.responseType = "blob";
+      x.onload = function () {
+        const url = window.URL.createObjectURL(x.response);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = fileName;
+        a.click();
+      };
+      x.send();
     },
     handlePlay(item) {
       this.audioSrc = this.baseUrl + item.url;
@@ -110,9 +119,9 @@ export default {
     copyData() {
       this.$copyText(this.copyText).then(
         (e) => {
-           this.$nextTick(()=>{
+          this.$nextTick(() => {
             this.copyDataAgain();
-          })
+          });
         },
         (e) => {
           this.$message.success("复制失败,请重试");
@@ -152,18 +161,18 @@ export default {
         "dwg",
         "stp",
         "rar",
-        "zip"
+        "zip",
       ];
       if (!typeList.includes(fileNameType)) {
         this.$message.warning(
           "只能上传格式为doc,docx,pdf,jpg,jpeg,png,excel,xls,xlsx,dwg,stp,rar,zip的文件"
         );
-        return false
+        return false;
       }
       let fileSize = file.size < 1024 * 1024 * 100;
       if (!fileSize) {
         this.$message.warning("文件大小不能超过100M");
-        return false
+        return false;
       }
     },
     handleSuccess(res, file, fileList) {
@@ -237,7 +246,7 @@ export default {
 .upload-input {
   height: 100px;
   ::v-deep .el-upload {
-    width: 100%; 
+    width: 100%;
     .el-upload-dragger {
       height: 78px !important;
       width: 100%;
